@@ -111,6 +111,7 @@ Install cpu0 debug build on Linux
       $ mkdir debug; cd debug
       $ rm -rf ../src/tools/clang/
       $ cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
+        -DLLVM_TARGETS_TO_BUILD="Mips;Cpu0" \
         -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" ../src/      
       $ make
 
