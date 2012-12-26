@@ -39,9 +39,6 @@ program and without clang and clang++.
 
 .. _Building LLVM with CMake: http://llvm.org/docs/CMake.html?highlight=cmake
 
-.. todo:: Find information on debugging LLVM within Xcode for Macs.
-.. todo:: Find information on building/debugging LLVM within Eclipse for Linux.
-
 Install LLVM 3.1 release on Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -50,6 +47,20 @@ Our tutorial is based on LLVM 3.1 release. We need `LLVM <http://llvm.org/>`_,
 In this section, we will show the command line steps to build and install LLVM
 on your Linux machine. We use the following names to denote paths specific to
 your enviroment.
+
+``LLVM_SRC``
+
+  This is the top level directory of the LLVM source tree.
+
+``Example_SRC``
+
+  This is the top level directory where our example code lives.
+
+``Debug_OBJ``
+
+  This is the top level directory of the LLVM object tree (i.e. the tree where
+  object files and compiled programs will be placed). We build LLVM in debug
+  mode here.
 
 ``INSTALL``
 
@@ -67,6 +78,8 @@ If you are using IDE, please see :ref:`appendix` for more information.
       $ tar xvf llvm-3.1.src.tar.gz
       $ tar xvf clang-3.1.src.tar.gz -C llvm-3.1.src/tools/
       $ tar xvf compiler-rt-3.1.src.tar.gz -C llvm-3.1.src/projects/
+      $ mv llvm-3.1.src/tools/clang-3.1.src llvm-3.1.src/tools/clang
+      $ mv llvm-3.1.src/projects/compiler-rt-3.1.src llvm-3.1.src/projects/compiler-rt
 
 #. Build LLVM
 
@@ -86,72 +99,39 @@ If you are using IDE, please see :ref:`appendix` for more information.
 Install cpu0 debug build on Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Make another copy /usr/local/llvm/3.1.test/cpu0/1/src for cpu0 debug working 
-project 
-according the following list steps, the corresponding commands shown in 
-:ref:`install_f25`:
+#. Make a new directory.
 
-1) Enter /usr/local/llvm/3.1.test/cpu0/1 and 
-``cp -rf /usr/local/llvm/3.1/src .``.
+    .. code-block:: bash
 
-2) Update my modified files to support cpu0 by command, 
-``cp -rf /home/Gamma/Gamma_flash/LLVMBackendTutorial/src_files_modify/src .``.
+     $ mkdir -p cpu0/2/src; cd cpu0/2/src
+     $ cp -rf $LLVM_SRC/* .
 
-3) Enter src/lib/Target and copy example code LLVMBackendTutorial/1/Cpu0 to the 
-directory by command ``cd src/lib/Target/`` and 
-``cp -rf /home/Gamma/Gamma_flash/LLVMBackendTutorial/1/Cpu0 .``.
+#. Update top-level source code.
 
-4) Go into directory 3.1.test/cpu0/1/src and Check step 3 is effect by command 
-``grep -R "Cpu0" . | more```. I add the Cpu0 backend support, so check with 
-grep.
+    .. code-block:: bash
 
-5) Remove clang from 3.1.test/cpu0/1/src/tools/clang, and mkdir 
-3.1.test/cpu0/1/cmake_debug_build. Without this you will waste extra time for 
-command 
-``make`` in cpu0 example code build.
+     $ cp -rf $Example_SRC/src_files_modify/src/* .
 
-.. _install_f25:
-.. figure:: ../Fig/install/25.png
-	:height: 952 px
-	:width: 1050 px
-	:scale: 80 %
-	:align: center
+#. Update subdirecotry ``lib/Target``.
 
-	Create llvm 3.1 debug copy
+    .. code-block:: bash
 
-Now, go into directory 3.1.test/cpu0/1, create directory cmake_debug_build and 
-do cmake 
-like build the 3.1 release, but we do Debug build and use clang as our compiler 
-instead, 
-as follows,
+     $ cp -rf $Example_SRC/2/Cpu0/ lib/Target/
 
-.. literalinclude:: ../terminal_io/install/1.txt
+#. Remove clang source tree since we don't need it at this moment. Build LLVM in
+   debug mode.
 
-Then do make as follows,
+    .. code-block:: bash
 
-.. literalinclude:: ../terminal_io/install/2.txt
+      $ cd ..
+      $ mkdir debug; cd debug
+      $ rm -rf ../src/tools/clang/
+      $ cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
+        -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" ../src/      
+      $ make
 
-Now, we are ready for the cpu0 backend development. We can run gdb debug as 
-follows. 
-If your setting has anything about gdb errors, please follow the errors indication 
-(maybe need to download gdb again). 
-Finally, try gdb as :ref:`install_f26`.
+#. Debug
 
-.. _install_f26:
-.. figure:: ../Fig/install/26.png
-	:align: center
+    .. code-block:: bash
 
-	Debug llvm cpu0 backend by gdb
-
-
-.. _LLVM Download Page:
-	http://llvm.org/releases/download.html#3.1
-
-
-.. _section Create LLVM.xcodeproj of supporting cpu0 by terminal cmake command:
-    http://jonathan2251.github.com/lbd/install.html#create-llvm-xcodeproj-of-
-    supporting-cpu0-by-terminal-cmake-command
-
-.. _section Create LLVM.xcodeproj by cmake Graphic UI:
-    http://jonathan2251.github.com/lbd/install.html#create-llvm-xcodeproj-by-
-    cmake-graphic-ui
+      $ gdb bin/llc
