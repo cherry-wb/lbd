@@ -24,6 +24,7 @@ Table of Contents
    ctrlflow
    funccall
    install
+   appendix
    todo
    
 
