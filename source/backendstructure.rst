@@ -1,30 +1,62 @@
-Back end structure
-==================
+LLVM Backend Structure
+======================
 
-This chapter introduce the back end class inherit tree and class members first. 
-Next, following the back end structure, adding individual class implementation 
-in each section. 
-There are compiler knowledge like DAG (Directed-Acyclic-Graph) and instruction 
-selection needed in this chapter. 
-This chapter explains these knowledge just when needed. 
-At the end of this chapter, we will have a back end to compile llvm 
-intermediate code into cpu0 assembly code.
+This chapter introduces the LLVM backend class inheritance tree and class members
+first. Next, we follow the LLVM backend structure and add class implementation one
+by one in each section. In this chapter, we need some compiler knowledge, like
+`DAG <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ and `instruction
+selection <http://en.wikipedia.org/wiki/Instruction_selection>`_, we will introduce
+them when needed. At the end of this chapter, we will have a backend being able
+to compile LLVM IR into cpu0 assembly code.
 
-Many code are added in this chapter. They almost are common in every back end 
-except the back end name (cpu0 or mips ...). Actually, we copy almost all the 
-code from mips and replace the name with cpu0. Please focus on the classes 
-relationship in this backend structure. Once knowing the structure, you can 
-create your backend structure as quickly as we did, even though there are 3000 
-lines of code in this chapter.
+The code added in this chapter are common in every LLVM backend, the only difference
+are their name. In fact, since Cpu0 is similar to Mips we copy most of the code from
+the Mips backend. In this chapter, we will focus on the relationship between classes
+involved in writing a LLVM backend. Once knowing the overall structure, you can
+quickly create a simple backend from scratch.
 
-TargetMachine structure
------------------------
+Step 0. Build Example Code
+---------------------------
 
-Your back end should define a TargetMachine class, for example, we define the 
-Cpu0TargetMachine class. 
-Cpu0TargetMachine class contains it's own instruction class, frame/stack class, 
-DAG (Directed-Acyclic-Graph) class, and register class. 
-The Cpu0TargetMachine contents as follows,
+We build our example code first, then add components step by step.
+
+#. Prepare the source code.
+
+    .. code-block:: bash
+
+     $ cd cpu0
+     $ mkdir -p 3/src; cd 3/src
+     $ cp -rf ../../2/src/* .
+     $ cp -rf $Example_SRC/3/1/Cpu0/ lib/Target/
+
+#. Build
+
+    .. code-block:: bash
+
+     $ mkdir debug; cd debug
+     $ cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
+       -DLLVM_TARGETS_TO_BUILD="Mips;Cpu0" \
+       -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" ../src/
+
+Step 1. Add XXTargetMachine
+---------------------------
+Below shows the role of TargetMachine in the LLVM backend structure. `llc
+<http://llvm.org/docs/CommandGuide/llc.html>`_ is LLVM static compiler.
+When you invoke ``llc`` command with option ``-march=XX``, it will trigger the
+corresponding callback functions.
+
+.. _backendstructure_f0:
+.. figure:: ../Fig/backendstructure/target_machine.png
+   :figclass: align-center
+
+   The role of TargetMachine
+
+`Target Machine <http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine>`_ is
+a base class for targets implemented with the LLVM target-independent code generator.
+You should define a ``XXTargetMachine`` class which inherit class ``LLVMTargetMachine``,
+where XX is your target name. In our tutorial we name it as ``Cpu0TargetMachine``.
+Class Cpu0TargetMachine has data members which define target layout, instruction
+information, frame/stack ...etc. The Cpu0TargetMachine contents as follows,
 
 .. literalinclude:: ../code_fragment/backendstructure/1.txt
 
@@ -34,13 +66,7 @@ The Cpu0TargetMachine contents as follows,
 
 	TargetMachine class diagram 1
 
-The Cpu0TargetMachine inherit tree is TargetMachine <- LLVMTargetMachine <- 
-Cpu0TargetMachine. 
-Cpu0TargetMachine has class Cpu0Subtarget, Cpu0InstrInfo, Cpu0FrameLowering, 
-Cpu0TargetLowering and Cpu0SelectionDAGInfo. 
-Class Cpu0Subtarget, Cpu0InstrInfo, Cpu0FrameLowering, Cpu0TargetLowering and 
-Cpu0SelectionDAGInfo are inherited from parent class TargetSubtargetInfo, 
-TargetInstrInfo, TargetFrameLowering, TargetLowering and TargetSelectionDAGInfo.
+The inheritance tree of class ``Cpu0TargetMachine`` and its data members are shown above.
 
 :ref:`backendstructure_f1` shows Cpu0TargetMachine inherit tree and it's 
 Cpu0InstrInfo class inherit tree. 
@@ -90,8 +116,6 @@ will be extracted by Cpu0InstrInfo.h.
 
 .. literalinclude:: ../code_fragment/backendstructure/2.txt
 
-http://llvm.org/docs/WritingAnLLVMBackend.html#TargetMachine
-
 Now, the code in 3/1/Cpu0 add class Cpu0TargetMachine(Cpu0TargetMachine.h and 
 cpp), Cpu0Subtarget (Cpu0Subtarget.h and .cpp), Cpu0InstrInfo (Cpu0InstrInfo.h 
 and .cpp), Cpu0FrameLowering (Cpu0FrameLowering.h and .cpp), Cpu0TargetLowering 
@@ -112,8 +136,8 @@ Command as follows,
 
 .. literalinclude:: ../terminal_io/backendstructure/1.txt
 
-Add RegisterInfo
-----------------
+Step 2. Add RegisterInfo
+------------------------
 
 As depicted in :ref:`backendstructure_f1`, the Cpu0InstrInfo class should 
 contains Cpu0RegisterInfo. 
@@ -133,8 +157,8 @@ The errors say that we have not Target AsmPrinter.
 Let's add it in next section.
 
 
-Add AsmPrinter
---------------
+Step 3. Add AsmPrinter
+----------------------
 
 3/3/cpu0 contains the Cpu0AsmPrinter definition. First, I add definitions in 
 Cpu0.td to support AssemblyWriter. 
