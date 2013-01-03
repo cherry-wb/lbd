@@ -45,9 +45,9 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 
 html:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/${LANG}/html
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
-	@echo "Build finished. The HTML pages are in $(BUILDDIR)/${LANG}/html."
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
@@ -161,7 +161,7 @@ gh-pages:
 	git checkout private $(GH_PAGES_SOURCES)
 	git reset HEAD
 	make html
-	mv -fv build/zh_TW.UTF-8/html/* ./
+	mv -fv build/html/* ./
 	rm -rf $(GH_PAGES_SOURCES) build
 	git add -A
 	git commit -m "Generated gh-pages for `git log private -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout private
