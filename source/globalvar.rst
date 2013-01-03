@@ -431,8 +431,8 @@ Where DAG.getEntryNode() is the register $2 which decide by Register Allocator,
 and (Wrapper GetGlobalReg(), GA) translate into Base=$gp and the 16 bits Offset 
 for $gp.
 
-Beside above code, add the following code to Cpu0AsmPrinter.cpp and it will 
-emit .cpload asm sudo instruction,
+Apart from above code, add the following code to Cpu0AsmPrinter.cpp and it will 
+emit .cpload asm pseudo instruction,
 
 .. code-block:: c++
 
