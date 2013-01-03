@@ -13,12 +13,12 @@ You can download and build the document yourself by doing command below:
 
 你可以下載文檔並透過底下指令自行編譯:
 
-  ```bash
-  $ git clone git://github.com/azru0512/lbd.git
-  $ cd lbd
-  $ git submodule init; git submodule update
-  $ make html
-  ```
+```
+$ git clone git://github.com/azru0512/lbd.git
+$ cd lbd
+$ git submodule init; git submodule update
+$ make html
+```
 
 If you would like to to view an up to date version of this book in your 
 browser without checking out and building the book, please visit: 
