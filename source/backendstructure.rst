@@ -15,6 +15,44 @@ the Mips backend. In this chapter, we will focus on the relationship between cla
 involved in writing a LLVM backend. Once knowing the overall structure, you can
 quickly create a simple backend from scratch.
 
+.. _testing:
+
+Overview
+--------
+首先介紹編譯的基本知識，編譯流程可以簡化成下圖。
+
+.. _compilation_pipeline:
+
+.. figure:: ../Fig/backendstructure/compilation_pipeline.png
+   :figclass: align-center
+
+   Compilation Pipeline
+
+.. _compilation_flow_part1:
+
+.. figure:: ../Fig/backendstructure/compilation_flow_part_1.png
+   :figclass: align-center
+
+   Compilation Flow
+
+LLVM 後端的四大功能標明在 :num:`figure #llvm-backend` 。
+
+#. 將 LLVM IR 編譯成匯編文本文件: 傳統的靜態編譯。
+
+#. 將 LLVM IR 編譯成目標二進制文件: .o file writer。
+
+#. 將匯編文本文件轉譯為目標二進製文件: 匯編。
+
+#. 將目標二進制文件還原為匯編文本文件: 反匯編。
+
+.. _llvm-backend:
+
+.. figure:: ../Fig/backendstructure/llvm_backend.png
+   :figclass: align-center
+
+   LLVM 後端
+
+
 Step 0. Build Example Code
 ---------------------------
 
@@ -40,12 +78,13 @@ We build our example code first, then add components step by step.
 
 Step 1. Add XXTargetMachine
 ---------------------------
-Below shows the role of TargetMachine in the LLVM backend structure. `llc
+The role of TargetMachine in the LLVM backend structure is shown in :num:`figure #target-machine`. `llc
 <http://llvm.org/docs/CommandGuide/llc.html>`_ is LLVM static compiler.
 When you invoke ``llc`` command with option ``-march=XX``, it will trigger the
 corresponding callback functions.
 
-.. _backendstructure_f0:
+.. _target-machine:
+
 .. figure:: ../Fig/backendstructure/target_machine.png
    :figclass: align-center
 
