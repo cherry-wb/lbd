@@ -161,10 +161,7 @@ gh-pages:
 	git checkout private $(GH_PAGES_SOURCES)
 	git reset HEAD
 	make html
-	make html latexpdf epub
 	mv -fv build/html/* ./
-	mv -fv build/latex/WriteAnLLVMBackendTutorialForCpu0.pdf "./WriteAnLLVMBackendTutorialForCpu0.pdf"
-	mv -fv build/epub/WriteAnLLVMBackendTutorialForCpu0.epub "./WriteAnLLVMBackendTutorialForCpu0.epub"
 	rm -rf source LLVMBackendTutorialExampleCode Makefile build
 	git add -A
 	git commit -m "Generated gh-pages for `git log private -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout private
