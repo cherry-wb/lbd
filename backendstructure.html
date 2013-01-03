@@ -69,12 +69,14 @@ involved in writing a LLVM backend. Once knowing the overall structure, you can
 quickly create a simple backend from scratch.</p>
 <div class="section" id="overview">
 <span id="testing"></span><h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>首先介紹編譯的基本知識，編譯流程可以簡化成下圖。</p>
+<p>首先介紹編譯的基本知識，編譯流程可以簡化成 <a class="pageref" href="#compilation-pipeline">figure  1</a> 。
+源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
+產生目標平台語言。<a class="pageref" href="#compilation-flow">figure  2</a> 展示了更進一步的編譯流程。</p>
 <div class="align-center figure" id="compilation-pipeline">
 <img alt="_images/compilation_pipeline.png" src="_images/compilation_pipeline.png" />
 <p class="caption">Figure 1: Compilation Pipeline</p>
 </div>
-<div class="align-center figure" id="compilation-flow-part1">
+<div class="align-center figure" id="compilation-flow">
 <img alt="_images/compilation_flow_part_1.png" src="_images/compilation_flow_part_1.png" />
 <p class="caption">Figure 2: Compilation Flow</p>
 </div>
