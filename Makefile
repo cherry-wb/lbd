@@ -162,6 +162,6 @@ gh-pages:
 	git reset HEAD
 	make html
 	mv -fv build/html/* ./
-	rm -rf $(GH_PAGES_SOURCES) build
+	rm -rf source LLVMBackendTutorialExampleCode Makefile build
 	git add -A
 	git commit -m "Generated gh-pages for `git log private -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout private
