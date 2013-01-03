@@ -38,7 +38,8 @@ your enviroment.
 
 ``Example_SRC``
 
-  This is the top level directory where our example code lives.
+  This is the top level directory where our example code lives. In our tutorial,
+  the example is a git submodule stored in ``lbd-example`` directory.
 
 ``Debug_OBJ``
 
