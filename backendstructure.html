@@ -10,8 +10,9 @@
     
     <title>LLVM Backend Structure &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -26,33 +27,31 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
     <link rel="next" title="Other instructions" href="otherinst.html" />
     <link rel="prev" title="Cpu0 Instruction and LLVM Target Description" href="llvmstructure.html" /> 
   </head>
   <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="otherinst.html" title="Other instructions"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="llvmstructure.html" title="Cpu0 Instruction and LLVM Target Description"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
-      </ul>
-    </div>  
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Write An LLVM Backend Tutorial For Cpu0</span></a></h1>
+        <h2 class="heading"><span>LLVM Backend Structure</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="llvmstructure.html">Cpu0 Instruction and LLVM Target Description</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="otherinst.html">Other instructions</a>&#160;&#160;»
+        </p>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
+      </div>
+      <div class="content">
+        
+        
   <div class="section" id="llvm-backend-structure">
 <h1>LLVM Backend Structure<a class="headerlink" href="#llvm-backend-structure" title="Permalink to this headline">¶</a></h1>
 <p>This chapter introduces the LLVM backend class inheritance tree and class members
@@ -950,71 +949,19 @@ as 123.</p>
 </div>
 
 
-          </div>
-        </div>
       </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">LLVM Backend Structure</a><ul>
-<li><a class="reference internal" href="#step-0-build-example-code">Step 0. Build Example Code</a></li>
-<li><a class="reference internal" href="#step-1-add-xxtargetmachine">Step 1. Add XXTargetMachine</a></li>
-<li><a class="reference internal" href="#step-2-add-registerinfo">Step 2. Add RegisterInfo</a></li>
-<li><a class="reference internal" href="#step-3-add-asmprinter">Step 3. Add AsmPrinter</a></li>
-<li><a class="reference internal" href="#llvm-code-generation-sequence">LLVM Code Generation Sequence</a></li>
-<li><a class="reference internal" href="#dag-directed-acyclic-graph">DAG (Directed Acyclic Graph)</a></li>
-<li><a class="reference internal" href="#id1">Instruction Selection</a></li>
-<li><a class="reference internal" href="#add-cpu0dagtodagisel-class">Add Cpu0DAGToDAGISel class</a></li>
-<li><a class="reference internal" href="#add-prologue-epilogue-functions">Add Prologue/Epilogue functions</a></li>
-<li><a class="reference internal" href="#summary-of-this-chapter">Summary of this Chapter</a></li>
-</ul>
-</li>
-</ul>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="llvmstructure.html">Cpu0 Instruction and LLVM Target Description</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="otherinst.html">Other instructions</a>&#160;&#160;»
+        </p>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="llvmstructure.html"
-                        title="previous chapter">Cpu0 Instruction and LLVM Target Description</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="otherinst.html"
-                        title="next chapter">Other instructions</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/backendstructure.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="otherinst.html" title="Other instructions"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="llvmstructure.html" title="Cpu0 Instruction and LLVM Target Description"
-             >previous</a> |</li>
-        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
-      </ul>
-    </div>
+
     <div class="footer">
         &copy; Copyright 2012, LLVM.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
