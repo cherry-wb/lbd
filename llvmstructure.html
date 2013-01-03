@@ -892,6 +892,78 @@ We will use it in DAG transformations later.</p>
 <h2>Writing configuration files<a class="headerlink" href="#writing-configuration-files" title="Permalink to this headline">¶</a></h2>
 <p>You must have to add one LLVMBuild.txt under <tt class="docutils literal"><span class="pre">Target/Cpu0</span></tt> directory.
 If you want to support cmake, then CMakeLists.txt needed to be added.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp"># CMakeLists.txt</span>
+<span class="cp"># Our td all in Cpu0.td, Cpu0RegisterInfo.td and Cpu0InstrInfo.td included in Cpu0.td</span>
+<span class="n">set</span><span class="p">(</span><span class="n">LLVM_TARGET_DEFINITIONS</span> <span class="n">Cpu0</span><span class="p">.</span><span class="n">td</span><span class="p">)</span>
+
+<span class="cp"># Generate Cpu0GenRegisterInfo.inc and Cpu0GenInstrInfo.inc which included by your hand code C++ files. </span>
+<span class="cp"># Cpu0GenRegisterInfo.inc came from Cpu0RegisterInfo.td, Cpu0GenInstrInfo.inc came from Cpu0InstrInfo.td.</span>
+<span class="n">tablegen</span><span class="p">(</span><span class="n">LLVM</span> <span class="n">Cpu0GenRegisterInfo</span><span class="p">.</span><span class="n">inc</span> <span class="o">-</span><span class="n">gen</span><span class="o">-</span><span class="k">register</span><span class="o">-</span><span class="n">info</span><span class="p">)</span>
+<span class="n">tablegen</span><span class="p">(</span><span class="n">LLVM</span> <span class="n">Cpu0GenInstrInfo</span><span class="p">.</span><span class="n">inc</span> <span class="o">-</span><span class="n">gen</span><span class="o">-</span><span class="n">instr</span><span class="o">-</span><span class="n">info</span><span class="p">)</span>
+<span class="n">tablegen</span><span class="p">(</span><span class="n">LLVM</span> <span class="n">Cpu0GenSubtargetInfo</span><span class="p">.</span><span class="n">inc</span> <span class="o">-</span><span class="n">gen</span><span class="o">-</span><span class="n">subtarget</span><span class="p">)</span>
+
+<span class="cp"># Cpu0CommonTableGen must be defined</span>
+<span class="n">add_public_tablegen_target</span><span class="p">(</span><span class="n">Cpu0CommonTableGen</span><span class="p">)</span>
+
+<span class="cp"># Cpu0CodeGen should match with LLVMBuild.txt Cpu0CodeGen</span>
+<span class="n">add_llvm_target</span><span class="p">(</span><span class="n">Cpu0CodeGen</span>
+  <span class="n">Cpu0TargetMachine</span><span class="p">.</span><span class="n">cpp</span>
+  <span class="p">)</span>
+
+<span class="cp"># Should match with &quot;subdirectories =  MCTargetDesc TargetInfo&quot; in LLVMBuild.txt</span>
+<span class="n">add_subdirectory</span><span class="p">(</span><span class="n">TargetInfo</span><span class="p">)</span>
+<span class="n">add_subdirectory</span><span class="p">(</span><span class="n">MCTargetDesc</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="p">;</span><span class="o">===-</span> <span class="p">.</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">Target</span><span class="o">/</span><span class="n">Cpu0</span><span class="o">/</span><span class="n">LLVMBuild</span><span class="p">.</span><span class="n">txt</span> <span class="o">--------------------------*-</span> <span class="n">Conf</span> <span class="o">-*--===</span><span class="p">;</span>
+<span class="p">;</span>
+<span class="p">;</span>                     <span class="n">The</span> <span class="n">LLVM</span> <span class="n">Compiler</span> <span class="n">Infrastructure</span>
+<span class="p">;</span>
+<span class="p">;</span> <span class="n">This</span> <span class="n">file</span> <span class="n">is</span> <span class="n">distributed</span> <span class="n">under</span> <span class="n">the</span> <span class="n">University</span> <span class="n">of</span> <span class="n">Illinois</span> <span class="n">Open</span> <span class="n">Source</span>
+<span class="p">;</span> <span class="n">License</span><span class="p">.</span> <span class="n">See</span> <span class="n">LICENSE</span><span class="p">.</span><span class="n">TXT</span> <span class="k">for</span> <span class="n">details</span><span class="p">.</span>
+<span class="p">;</span>
+<span class="p">;</span><span class="o">===------------------------------------------------------------------------===</span><span class="p">;</span>
+<span class="p">;</span>
+<span class="p">;</span> <span class="n">This</span> <span class="n">is</span> <span class="n">an</span> <span class="n">LLVMBuild</span> <span class="n">description</span> <span class="n">file</span> <span class="k">for</span> <span class="n">the</span> <span class="n">components</span> <span class="n">in</span> <span class="k">this</span> <span class="n">subdirectory</span><span class="p">.</span>
+<span class="p">;</span>
+<span class="p">;</span> <span class="n">For</span> <span class="n">more</span> <span class="n">information</span> <span class="n">on</span> <span class="n">the</span> <span class="n">LLVMBuild</span> <span class="n">system</span><span class="p">,</span> <span class="n">please</span> <span class="nl">see:</span>
+<span class="p">;</span>
+<span class="p">;</span>   <span class="nl">http:</span><span class="c1">//llvm.org/docs/LLVMBuild.html</span>
+<span class="p">;</span>
+<span class="p">;</span><span class="o">===------------------------------------------------------------------------===</span><span class="p">;</span>
+
+<span class="cp"># Following comments extracted from http:</span><span class="c1">//llvm.org/docs/LLVMBuild.html</span>
+
+<span class="p">[</span><span class="n">common</span><span class="p">]</span>
+<span class="n">subdirectories</span> <span class="o">=</span>  <span class="n">MCTargetDesc</span> <span class="n">TargetInfo</span>
+
+<span class="p">[</span><span class="n">component_0</span><span class="p">]</span>
+<span class="cp"># TargetGroup components are an extension of LibraryGroups, specifically for defining LLVM targets (which are handled specially in a few places).</span>
+<span class="n">type</span> <span class="o">=</span> <span class="n">TargetGroup</span>
+<span class="cp"># The name of the component should always be the name of the target. (should match &quot;def Cpu0 : Target&quot; in Cpu0.td)</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">Cpu0</span>
+<span class="cp"># Cpu0 component is located in directory Target/</span>
+<span class="n">parent</span> <span class="o">=</span> <span class="n">Target</span>
+<span class="cp"># Whether this target defines an assembly parser, assembly printer, disassembler, and supports JIT compilation. They are optional.</span>
+<span class="cp">#has_asmparser = 1</span>
+<span class="cp">#has_asmprinter = 1</span>
+<span class="cp">#has_disassembler = 1</span>
+<span class="cp">#has_jit = 1</span>
+
+<span class="p">[</span><span class="n">component_1</span><span class="p">]</span>
+<span class="cp"># component_1 is a Library type and name is Cpu0CodeGen. After build it will in lib/libLLVMCpu0CodeGen.a of your build command directory.</span>
+<span class="n">type</span> <span class="o">=</span> <span class="n">Library</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">Cpu0CodeGen</span>
+<span class="cp"># Cpu0CodeGen component(Library) is located in directory Cpu0/</span>
+<span class="n">parent</span> <span class="o">=</span> <span class="n">Cpu0</span>
+<span class="cp"># If given, a list of the names of Library or LibraryGroup components which must also be linked in whenever this library is used. That is, the link time </span>
+<span class="cp"># dependencies for this component. When tools are built, the build system will include the transitive closure of all required_libraries for the components </span>
+<span class="cp"># the tool needs.</span>
+<span class="n">required_libraries</span> <span class="o">=</span> <span class="n">CodeGen</span> <span class="n">Core</span> <span class="n">MC</span> <span class="n">Cpu0Desc</span> <span class="n">Cpu0Info</span> <span class="n">SelectionDAG</span> <span class="n">Support</span> <span class="n">Target</span>
+<span class="cp"># All LLVMBuild.txt in Target/Cpu0 and subdirectory use &#39;add_to_library_groups = Cpu0&#39;</span>
+<span class="n">add_to_library_groups</span> <span class="o">=</span> <span class="n">Cpu0</span>
+</pre></div>
+</div>
 <p>LLVMBuild.txt files are written in a simple variant of the INI or configuration
 file format.
 Comments are prefixed by <tt class="docutils literal"><span class="pre">#</span></tt> in both files.
