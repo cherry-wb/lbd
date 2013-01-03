@@ -87,12 +87,12 @@ is <a class="reference external" href="http://translate.google.com.tw/translate?
 and its structure is shown below.</p>
 <div class="figure align-center" id="llvmstructure-f1">
 <img alt="_images/111.png" src="_images/111.png" />
-<p class="caption">The structure of the processor of CPU0</p>
+<p class="caption">Figure 1: The structure of the processor of CPU0</p>
 </div>
 <p>Uses of each register as follows:</p>
 <div class="figure align-center" id="llvmstructure-t1">
 <img alt="_images/112.png" src="_images/112.png" />
-<p class="caption">Cpu0 registers table</p>
+<p class="caption">Figure 2: Cpu0 registers table</p>
 </div>
 </div>
 <div class="section" id="instruction-set-for-cpu0">
@@ -103,17 +103,17 @@ instruction, the following figure shows the three types of instruction encoding
 format.</p>
 <div class="figure align-center" id="llvmstructure-f2">
 <img alt="_images/24.png" src="_images/24.png" />
-<p class="caption">CPU0 three instruction formats</p>
+<p class="caption">Figure 3: CPU0 three instruction formats</p>
 </div>
 <p>The following is the CPU0 processor&#8217;s instruction table format</p>
 <div class="figure align-center" id="llvmstructure-t2">
 <img alt="_images/25.png" src="_images/25.png" />
-<p class="caption">CPU0 instruction table</p>
+<p class="caption">Figure 4: CPU0 instruction table</p>
 </div>
 <p>In the second edition of CPU0_v2 we fill the following command:</p>
 <div class="figure align-center" id="llvmstructure-t3">
 <img alt="_images/33.png" src="_images/33.png" />
-<p class="caption">CPU0_v2 instruction table</p>
+<p class="caption">Figure 5: CPU0_v2 instruction table</p>
 </div>
 </div>
 <div class="section" id="status-register">
@@ -123,7 +123,7 @@ interrupt mode bit.
 Its structure is shown below.</p>
 <div class="figure align-center" id="llvmstructure-f3">
 <img alt="_images/34.png" src="_images/34.png" />
-<p class="caption">CPU0 status register</p>
+<p class="caption">Figure 6: CPU0 status register</p>
 </div>
 <p>When CMP Ra, Rb instruction execution, the state flag will thus change.</p>
 <p>If Ra&gt; Rb, then the setting state of N = 0, Z = 0.
@@ -169,11 +169,11 @@ ability.
 These two instructions format as <a class="reference internal" href="#llvmstructure-f4"><em>Cpu0 ldi instruction</em></a> and <a class="reference internal" href="#llvmstructure-f5"><em>Mips addiu instruction format</em></a>.</p>
 <div class="figure align-center" id="llvmstructure-f4">
 <img alt="_images/43.png" src="_images/43.png" />
-<p class="caption">Cpu0 ldi instruction</p>
+<p class="caption">Figure 7: Cpu0 ldi instruction</p>
 </div>
 <div class="figure align-center" id="llvmstructure-f5">
 <img alt="_images/52.png" src="_images/52.png" />
-<p class="caption">Mips addiu instruction format</p>
+<p class="caption">Figure 8: Mips addiu instruction format</p>
 </div>
 <p>From <a class="reference internal" href="#llvmstructure-f4"><em>Cpu0 ldi instruction</em></a> and <a class="reference internal" href="#llvmstructure-f5"><em>Mips addiu instruction format</em></a>, you can find ldi $Ra,
 5 can be replaced by addiu $Ra, $zero, 5.
@@ -197,7 +197,7 @@ The AST is optionally converted to a new representation for optimization, and
 the optimizer and back end are run on the code.</p>
 <div class="figure align-center" id="llvmstructure-f6">
 <img alt="_images/62.png" src="_images/62.png" />
-<p class="caption">Tree major components of a Three Phase Compiler</p>
+<p class="caption">Figure 9: Tree major components of a Three Phase Compiler</p>
 </div>
 <p>The optimizer is responsible for doing a broad variety of transformations to
 try to improve the code&#8217;s running time, such as eliminating redundant
@@ -219,7 +219,7 @@ end can be written for any target that can compile from it, as shown in
 <a class="reference internal" href="#llvmstructure-f7"><em>Retargetablity</em></a>.</p>
 <div class="figure align-center" id="llvmstructure-f7">
 <img alt="_images/72.png" src="_images/72.png" />
-<p class="caption">Retargetablity</p>
+<p class="caption">Figure 10: Retargetablity</p>
 </div>
 <p>With this design, porting the compiler to support a new source language (e.g.,
 Algol or BASIC) requires implementing a new front end, but the existing
@@ -336,7 +336,7 @@ The (simplified) build process for the x86 target is shown in
 <a class="reference internal" href="#llvmstructure-f8"><em>Simplified x86 Target Definition</em></a>.</p>
 <div class="figure align-center" id="llvmstructure-f8">
 <img alt="_images/82.png" src="_images/82.png" />
-<p class="caption">Simplified x86 Target Definition</p>
+<p class="caption">Figure 11: Simplified x86 Target Definition</p>
 </div>
 <p>The different subsystems supported by the .td files allow target authors to
 build up the different pieces of their target.

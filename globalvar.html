@@ -1105,7 +1105,7 @@ Writing <span class="s1">&#39;/tmp/llvm_84ibpm/dag.main.dot&#39;</span>...  <spa
 <p>It will show the /tmp/llvm_84ibpm/dag.main.dot as <a class="reference internal" href="#globalvar-f1"><em>llc option -view-dag-combine1-dags graphic view</em></a>.</p>
 <div class="figure align-center" id="globalvar-f1">
 <a class="reference internal image-reference" href="_images/110.png"><img alt="_images/110.png" src="_images/110.png" style="width: 687.0px; height: 851.0px;" /></a>
-<p class="caption">llc option -view-dag-combine1-dags graphic view</p>
+<p class="caption">Figure 1: llc option -view-dag-combine1-dags graphic view</p>
 </div>
 <p>From <a class="reference internal" href="#globalvar-f1"><em>llc option -view-dag-combine1-dags graphic view</em></a>, we can see the -view-dag-combine1-dags option is for
 Initial selection DAG.
@@ -1532,7 +1532,7 @@ LLVM ERROR: Cannot <span class="k">select</span>: 0x7fa73a02ea10: <span class="n
 </div>
 <div class="figure align-center" id="globalvar-f2">
 <a class="reference internal image-reference" href="_images/23.png"><img alt="_images/23.png" src="_images/23.png" style="width: 778.0px; height: 786.0px;" /></a>
-<p class="caption">ch5_6.bc DAG</p>
+<p class="caption">Figure 2: ch5_6.bc DAG</p>
 </div>
 <p>LLVM replace srem divide operation with multiply operation in DAG optimization
 because DIV operation cost more in time than MUL.
@@ -1549,7 +1549,7 @@ The final result (sub 12, 12) is 0 which match the statement (11+1)%12.</p>
 Similarly, SMMUL get the high word of multiply result.</p>
 <div class="figure align-center" id="globalvar-f3">
 <a class="reference internal image-reference" href="_images/32.png"><img alt="_images/32.png" src="_images/32.png" style="width: 657.0px; height: 781.0px;" /></a>
-<p class="caption">Translate ch5_6.bc into cpu0 backend DAG</p>
+<p class="caption">Figure 3: Translate ch5_6.bc into cpu0 backend DAG</p>
 </div>
 <p>Follows is the result of run 5/6_1/Cpu0 with ch5_6.bc.</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-71-252:InputFiles Jonathan<span class="nv">$ </span>cat ch5_6.cpu0.s
@@ -1705,7 +1705,7 @@ imm16 to 0. <a class="reference internal" href="#globalvar-f4"><em>DAG for ch5_6
 ch5_6.bc.</p>
 <div class="figure align-center" id="globalvar-f4">
 <a class="reference internal image-reference" href="_images/42.png"><img alt="_images/42.png" src="_images/42.png" style="width: 231.75px; height: 605.25px;" /></a>
-<p class="caption">DAG for ch5_6.bc with Mips style MULT</p>
+<p class="caption">Figure 4: DAG for ch5_6.bc with Mips style MULT</p>
 </div>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-71-252:InputFiles Jonathan<span class="nv">$ </span>cat ch5_6.cpu0.s
     .section .mdebug.abi32

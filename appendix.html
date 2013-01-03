@@ -75,7 +75,7 @@ compiler-rt source to src/project/compiler-rt as shown in <a class="reference in
 </div>
 <div class="figure align-center" id="install-f1">
 <img alt="_images/1.png" src="_images/1.png" />
-<p class="caption">LLVM, clang, compiler-rt source code positions on Mac OS X</p>
+<p class="caption">Figure 1: LLVM, clang, compiler-rt source code positions on Mac OS X</p>
 </div>
 <p>Next, copy the LLVM source to /Users/Jonathan/llvm/3.1/src by executing the
 terminal command <tt class="docutils literal"><span class="pre">cp</span> <span class="pre">-rf</span> <span class="pre">/Users/Jonathan/Documents/llvmSrc/src</span> <span class="pre">/Users/Jonathan/</span>
@@ -89,7 +89,7 @@ the radio button next to &#8220;Anywhere.&#8221; See <a class="reference interna
 illustration. You may want to revert this setting after installing cmake.</p>
 <div class="figure align-center" id="install-f2">
 <img alt="_images/2.png" src="_images/2.png" />
-<p class="caption">Adjusting Mac OS X security settings to allow cmake installation.</p>
+<p class="caption">Figure 2: Adjusting Mac OS X security settings to allow cmake installation.</p>
 </div>
 <p>Alternatively, you can mount the cmake .dmg image file you downloaded, right
 -click (or
@@ -113,15 +113,15 @@ First, create LLVM.xcodeproj as
 and then click <strong>Done</strong> button on <a class="reference internal" href="#install-f4"><em>Create LLVM.xcodeproj by cmake – Set option to generate Xcode project</em></a> to get <a class="reference internal" href="#install-f5"><em>Create LLVM.xcodeproj by cmake – Before Adjust CMAKE_INSTALL_NAME_TOOL</em></a>.</p>
 <div class="figure align-center" id="install-f3">
 <img alt="_images/3.png" src="_images/3.png" />
-<p class="caption">Start to create LLVM.xcodeproj by cmake</p>
+<p class="caption">Figure 3: Start to create LLVM.xcodeproj by cmake</p>
 </div>
 <div class="figure align-center" id="install-f4">
 <img alt="_images/4.png" src="_images/4.png" />
-<p class="caption">Create LLVM.xcodeproj by cmake – Set option to generate Xcode project</p>
+<p class="caption">Figure 4: Create LLVM.xcodeproj by cmake – Set option to generate Xcode project</p>
 </div>
 <div class="figure align-center" id="install-f5">
 <img alt="_images/5.png" src="_images/5.png" />
-<p class="caption">Create LLVM.xcodeproj by cmake – Before Adjust CMAKE_INSTALL_NAME_TOOL</p>
+<p class="caption">Figure 5: Create LLVM.xcodeproj by cmake – Before Adjust CMAKE_INSTALL_NAME_TOOL</p>
 </div>
 <div class="admonition-todo admonition" id="index-2">
 <p class="first admonition-title">Todo</p>
@@ -132,26 +132,26 @@ E_TOOL by click the right side button <strong>“...”</strong> of that row in
 <a class="reference internal" href="#install-f5"><em>Create LLVM.xcodeproj by cmake – Before Adjust CMAKE_INSTALL_NAME_TOOL</em></a> to get <a class="reference internal" href="#install-f6"><em>Select Cmake 2.8-9.app</em></a>.</p>
 <div class="figure align-center" id="install-f6">
 <img alt="_images/6.png" src="_images/6.png" />
-<p class="caption">Select Cmake 2.8-9.app</p>
+<p class="caption">Figure 6: Select Cmake 2.8-9.app</p>
 </div>
 <p>Click Configure button in <a class="reference internal" href="#install-f6"><em>Select Cmake 2.8-9.app</em></a> to get <a class="reference internal" href="#install-f7"><em>Click cmake Configure button first time</em></a>.</p>
 <div class="figure align-center" id="install-f7">
 <img alt="_images/7.png" src="_images/7.png" />
-<p class="caption">Click cmake Configure button first time</p>
+<p class="caption">Figure 7: Click cmake Configure button first time</p>
 </div>
 <p>Check CLANG_BUILD_EXAMPLES, LLVM_BUILD_EXAMPLES, and uncheck LLVM_ENABLE_PIC as
 <a class="reference internal" href="#install-f8"><em>Check CLANG_BUILD_EXAMPLES, LLVM_BUILD_EXAMPLES, and uncheck
 LLVM_ENABLE_PIC in cmake</em></a>.</p>
 <div class="figure align-center" id="install-f8">
 <img alt="_images/8.png" src="_images/8.png" />
-<p class="caption">Check CLANG_BUILD_EXAMPLES, LLVM_BUILD_EXAMPLES, and uncheck
+<p class="caption">Figure 8: Check CLANG_BUILD_EXAMPLES, LLVM_BUILD_EXAMPLES, and uncheck
 LLVM_ENABLE_PIC in cmake</p>
 </div>
 <p>Click Configure button again. If the output result message has no red color,
 then click Generate button to get <a class="reference internal" href="#install-f9"><em>Click cmake Generate button second time</em></a>.</p>
 <div class="figure align-center" id="install-f9">
 <img alt="_images/9.png" src="_images/9.png" />
-<p class="caption">Click cmake Generate button second time</p>
+<p class="caption">Figure 9: Click cmake Generate button second time</p>
 </div>
 </div>
 <div class="section" id="build-llvm-by-xcode">
@@ -160,13 +160,13 @@ then click Generate button to get <a class="reference internal" href="#install-f
 Xcode and click menu “Product – Build” as <a class="reference internal" href="#install-f10"><em>Click Build button to build LLVM.xcodeproj by Xcode</em></a>.</p>
 <div class="figure align-center" id="install-f10">
 <img alt="_images/10.png" src="_images/10.png" />
-<p class="caption">Click Build button to build LLVM.xcodeproj by Xcode</p>
+<p class="caption">Figure 10: Click Build button to build LLVM.xcodeproj by Xcode</p>
 </div>
 <p>After few minutes of build, the clang, llc, llvm-as, ..., can be found in
 cmake_debug_build/bin/Debug/ as <a class="reference internal" href="#install-f11"><em>Executable files built by Xcode</em></a>.</p>
 <div class="figure align-center" id="install-f11">
 <img alt="_images/11.png" src="_images/11.png" />
-<p class="caption">Executable files built by Xcode</p>
+<p class="caption">Figure 11: Executable files built by Xcode</p>
 </div>
 <p>To access those execution files, edit .profile (if you .profile not exists,
 please create file .profile), save .profile to /Users/Jonathan/, and enable
@@ -175,7 +175,7 @@ Please add path /Applications//Xcode.app/Contents/Developer/usr/bin to .profile
 if you didn&#8217;t add it after Xcode download.</p>
 <div class="figure align-center" id="install-f12">
 <a class="reference internal image-reference" href="_images/12.png"><img alt="_images/12.png" src="_images/12.png" style="width: 993.6px; height: 142.2px;" /></a>
-<p class="caption">Edit .profile and save .profile to /Users/Jonathan/</p>
+<p class="caption">Figure 12: Edit .profile and save .profile to /Users/Jonathan/</p>
 </div>
 </div>
 <div class="section" id="create-llvm-xcodeproj-of-supporting-cpu0-by-terminal-cmake-command">
@@ -190,7 +190,7 @@ Now, let&#8217;s repeat above steps to create llvm/3.1.test with cpu0 modified c
 as <a class="reference internal" href="#install-f13"><em>Create llvm/3.1.test with cpu0 modified code</em></a>.</p>
 <div class="figure align-center" id="install-f13">
 <img alt="_images/13.png" src="_images/13.png" />
-<p class="caption">Create llvm/3.1.test with cpu0 modified code</p>
+<p class="caption">Figure 13: Create llvm/3.1.test with cpu0 modified code</p>
 </div>
 <p>/Users/Jonathan/Documents/Gamma_flash/LLVMBackendTutorial/src_files_modify/src/
 contains the files I modified for cpu0 architecture.
@@ -200,7 +200,7 @@ After <a class="reference internal" href="#install-f13"><em>Create llvm/3.1.test
 to src/lib/Target/ as <a class="reference internal" href="#install-f14"><em>Copy cpu0 example code from 1/Cpu0 to src/lib/Target/</em></a>.</p>
 <div class="figure align-center" id="install-f14">
 <img alt="_images/14.png" src="_images/14.png" />
-<p class="caption">Copy cpu0 example code from 1/Cpu0 to src/lib/Target/</p>
+<p class="caption">Figure 14: Copy cpu0 example code from 1/Cpu0 to src/lib/Target/</p>
 </div>
 <p>Please remove src/tools/clang since it will waste time to build clang for our
 working Cpu0 changes.
@@ -211,7 +211,7 @@ Remind, currently, the <tt class="docutils literal"><span class="pre">cmake</spa
 the <a class="reference external" href="http://jonathan2251.github.com/lbd/install.html#create-llvm-xcodeproj-by-cmake-graphic-ui">section Create LLVM.xcodeproj by cmake Graphic UI</a> cannot.</p>
 <div class="figure align-center" id="install-f15">
 <a class="reference internal image-reference" href="_images/15.png"><img alt="_images/15.png" src="_images/15.png" style="width: 990.9px; height: 486.0px;" /></a>
-<p class="caption">Build llvm debug cpu0 working project by <tt class="docutils literal"><span class="pre">cmake</span></tt> terminal command</p>
+<p class="caption">Figure 15: Build llvm debug cpu0 working project by <tt class="docutils literal"><span class="pre">cmake</span></tt> terminal command</p>
 </div>
 <p>Since Xcode use clang compiler and lldb instead of gcc and gdb, we can run lldb
 debug as <a class="reference internal" href="#install-f16"><em>Run lldb debug</em></a>.
@@ -219,7 +219,7 @@ About the lldb debug command, please reference
 <a class="reference external" href="http://lldb.llvm.org/lldb-gdb.html">http://lldb.llvm.org/lldb-gdb.html</a> or lldb portal <a class="reference external" href="http://lldb.llvm.org/">http://lldb.llvm.org/</a>.</p>
 <div class="figure align-center" id="install-f16">
 <a class="reference internal image-reference" href="_images/16.png"><img alt="_images/16.png" src="_images/16.png" style="width: 988.2px; height: 407.7px;" /></a>
-<p class="caption">Run lldb debug</p>
+<p class="caption">Figure 16: Run lldb debug</p>
 </div>
 </div>
 <div class="section" id="install-other-tools-on-imac">
@@ -231,18 +231,18 @@ FileMerge is a part of Xcode, you can type FileMerge in Finder – Applications
 as <a class="reference internal" href="#install-f17"><em>Type FileMerge in Finder – Applications</em></a> and drag it into the Dock as <a class="reference internal" href="#install-f18"><em>Drag FileMege into the Dock</em></a>.</p>
 <div class="figure align-center" id="install-f17">
 <img alt="../Fig/install/17.png" src="../Fig/install/17.png" />
-<p class="caption">Type FileMerge in Finder – Applications</p>
+<p class="caption">Figure 17: Type FileMerge in Finder – Applications</p>
 </div>
 <div class="figure align-center" id="install-f18">
 <img alt="../Fig/install/18.png" src="../Fig/install/18.png" />
-<p class="caption">Drag FileMege into the Dock</p>
+<p class="caption">Figure 18: Drag FileMege into the Dock</p>
 </div>
 <p>Download tool Graphviz for display llvm IR nodes in debugging,
 <a class="reference external" href="http://www.graphviz.org/Download_macos.php">http://www.graphviz.org/Download_macos.php</a>.
 We choose mountainlion as <a class="reference internal" href="#install-f19"><em>Download graphviz for llvm IR node display</em></a> since our iMac is Mountain Lion.</p>
 <div class="figure align-center" id="install-f19">
 <a class="reference internal image-reference" href="../Fig/install/19.png"><img alt="../Fig/install/19.png" src="../Fig/install/19.png" style="width: 944.8px; height: 590.4px;" /></a>
-<p class="caption">Download graphviz for llvm IR node display</p>
+<p class="caption">Figure 19: Download graphviz for llvm IR node display</p>
 </div>
 <p>After install Graphviz, please set the path to .profile.
 For example, we install the Graphviz in directory
@@ -268,11 +268,11 @@ To dump binary file, first, open the binary file, next, select menu
 Then select “Front document&#8217;s file” as <a class="reference internal" href="#install-f21"><em>Select Front document&#8217;s file in TextWrangler</em></a>.</p>
 <div class="figure align-center" id="install-f20">
 <img alt="../Fig/install/20.png" src="../Fig/install/20.png" />
-<p class="caption">Select Hex Dump menu</p>
+<p class="caption">Figure 20: Select Hex Dump menu</p>
 </div>
 <div class="figure align-center" id="install-f21">
 <img alt="../Fig/install/21.png" src="../Fig/install/21.png" />
-<p class="caption">Select Front document&#8217;s file in TextWrangler</p>
+<p class="caption">Figure 21: Select Front document&#8217;s file in TextWrangler</p>
 </div>
 </div>
 </div>
@@ -290,7 +290,7 @@ Then select “Front document&#8217;s file” as <a class="reference internal" h
 </div></blockquote>
 <div class="figure align-center" id="install-f22">
 <img alt="../Fig/install/22.png" src="../Fig/install/22.png" />
-<p class="caption">Create llvm release build</p>
+<p class="caption">Figure 22: Create llvm release build</p>
 </div>
 <p>Next, build with cmake command,
 <tt class="docutils literal"><span class="pre">cmake</span> <span class="pre">-DCMAKE_BUILD_TYPE=Release</span> <span class="pre">-DCLANG_BUILD_EXAMPLES=ON</span> <span class="pre">-DLLVM_BUILD_EXAMPL</span>
@@ -298,7 +298,7 @@ Then select “Front document&#8217;s file” as <a class="reference internal" h
 shown in <a class="reference internal" href="#install-f23"><em>Create llvm 3.1 release build</em></a>.</p>
 <div class="figure align-center" id="install-f23">
 <img alt="../Fig/install/23.png" src="../Fig/install/23.png" />
-<p class="caption">Create llvm 3.1 release build</p>
+<p class="caption">Figure 23: Create llvm 3.1 release build</p>
 </div>
 <p>After cmake, run command <tt class="docutils literal"><span class="pre">make</span></tt>, then you can get clang, llc, llvm-as, ...,
 in
@@ -308,7 +308,7 @@ bin to PATH
 to enable the clang, llc, ..., command search path, as shown in <a class="reference internal" href="#install-f24"><em>Setup llvm command path</em></a>.</p>
 <div class="figure align-center" id="install-f24">
 <img alt="../Fig/install/24.png" src="../Fig/install/24.png" />
-<p class="caption">Setup llvm command path</p>
+<p class="caption">Figure 24: Setup llvm command path</p>
 </div>
 </div>
 <div class="section" id="install-cpu0-debug-build-on-linux">
@@ -333,7 +333,7 @@ command
 <tt class="docutils literal"><span class="pre">make</span></tt> in cpu0 example code build.</p>
 <div class="figure align-center" id="install-f25">
 <a class="reference internal image-reference" href="../Fig/install/25.png"><img alt="../Fig/install/25.png" src="../Fig/install/25.png" style="width: 840.0px; height: 761.6px;" /></a>
-<p class="caption">Create llvm 3.1 debug copy</p>
+<p class="caption">Figure 25: Create llvm 3.1 debug copy</p>
 </div>
 <p>Now, go into directory 3.1.test/cpu0/1, create directory cmake_debug_build and
 do cmake
@@ -348,7 +348,7 @@ If your setting has anything about gdb errors, please follow the errors indicati
 Finally, try gdb as <a class="reference internal" href="#install-f26"><em>Debug llvm cpu0 backend by gdb</em></a>.</p>
 <div class="figure align-center" id="install-f26">
 <img alt="../Fig/install/26.png" src="../Fig/install/26.png" />
-<p class="caption">Debug llvm cpu0 backend by gdb</p>
+<p class="caption">Figure 26: Debug llvm cpu0 backend by gdb</p>
 </div>
 </div>
 </div>

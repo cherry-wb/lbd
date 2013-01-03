@@ -89,7 +89,7 @@ arguments in register $a0, $a1, $a2, $a3, and the other arguments if it over 4
 arguments in stack. <a class="reference internal" href="#funccall-f1"><em>Mips stack frame</em></a> is the Mips stack frame.</p>
 <div class="figure align-center" id="funccall-f1">
 <a class="reference internal image-reference" href="_images/18.png"><img alt="_images/18.png" src="_images/18.png" style="width: 688.0px; height: 531.0px;" /></a>
-<p class="caption">Mips stack frame</p>
+<p class="caption">Figure 1: Mips stack frame</p>
 </div>
 <p>Run llc with -march=mips for ch7_1.bc, you will get the following result.</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ch7_1.cpp</span>
@@ -206,7 +206,7 @@ The stack size of sum_i() is 32, so 16+32($sp) is the location of incoming
 argument 5.</p>
 <div class="figure align-center" id="funccall-f2">
 <a class="reference internal image-reference" href="_images/22.png"><img alt="_images/22.png" src="_images/22.png" style="width: 740.0px; height: 577.0px;" /></a>
-<p class="caption">Mips arguments location in stack frame</p>
+<p class="caption">Figure 2: Mips arguments location in stack frame</p>
 </div>
 <p>The 007-2418-003.pdf in
 <a class="reference external" href="https://www.dropbox.com/home/LLVMBackendTutorial/doc/MIPSproAssemblyLanguageProgrammerGuide">https://www.dropbox.com/home/LLVMBackendTutorial/doc/MIPSproAssemblyLanguageProgrammerGuide</a>
@@ -1145,7 +1145,7 @@ main:
 <a class="reference internal" href="#funccall-t1"><em>Callee incoming arguments and caller outgoing arguments</em></a>.</p>
 <div class="figure align-center" id="funccall-t1">
 <a class="reference internal image-reference" href="_images/19.png"><img alt="_images/19.png" src="_images/19.png" style="width: 694.0px; height: 153.0px;" /></a>
-<p class="caption">Callee incoming arguments and caller outgoing arguments</p>
+<p class="caption">Figure 3: Callee incoming arguments and caller outgoing arguments</p>
 </div>
 </div>
 <div class="section" id="pseudo-hook-instruction-adjcallstackdown-and-adjcallstackup">
