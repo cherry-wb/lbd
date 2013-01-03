@@ -19,16 +19,18 @@ quickly create a simple backend from scratch.
 
 Overview
 --------
-首先介紹編譯的基本知識，編譯流程可以簡化成下圖。
+首先介紹編譯的基本知識，編譯流程可以簡化成 :num:`figure #compilation-pipeline` 。
+源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
+產生目標平台語言。:num:`figure #compilation-flow` 展示了更進一步的編譯流程。
 
-.. _compilation_pipeline:
+.. _compilation-pipeline:
 
 .. figure:: ../Fig/backendstructure/compilation_pipeline.png
    :figclass: align-center
 
    Compilation Pipeline
 
-.. _compilation_flow_part1:
+.. _compilation-flow:
 
 .. figure:: ../Fig/backendstructure/compilation_flow_part_1.png
    :figclass: align-center
