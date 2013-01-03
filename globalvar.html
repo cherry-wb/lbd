@@ -10,9 +10,8 @@
     
     <title>Global variable, struct and array &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
-    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -27,31 +26,33 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
     <link rel="next" title="Control flow statement" href="ctrlflow.html" />
     <link rel="prev" title="Other instructions" href="otherinst.html" /> 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
-          <span>Write An LLVM Backend Tutorial For Cpu0</span></a></h1>
-        <h2 class="heading"><span>Global variable, struct and array</span></h2>
-      </div>
-      <div class="topnav">
-      
-        <p>
-        «&#160;&#160;<a href="otherinst.html">Other instructions</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="ctrlflow.html">Control flow statement</a>&#160;&#160;»
-        </p>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ctrlflow.html" title="Control flow statement"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="otherinst.html" title="Other instructions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-      </div>
-      <div class="content">
-        
-        
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
   <div class="section" id="global-variable-struct-and-array">
 <h1>Global variable, struct and array<a class="headerlink" href="#global-variable-struct-and-array" title="Permalink to this headline">¶</a></h1>
 <p>In the previous two chapters, we only access the local variables.
@@ -1754,19 +1755,67 @@ support. You can compile it and check the result.</p>
 </div>
 
 
+          </div>
+        </div>
       </div>
-      <div class="bottomnav">
-      
-        <p>
-        «&#160;&#160;<a href="otherinst.html">Other instructions</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="ctrlflow.html">Control flow statement</a>&#160;&#160;»
-        </p>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Global variable, struct and array</a><ul>
+<li><a class="reference internal" href="#global-variable">Global variable</a></li>
+<li><a class="reference internal" href="#array-and-struct-support">Array and struct support</a></li>
+<li><a class="reference internal" href="#operator-not">Operator “not” !</a></li>
+<li><a class="reference internal" href="#display-llvm-ir-nodes-with-graphviz">Display llvm IR nodes with Graphviz</a></li>
+<li><a class="reference internal" href="#adjust-cpu0-instruction-and-support-type-of-local-variable-pointer">Adjust cpu0 instruction and support type of local variable pointer</a></li>
+<li><a class="reference internal" href="#operator-mod">Operator mod, %</a></li>
+</ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="otherinst.html"
+                        title="previous chapter">Other instructions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ctrlflow.html"
+                        title="next chapter">Control flow statement</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/globalvar.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
-
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ctrlflow.html" title="Control flow statement"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="otherinst.html" title="Other instructions"
+             >previous</a> |</li>
+        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
+      </ul>
+    </div>
     <div class="footer">
         &copy; Copyright 2012, LLVM.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.

@@ -10,9 +10,8 @@
     
     <title>Cpu0 Instruction and LLVM Target Description &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
-    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -27,31 +26,33 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
     <link rel="next" title="LLVM Backend Structure" href="backendstructure.html" />
     <link rel="prev" title="Getting Started: Installing LLVM and the Cpu0 example code" href="install.html" /> 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
-          <span>Write An LLVM Backend Tutorial For Cpu0</span></a></h1>
-        <h2 class="heading"><span>Cpu0 Instruction and LLVM Target Description</span></h2>
-      </div>
-      <div class="topnav">
-      
-        <p>
-        «&#160;&#160;<a href="install.html">Getting Started: Installing LLVM and the Cpu0 example code</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="backendstructure.html">LLVM Backend Structure</a>&#160;&#160;»
-        </p>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="backendstructure.html" title="LLVM Backend Structure"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Getting Started: Installing LLVM and the Cpu0 example code"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-      </div>
-      <div class="content">
-        
-        
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
   <div class="section" id="cpu0-instruction-and-llvm-target-description">
 <h1>Cpu0 Instruction and LLVM Target Description<a class="headerlink" href="#cpu0-instruction-and-llvm-target-description" title="Permalink to this headline">¶</a></h1>
 <p>Before you start, you should know that you can always examine existing LLVM
@@ -1168,19 +1169,75 @@ The error message say we didn&#8217;t define our target machine.</p>
 </div>
 
 
+          </div>
+        </div>
       </div>
-      <div class="bottomnav">
-      
-        <p>
-        «&#160;&#160;<a href="install.html">Getting Started: Installing LLVM and the Cpu0 example code</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="backendstructure.html">LLVM Backend Structure</a>&#160;&#160;»
-        </p>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Cpu0 Instruction and LLVM Target Description</a><ul>
+<li><a class="reference internal" href="#cpu0-processor-architecture">CPU0 processor architecture</a><ul>
+<li><a class="reference internal" href="#brief-introduction">Brief introduction</a></li>
+<li><a class="reference internal" href="#instruction-set-for-cpu0">Instruction Set for CPU0</a></li>
+<li><a class="reference internal" href="#status-register">Status register</a></li>
+<li><a class="reference internal" href="#the-execution-of-the-instruction-step">The execution of the instruction step</a></li>
+<li><a class="reference internal" href="#replace-ldi-instruction-by-addiu-instruction">Replace ldi instruction by addiu instruction</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#llvm-structure">LLVM structure</a></li>
+<li><a class="reference internal" href="#target-description-td">Target Description td</a></li>
+<li><a class="reference internal" href="#write-td-target-description">Write td (Target Description)</a></li>
+<li><a class="reference internal" href="#write-cmake-file">Write cmake file</a></li>
+<li><a class="reference internal" href="#target-registration">Target Registration</a></li>
+<li><a class="reference internal" href="#build-libraries-and-td">Build libraries and td</a></li>
+</ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Getting Started: Installing LLVM and the Cpu0 example code</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="backendstructure.html"
+                        title="next chapter">LLVM Backend Structure</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/llvmstructure.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
-
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="backendstructure.html" title="LLVM Backend Structure"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Getting Started: Installing LLVM and the Cpu0 example code"
+             >previous</a> |</li>
+        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
+      </ul>
+    </div>
     <div class="footer">
         &copy; Copyright 2012, LLVM.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
