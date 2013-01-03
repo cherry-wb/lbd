@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started: Installing LLVM and the Cpu0 example code &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
+    <link rel="next" title="Cpu0 Instruction and LLVM Target Description" href="llvmstructure.html" />
+    <link rel="prev" title="About" href="about.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="llvmstructure.html" title="Cpu0 Instruction and LLVM Target Description"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="about.html" title="About"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started-installing-llvm-and-the-cpu0-example-code">
+<h1>Getting Started: Installing LLVM and the Cpu0 example code<a class="headerlink" href="#getting-started-installing-llvm-and-the-cpu0-example-code" title="Permalink to this headline">¶</a></h1>
+<p>In this chapter, we will run through how to set up LLVM using if you are using
+Mac OS X or Linux.  When discussing Mac OS X, we are using Apple&#8217;s Xcode IDE
+(version 4.5.1) running on Mac OS X Mountain Lion (version 10.8) to modify and
+build LLVM from source, and we will be debugging using lldb.
+We cannot debug our LLVM builds within Xcode at the
+moment, but if you have experience with this, please contact us and help us
+build documentation that covers this.  For Linux machines, we are building and
+debugging (using gdb) our LLVM installations on a Fedora 17 system.  We will
+not be using an IDE for Linux, but once again, if you have experience building/
+debugging LLVM using Eclipse or other major IDEs, please contact the authors.
+For information on using <tt class="docutils literal"><span class="pre">cmake</span></tt> to build LLVM, please refer to the <a class="reference external" href="http://llvm.org/docs/CMake.html?highlight=cmake">Building
+LLVM with CMake</a> documentation for further information.  We are using cmake
+version 2.8.9.</p>
+<p>We will install two llvm directories in this chapter. One is the directory
+llvm/3.1/ which contains the clang, clang++ compiler we will use to translate
+the C/C++ input file into llvm IR.
+The other is the directory llvm/3.1.test/cpu0/1 which contains our cpu0 backend
+program and without clang and clang++.</p>
+<div class="section" id="install-llvm-3-1-release-on-linux">
+<h2>Install LLVM 3.1 release on Linux<a class="headerlink" href="#install-llvm-3-1-release-on-linux" title="Permalink to this headline">¶</a></h2>
+<p>Our tutorial is based on LLVM 3.1 release. We need <a class="reference external" href="http://llvm.org/">LLVM</a>,
+<a class="reference external" href="http://clang.llvm.org/">clang</a> and <a class="reference external" href="http://compiler-rt.llvm.org/">compiler-rt</a>.
+In this section, we will show the command line steps to build and install LLVM
+on your Linux machine. We use the following names to denote paths specific to
+your enviroment.</p>
+<p><tt class="docutils literal"><span class="pre">LLVM_SRC</span></tt></p>
+<blockquote>
+<div>This is the top level directory of the LLVM source tree.</div></blockquote>
+<p><tt class="docutils literal"><span class="pre">Example_SRC</span></tt></p>
+<blockquote>
+<div>This is the top level directory where our example code lives.</div></blockquote>
+<p><tt class="docutils literal"><span class="pre">Debug_OBJ</span></tt></p>
+<blockquote>
+<div>This is the top level directory of the LLVM object tree (i.e. the tree where
+object files and compiled programs will be placed). We build LLVM in debug
+mode here.</div></blockquote>
+<p><tt class="docutils literal"><span class="pre">INSTALL</span></tt></p>
+<blockquote>
+<div>The resulting binary will be installed in this directory.</div></blockquote>
+<p>If you are using IDE, please see <a class="reference internal" href="appendix.html#appendix"><em>Appendix</em></a> for more information.</p>
+<ol class="arabic">
+<li><p class="first">Download the source code.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>wget http://llvm.org/releases/3.1/llvm-3.1.src.tar.gz
+<span class="nv">$ </span>wget http://llvm.org/releases/3.1/clang-3.1.src.tar.gz
+<span class="nv">$ </span>wget http://llvm.org/releases/3.1/compiler-rt-3.1.src.tar.gz
+<span class="nv">$ </span>tar xvf llvm-3.1.src.tar.gz
+<span class="nv">$ </span>tar xvf clang-3.1.src.tar.gz -C llvm-3.1.src/tools/
+<span class="nv">$ </span>tar xvf compiler-rt-3.1.src.tar.gz -C llvm-3.1.src/projects/
+<span class="nv">$ </span>mv llvm-3.1.src/tools/clang-3.1.src llvm-3.1.src/tools/clang
+<span class="nv">$ </span>mv llvm-3.1.src/projects/compiler-rt-3.1.src llvm-3.1.src/projects/compiler-rt
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Build LLVM</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>mkdir obj; <span class="nb">cd </span>obj
+<span class="nv">$ </span>../llvm-3.1.src/configure --prefix<span class="o">=</span><span class="nv">$INSTALL</span>
+  --enable-targets<span class="o">=</span>host
+<span class="nv">$ </span>make -j; make install
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Set $PATH</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">&quot;PATH=$INSTALL/bin:$PATH&quot;</span> &gt; <span class="nv">$HOME</span>/.bash_profile
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="install-cpu0-debug-build-on-linux">
+<h2>Install cpu0 debug build on Linux<a class="headerlink" href="#install-cpu0-debug-build-on-linux" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Make a new directory.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>mkdir -p cpu0/2/src; <span class="nb">cd </span>cpu0/2/src
+<span class="nv">$ </span>cp -rf <span class="nv">$LLVM_SRC</span>/* .
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Update top-level source code.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>cp -rf <span class="nv">$Example_SRC</span>/src_files_modify/src/* .
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Update subdirecotry <tt class="docutils literal"><span class="pre">lib/Target</span></tt>.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>cp -rf <span class="nv">$Example_SRC</span>/2/Cpu0/ lib/Target/
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Remove clang source tree since we don&#8217;t need it at this moment. Build LLVM in
+debug mode.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd</span> ..
+<span class="nv">$ </span>mkdir debug; <span class="nb">cd </span>debug
+<span class="nv">$ </span>rm -rf ../src/tools/clang/
+<span class="nv">$ </span>cmake -DCMAKE_CXX_COMPILER<span class="o">=</span>clang++ -DCMAKE_C_COMPILER<span class="o">=</span>clang <span class="se">\</span>
+  -DLLVM_TARGETS_TO_BUILD<span class="o">=</span><span class="s2">&quot;Mips;Cpu0&quot;</span> <span class="se">\</span>
+  -DCMAKE_BUILD_TYPE<span class="o">=</span>Debug -G <span class="s2">&quot;Unix Makefiles&quot;</span> ../src/
+<span class="nv">$ </span>make
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Debug</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>gdb bin/llc
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting Started: Installing LLVM and the Cpu0 example code</a><ul>
+<li><a class="reference internal" href="#install-llvm-3-1-release-on-linux">Install LLVM 3.1 release on Linux</a></li>
+<li><a class="reference internal" href="#install-cpu0-debug-build-on-linux">Install cpu0 debug build on Linux</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="about.html"
+                        title="previous chapter">About</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="llvmstructure.html"
+                        title="next chapter">Cpu0 Instruction and LLVM Target Description</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="llvmstructure.html" title="Cpu0 Instruction and LLVM Target Description"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="about.html" title="About"
+             >previous</a> |</li>
+        <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, LLVM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
