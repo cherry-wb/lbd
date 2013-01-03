@@ -389,13 +389,15 @@ Please notify the Pattern =
 We will use it in DAG transformations later. 
 
 
-Write cmake file
-----------------
+Writing configuration files
+---------------------------
 
-Target/Cpu0 directory has two files CMakeLists.txt and LLVMBuild.txt, 
-contents as follows,
+You must have to add one LLVMBuild.txt under ``Target/Cpu0`` directory.
+If you want to support cmake, then CMakeLists.txt needed to be added.
 
-.. literalinclude:: ../code_fragment/llvmstructure/11.txt
+.. literalinclude:: ../lbd-example/2/Cpu0/CMakeLists.txt
+
+.. literalinclude:: ../lbd-example/2/Cpu0/LLVMBuild.txt
 
 LLVMBuild.txt files are written in a simple variant of the INI or configuration 
 file format. 
