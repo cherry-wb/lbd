@@ -21,6 +21,7 @@ Table of Contents
    llvmstructure
    backendstructure
    otherinst
+   genobj
    globalvar
    ctrlflow
    funccall

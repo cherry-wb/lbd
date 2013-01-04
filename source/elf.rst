@@ -81,15 +81,15 @@ is link time layout for code and data.
 ELF header and Section header table
 ------------------------------------
 
-Let's run 7/7/Cpu0 with ch5_1.cpp, and dump ELF header information by 
+Let's run 7/7/Cpu0 with ch6_1.cpp, and dump ELF header information by 
 ``readelf -h`` to see what information the ELF header contains.
 
 .. code-block:: bash
 
   [Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-  bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch5_1.bc -o ch5_1.cpu0.o
+  bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch6_1.bc -o ch6_1.cpu0.o
   
-  [Gamma@localhost InputFiles]$ readelf -h ch5_1.cpu0.o 
+  [Gamma@localhost InputFiles]$ readelf -h ch6_1.cpu0.o 
   ELF Header:
     Magic:   7f 45 4c 46 01 02 01 08 00 00 00 00 00 00 00 00 
     Class:                             ELF32
@@ -112,6 +112,32 @@ Let's run 7/7/Cpu0 with ch5_1.cpp, and dump ELF header information by
     Section header string table index: 7
   [Gamma@localhost InputFiles]$ 
 
+  [Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
+  bin/llc -march=mips -relocation-model=pic -filetype=obj ch6_1.bc -o ch6_1.mips.o
+  
+  [Gamma@localhost InputFiles]$ readelf -h ch6_1.mips.o 
+  ELF Header:
+    Magic:   7f 45 4c 46 01 02 01 08 00 00 00 00 00 00 00 00 
+    Class:                             ELF32
+    Data:                              2's complement, big endian
+    Version:                           1 (current)
+    OS/ABI:                            UNIX - IRIX
+    ABI Version:                       0
+    Type:                              REL (Relocatable file)
+    Machine:                           MIPS R3000
+    Version:                           0x1
+    Entry point address:               0x0
+    Start of program headers:          0 (bytes into file)
+    Start of section headers:          212 (bytes into file)
+    Flags:                             0x70000001
+    Size of this header:               52 (bytes)
+    Size of program headers:           0 (bytes)
+    Number of program headers:         0
+    Size of section headers:           40 (bytes)
+    Number of section headers:         11
+    Section header string table index: 8
+  [Gamma@localhost InputFiles]$ 
+
 
 As above ELF header display, it contains information of magic number, version, 
 ABI, …, . 
@@ -119,7 +145,7 @@ Let's check ELF segments information as follows,
 
 .. code-block:: bash
 
-  [Gamma@localhost InputFiles]$ readelf -l ch5_1.cpu0.o 
+  [Gamma@localhost InputFiles]$ readelf -l ch6_1.cpu0.o 
   
   There are no program headers in this file.
   [Gamma@localhost InputFiles]$ 
@@ -133,7 +159,7 @@ It contains offset and size information for every section.
 
 .. code-block:: bash
 
-  [Gamma@localhost InputFiles]$ readelf -S ch5_1.cpu0.o 
+  [Gamma@localhost InputFiles]$ readelf -S ch6_1.cpu0.o 
   There are 10 section headers, starting at offset 0xd4:
   
   Section Headers:
@@ -163,13 +189,13 @@ The cpu0 backend translate global variable as follows,
 
 .. code-block:: bash
 
-  [Gamma@localhost InputFiles]$ clang -c ch5_1.cpp -emit-llvm -o ch5_1.bc
+  [Gamma@localhost InputFiles]$ clang -c ch6_1.cpp -emit-llvm -o ch6_1.bc
   [Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-  bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch5_1.bc -o ch5_1.cpu0.s
-  [Gamma@localhost InputFiles]$ cat ch5_1.cpu0.s 
+  bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch6_1.bc -o ch6_1.cpu0.s
+  [Gamma@localhost InputFiles]$ cat ch6_1.cpu0.s 
     .section .mdebug.abi32
     .previous
-    .file "ch5_1.bc"
+    .file "ch6_1.bc"
     .text
     .globl  main
     .align  2
@@ -194,10 +220,10 @@ The cpu0 backend translate global variable as follows,
   
   
   [Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-  bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch5_1.bc -o ch5_1.cpu0.o
-  [Gamma@localhost InputFiles]$ objdump -s ch5_1.cpu0.o
+  bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch6_1.bc -o ch6_1.cpu0.o
+  [Gamma@localhost InputFiles]$ objdump -s ch6_1.cpu0.o
   
-  ch5_1.cpu0.o:     file format elf32-big
+  ch6_1.cpu0.o:     file format elf32-big
   
   Contents of section .text:
   // .cpload machine instruction
@@ -207,7 +233,7 @@ The cpu0 backend translate global variable as follows,
    ...
   [Gamma@localhost InputFiles]$ Jonathan$ 
   
-  [Gamma@localhost InputFiles]$ readelf -tr ch5_1.cpu0.o 
+  [Gamma@localhost InputFiles]$ readelf -tr ch6_1.cpu0.o 
   There are 10 section headers, starting at offset 0xd4:
   
   Section Headers:
@@ -254,7 +280,7 @@ The cpu0 backend translate global variable as follows,
   Relocation section '.rel.eh_frame' at offset 0x328 contains 1 entries:
    Offset     Info    Type            Sym.Value  Sym. Name
   0000001c  00000202 unrecognized: 2       00000000   .text
-  [Gamma@localhost InputFiles]$ readelf -tr ch5_1.mips.o 
+  [Gamma@localhost InputFiles]$ readelf -tr ch6_1.mips.o 
   There are 10 section headers, starting at offset 0xd0:
   
   Section Headers:
@@ -331,7 +357,7 @@ address of .data section variable will load to.
 So, translate the address to 0 and made a relocation record on 0x00000020 of 
 .text section. Loader will change this address too.
 	
-Run with ch7_3_3.cpp will get the unknown result in _Z5sum_iiz and other symbol 
+Run with ch8_3_3.cpp will get the unknown result in _Z5sum_iiz and other symbol 
 reference as below. 
 Loader or linker will take care them according the relocation records compiler 
 generated.
@@ -339,9 +365,9 @@ generated.
 .. code-block:: bash
 
   [Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-  bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch7_3_3.bc -o ch7_3__3.
+  bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch8_3_3.bc -o ch8_3__3.
   cpu0.o
-  [Gamma@localhost InputFiles]$ readelf -tr ch7_3_3.cpu0.o 
+  [Gamma@localhost InputFiles]$ readelf -tr ch8_3_3.cpu0.o 
   There are 11 section headers, starting at offset 0x248:
   
   Section Headers:
@@ -401,9 +427,9 @@ generated.
   0000001c  00000302 unrecognized: 2       00000000   .text
   00000034  00000302 unrecognized: 2       00000000   .text
   [Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-  bin/llc -march=mips -relocation-model=pic -filetype=obj ch7_3_3.bc -o ch7_3__3.
+  bin/llc -march=mips -relocation-model=pic -filetype=obj ch8_3_3.bc -o ch8_3__3.
   mips.o
-  [Gamma@localhost InputFiles]$ readelf -tr ch7_3_3.mips.o 
+  [Gamma@localhost InputFiles]$ readelf -tr ch8_3_3.mips.o 
   There are 11 section headers, starting at offset 0x254:
   
   Section Headers:
