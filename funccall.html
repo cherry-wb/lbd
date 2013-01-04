@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.1.2',
+        VERSION:     '3.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
-    <link rel="next" title="Appendix" href="appendix.html" />
+    <link rel="next" title="ELF" href="elf.html" />
     <link rel="prev" title="Control flow statement" href="ctrlflow.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="appendix.html" title="Appendix"
+          <a href="elf.html" title="ELF"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="ctrlflow.html" title="Control flow statement"
@@ -59,8 +59,8 @@
 chapter.
 A lots of code needed in function call. We break it down according llvm
 supplied interface for easy to explanation.
-This chapter introduce the Mips stack frame structure first since we borrow
-many part of ABI from it.
+This chapter start from introducing the Mips stack frame structure since we
+borrow many part of ABI from it.
 Although each CPU has it&#8217;s own ABI, most of RISC CPUs ABI are similar.
 In addition to support fixed number of arguments function call, cpu0 also
 upport variable number of arguments since C/C++ support this feature.
@@ -74,21 +74,21 @@ It include stack frame and the related ABI support.
 If you have problem in reading the stack frame illustrated in the first three
 sections of this chapter, you can read the appendix B of “Procedure Call
 Convention” of book “Computer Organization and Design” which listed in
-section “RISC CPU knowledge” of chapter “Control flow statement”,
+section “RISC CPU knowledge” of chapter “Control flow statement” <a class="footnote-reference" href="#id10" id="id1">[1]</a>,
 “Run Time Memory” of compiler book, or “Function Call Sequence”  and
 “Stack Frame” of Mips ABI.</p>
 <div class="section" id="mips-stack-frame">
 <h2>Mips stack frame<a class="headerlink" href="#mips-stack-frame" title="Permalink to this headline">¶</a></h2>
-<p>The first thing for design the cpu0 function call is to decide how to pass
+<p>The first thing for design the cpu0 function call is deciding how to pass
 arguments in function call. There are two options.
 The first is pass arguments all in stack.
 Second is pass arguments in the registers which are reserved for function
 arguments, and put the other arguments in stack if it over the number of
 registers reserved for function call. For example, Mips pass the first 4
-arguments in register $a0, $a1, $a2, $a3, and the other arguments if it over 4
-arguments in stack. <a class="reference internal" href="#funccall-f1"><em>Mips stack frame</em></a> is the Mips stack frame.</p>
+arguments in register $a0, $a1, $a2, $a3, and the other arguments in stack
+if it over 4 arguments. <a class="reference internal" href="#funccall-f1"><em>Mips stack frame</em></a> is the Mips stack frame.</p>
 <div class="figure align-center" id="funccall-f1">
-<a class="reference internal image-reference" href="_images/18.png"><img alt="_images/18.png" src="_images/18.png" style="width: 688.0px; height: 531.0px;" /></a>
+<a class="reference internal image-reference" href="_images/19.png"><img alt="_images/19.png" src="_images/19.png" style="width: 688.0px; height: 531.0px;" /></a>
 <p class="caption">Figure 1: Mips stack frame</p>
 </div>
 <p>Run llc with -march=mips for ch7_1.bc, you will get the following result.</p>
@@ -208,15 +208,12 @@ argument 5.</p>
 <a class="reference internal image-reference" href="_images/22.png"><img alt="_images/22.png" src="_images/22.png" style="width: 740.0px; height: 577.0px;" /></a>
 <p class="caption">Figure 2: Mips arguments location in stack frame</p>
 </div>
-<p>The 007-2418-003.pdf in
-<a class="reference external" href="https://www.dropbox.com/home/LLVMBackendTutorial/doc/MIPSproAssemblyLanguageProgrammerGuide">https://www.dropbox.com/home/LLVMBackendTutorial/doc/MIPSproAssemblyLanguageProgrammerGuide</a>
-is the Mips assembly language manual.
-psABI-mips.pdf in <a class="reference external" href="https://www.dropbox.com/sh/2pkh1fewlq2zag9/buvX_zeN09/doc">https://www.dropbox.com/sh/2pkh1fewlq2zag9/buvX_zeN09/doc</a> is
-Mips Application Binary Interface which include the <a class="reference internal" href="#funccall-f1"><em>Mips stack frame</em></a>.</p>
+<p>The 007-2418-003.pdf in <a class="footnote-reference" href="#id11" id="id2">[2]</a> is the Mips assembly language manual.
+<a class="footnote-reference" href="#id12" id="id3">[3]</a> is Mips Application Binary Interface which include the <a class="reference internal" href="#funccall-f1"><em>Mips stack frame</em></a>.</p>
 </div>
 <div class="section" id="load-incoming-arguments-from-stack-frame">
 <h2>Load incoming arguments from stack frame<a class="headerlink" href="#load-incoming-arguments-from-stack-frame" title="Permalink to this headline">¶</a></h2>
-<p>From last section, to support function call, we need implement the arguments
+<p>From last section, to support function call, we need implementing the arguments
 pass mechanism with stack frame. Before do that, let&#8217;s run the old version of
 code 6/1/Cpu0 with ch7_1.cpp and see what happen.</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-79-31:InputFiles Jonathan<span class="nv">$ </span>/Users/Jonathan/llvm/3.1.test/cpu0/1/
@@ -284,7 +281,7 @@ for cpu0 passing rule as follows,</p>
 and define the CC_Cpu0EABI.
 The reason we don&#8217;t define the Calling Convention directly in CC_Cpu0 is that
 a real general CPU like Mips can have several Calling Convention.
-Combine with the mechanism of <a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">section Target Registration</a> which llvm
+Combine with the mechanism of &#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id13" id="id4">[4]</a> which llvm
 supplied, we can use different Calling Convention in  different target.
 Although cpu0 only have a Calling Convention right now, define with a dedicate
 Call Convention name (CC_Cpu0EABI in this example) is a better solution for
@@ -360,7 +357,7 @@ We define it as follows,</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Refresh <a class="reference external" href="http://jonathan2251.github.com/lbd/globalvar.html#global-variable">section Global variable</a>, we have take care global
+<p>Refresh &#8220;section Global variable&#8221; <a class="footnote-reference" href="#id14" id="id5">[5]</a>, we handled global
 variable translation by create the IR DAG in LowerGlobalAddress() first, and
 then do the Instruction Selection by their corresponding machine instruction
 DAG in Cpu0InstrInfo.td.
@@ -376,7 +373,7 @@ ArgLocs[i].isMemLoc() is true.
 In “for loop”, it create each frame index object by LastFI =
 MFI-&gt;CreateFixedObject(ValVT.getSizeInBits()/8,VA.getLocMemOffset(), true) and
 FIN = DAG.getFrameIndex(LastFI, getPointerTy()).
-nd then create IR DAG load node and put the load node into vector InVals by
+And then create IR DAG load node and put the load node into vector InVals by
 InVals.push_back(DAG.getLoad(ValVT, dl, Chain, FIN,
 MachinePointerInfo::getFixedStack(LastFI), false, false, false, 0)).
 Cpu0FI-&gt;setVarArgsFrameIndex(0) and Cpu0FI-&gt;setLastInArgFI(LastFI) are called
@@ -387,7 +384,9 @@ Second time is for main() which didn&#8217;t create any load DAG for no incoming
 argument passing into main().
 In addition to LowerFormalArguments() which create the load DAG, we need to
 define the loadRegFromStackSlot() to issue the machine instruction
-“ld $r, offset($sp)” to load incoming arguments from stack frame offset.</p>
+“ld $r, offset($sp)” to load incoming arguments from stack frame offset.
+GetMemOperand(..., FI, ...) return the Memory location of the frame index
+variable, which is the offset.</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0InstrInfo.cpp</span>
 <span class="p">...</span>
 <span class="k">static</span> <span class="n">MachineMemOperand</span><span class="o">*</span> <span class="n">GetMemOperand</span><span class="p">(</span><span class="n">MachineBasicBlock</span> <span class="o">&amp;</span><span class="n">MBB</span><span class="p">,</span> <span class="kt">int</span> <span class="n">FI</span><span class="p">,</span>
@@ -419,8 +418,8 @@ define the loadRegFromStackSlot() to issue the machine instruction
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Beyond Calling Convention and LowerFormalArguments(), 7/2/Cpu0 add following
-code for cpu0 instructions swi (Software Interrupt) and jsub, jalr
+<p>In addition to Calling Convention and LowerFormalArguments(), 7/2/Cpu0 add the
+following code for cpu0 instructions swi (Software Interrupt), jsub and jalr
 (function call) definition and printing.</p>
 <div class="highlight-c++"><pre>// Cpu0InstrFormats.td
 ...
@@ -440,12 +439,6 @@ def Cpu0JmpLink : SDNode&lt;"Cpu0ISD::JmpLink",SDT_Cpu0JmpLink,
                          [SDNPHasChain, SDNPOutGlue, SDNPOptInGlue,
                           SDNPVariadic]&gt;;
 ...
-// These are target-independent nodes, but have target-specific formats.
-def callseq_start : SDNode&lt;"ISD::CALLSEQ_START", SDT_Cpu0CallSeqStart,
-                           [SDNPHasChain, SDNPOutGlue]&gt;;
-def callseq_end   : SDNode&lt;"ISD::CALLSEQ_END", SDT_Cpu0CallSeqEnd,
-                           [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue]&gt;;
-…
 def jmptarget   : Operand&lt;OtherVT&gt; {
   let EncoderMethod = "getJumpTargetOpValue";
 }
@@ -568,8 +561,8 @@ public:
   void setMaxCallFrameSize(unsigned S) { MaxCallFrameSize = S; }
 };</pre>
 </div>
-<p>After above changes, you can run 7/2/Cpu0 with ch7_1.cpp and see what happen
-as follows,</p>
+<p>After above changes, you can run 7/2/Cpu0 with ch7_1.cpp and see what happens
+in the following,</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-79-83:InputFiles Jonathan<span class="nv">$ </span>/Users/Jonathan/llvm/3.1.test/cpu0/1/
 cmake_debug_build/bin/Debug/llc -march<span class="o">=</span>cpu0 -relocation-model<span class="o">=</span>pic -filetype<span class="o">=</span>asm
 ch7_1.bc -o ch7_1.cpu0.s
@@ -593,9 +586,9 @@ Illegal instruction: 4
 <p><a class="reference internal" href="#funccall-f2"><em>Mips arguments location in stack frame</em></a> depicted two steps to take care arguments passing.
 One is store outgoing arguments in caller function, and the other is load
 incoming arguments in callee function.
-We define LowerFormalArguments() to do “load incoming arguments” in callee
-function of the last section.
-Now, we have to finish “store outgoing arguments” in caller function.
+We defined LowerFormalArguments() for “load incoming arguments” in callee
+function last section.
+Now, we will finish “store outgoing arguments” in caller function.
 LowerCall() is responsible to do this. The implementation as follows,</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0ISelLowering.cpp</span>
 <span class="p">...</span>
@@ -835,11 +828,16 @@ CCInfo(CallConv,..., ArgLocs, …) to get outgoing arguments information before
 enter “for loop” and set stack alignment with 8 bytes.
 They&#8217;re almost same in “for loop” with LowerFormalArguments(), except
 LowerCall() create store DAG vector instead of load DAG vector.
-DAG.getCALLSEQ_START() and DAG.getCALLSEQ_END() are set before and after the
-“for loop”, they insert CALLSEQ_START, CALLSEQ_END, and translate into pseudo
-machine instructions !ADJCALLSTACKDOWN, !ADJCALLSTACKUP later according
-Cpu0InstrInfo.td definition as follows.</p>
+After the “for loop”, it create “ld $6, %call24(_Z5sum_iiiiiii)($gp)”
+and jalr $6 for calling subroutine (the $6 is $t9) in PIC mode.
+DAG.getCALLSEQ_START() and DAG.getCALLSEQ_END() are set before the “for loop”
+and after call subroutine, they insert CALLSEQ_START, CALLSEQ_END, and
+translate into pseudo machine instructions !ADJCALLSTACKDOWN, !ADJCALLSTACKUP
+later according Cpu0InstrInfo.td definition as follows.</p>
 <div class="highlight-c++"><pre>// Cpu0InstrInfo.td
+...
+def SDT_Cpu0CallSeqStart : SDCallSeqStart&lt;[SDTCisVT&lt;0, i32&gt;]&gt;;
+def SDT_Cpu0CallSeqEnd   : SDCallSeqEnd&lt;[SDTCisVT&lt;0, i32&gt;, SDTCisVT&lt;1, i32&gt;]&gt;;
 ...
 // These are target-independent nodes, but have target-specific formats.
 def callseq_start : SDNode&lt;"ISD::CALLSEQ_START", SDT_Cpu0CallSeqStart,
@@ -1038,7 +1036,9 @@ eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
     return FI &lt;= OutArgFIRange.first &amp;&amp; FI &gt;= OutArgFIRange.second;
   }</pre>
 </div>
-<p>Run 7/4/Cpu0 with ch7_1.cpp will get the following result.</p>
+<p>Run 7/4/Cpu0 with ch7_1.cpp will get the following result.
+It correct arguements offset im main() from (0+40)$sp, (8+40)$sp, ..., to
+(0)$sp, (8)$sp, ..., where the stack size is 40 in main().</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-76-131:InputFiles Jonathan<span class="nv">$ </span>/Users/Jonathan/llvm/3.1.test/cpu0/1/
 cmake_debug_build/bin/Debug/llc -march<span class="o">=</span>cpu0 -relocation-model<span class="o">=</span>pic -filetype<span class="o">=</span>
 asm ch7_1.bc -o ch7_1.cpu0.s
@@ -1141,10 +1141,12 @@ main:
   .cfi_endproc
 </pre></div>
 </div>
-<p>Summary callee incoming arguments and caller outgoing arguments as
+<p>The incoming arguments is the formal arguments defined in compiler and program
+language books. The outgoing arguments is the actual arguments.
+Summary callee incoming arguments and caller outgoing arguments as
 <a class="reference internal" href="#funccall-t1"><em>Callee incoming arguments and caller outgoing arguments</em></a>.</p>
 <div class="figure align-center" id="funccall-t1">
-<a class="reference internal image-reference" href="_images/19.png"><img alt="_images/19.png" src="_images/19.png" style="width: 694.0px; height: 153.0px;" /></a>
+<a class="reference internal image-reference" href="_images/110.png"><img alt="_images/110.png" src="_images/110.png" style="width: 697.0px; height: 156.0px;" /></a>
 <p class="caption">Figure 3: Callee incoming arguments and caller outgoing arguments</p>
 </div>
 </div>
@@ -1278,19 +1280,19 @@ main:
 </div>
 <div class="section" id="handle-gp-register-in-pic-addressing-mode">
 <h2>Handle $gp register in PIC addressing mode<a class="headerlink" href="#handle-gp-register-in-pic-addressing-mode" title="Permalink to this headline">¶</a></h2>
-<p>In <a class="reference external" href="http://jonathan2251.github.com/lbd/globalvar.html#global-variable">section Global variable</a>, we mentioned there are two addressing
-mode, one is static address mode, the other is PIC (position-independent code).
+<p>In &#8220;section Global variable&#8221; <a class="footnote-reference" href="#id15" id="id6">[6]</a>, we mentioned two addressing
+mode, the static address mode and PIC (position-independent code) mode.
 We also mentioned, one example of PIC mode is used in share library.
-Share library usually can be loaded in different memory address decided on run
+Share library usually can be loaded in different memory address decided at run
 time.
 The static mode (absolute address mode) is usually designed to load in specific
-memory address decided on compile time.
+memory address decided at compile time.
 Since share library can be loaded in different memory address, the global
-variable address cannot be decided in compile time.
-Even though, we can decide the distance between global variable address and
+variable address cannot be decided at compile time.
+But, we can caculate the distance between the global variable address and
 shared library function if they will be loaded to the contiguous memory space
 together.</p>
-<p>Let&#8217;s run 7/5/Cpu0 with ch7_2.cpp to get the following result and we put the
+<p>Let&#8217;s run 7/5/Cpu0 with ch7_2.cpp to get the following result of we putting the
 comment in it for explanation.</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-67-25:InputFiles Jonathan<span class="nv">$ </span>cat ch7_2.cpu0.s
     .section .mdebug.abi32
@@ -1359,8 +1361,8 @@ gI:
     .size   gI, 4
 </pre></div>
 </div>
-<p>As above code comment, “.cprestore 24” is a pseudo instruction for save $gp to
-24($sp); “ld $gp, 24($sp)” will restore the $gp.
+<p>As above code comment, “.cprestore 24” is a pseudo instruction for saving $gp
+to 24($sp); “ld $gp, 24($sp)” will restore the $gp.
 In other word, $gp is caller saved register, so main() need to save/restore $gp
 before/after call the shared library _Z5sum_iiiiiii() function.
 In _Z5sum_iiiiiii() function, we translate global variable gI address by
@@ -1372,7 +1374,7 @@ bits address range access.
 We add “jalr” to cpu0 and expand it to 32 bit address. We did this change for
 two reason. One is cpu0 can be expand to 32 bit address space by only add this
 instruction.
-The other is cpu0 is designed for teaching purpose, this book is the same
+The other is cpu0 is designed for teaching purpose, this book has the same
 purpose for llvm backend design. We reserve “jalr” as PIC mode for shared
 library or dynamic loading code to demonstrate the caller how to handle the
 caller saved register $gp in calling the shared library and the shared library
@@ -1415,9 +1417,9 @@ void Cpu0FrameLowering::emitPrologue(MachineFunction &amp;MF) const {
   ….
   // Restore GP from the saved stack location
   if (Cpu0FI-&gt;needGPSaveRestore()) {
-  unsigned Offset = MFI-&gt;getObjectOffset(Cpu0FI-&gt;getGPFI());
-  BuildMI(MBB, MBBI, dl, TII.get(Cpu0::CPRESTORE)).addImm(Offset)
-    .addReg(Cpu0::GP);
+    unsigned Offset = MFI-&gt;getObjectOffset(Cpu0FI-&gt;getGPFI());
+    BuildMI(MBB, MBBI, dl, TII.get(Cpu0::CPRESTORE)).addImm(Offset)
+      .addReg(Cpu0::GP);
   }
 }
 
@@ -1449,8 +1451,8 @@ Cpu0TargetLowering::LowerCall(SDValue InChain, SDValue Callee,
   if (IsPIC &amp;&amp; Cpu0FI-&gt;globalBaseRegFixed() &amp;&amp; !Cpu0FI-&gt;getGPFI())
   ...
   if (MaxCallFrameSize &lt; NextStackOffset) {
-  if (Cpu0FI-&gt;needGPSaveRestore())
-    MFI-&gt;setObjectOffset(Cpu0FI-&gt;getGPFI(), NextStackOffset);
+    if (Cpu0FI-&gt;needGPSaveRestore())
+      MFI-&gt;setObjectOffset(Cpu0FI-&gt;getGPFI(), NextStackOffset);
   …
 }
 
@@ -1511,38 +1513,38 @@ bool Inserter::runOnMachineFunction(MachineFunction &amp;F) {
   int FI = Cpu0FI-&gt;getGPFI();
 
   for (MachineFunction::iterator MFI = F.begin(), MFE = F.end();
-     MFI != MFE; ++MFI) {
-  MachineBasicBlock&amp; MBB = *MFI;
-  MachineBasicBlock::iterator I = MFI-&gt;begin();
+      MFI != MFE; ++MFI) {
+    MachineBasicBlock&amp; MBB = *MFI;
+    MachineBasicBlock::iterator I = MFI-&gt;begin();
 
-   /// IsLandingPad - Indicate that this basic block is entered via an
-  /// exception handler.
-  // If MBB is a landing pad, insert instruction that restores $gp after
-  // EH_LABEL.
-  if (MBB.isLandingPad()) {
-    // Find EH_LABEL first.
-    for (; I-&gt;getOpcode() != TargetOpcode::EH_LABEL; ++I) ;
+     /// IsLandingPad - Indicate that this basic block is entered via an
+    /// exception handler.
+    // If MBB is a landing pad, insert instruction that restores $gp after
+    // EH_LABEL.
+    if (MBB.isLandingPad()) {
+      // Find EH_LABEL first.
+      for (; I-&gt;getOpcode() != TargetOpcode::EH_LABEL; ++I) ;
 
-    // Insert ld.
-    ++I;
-    DebugLoc dl = I != MBB.end() ? I-&gt;getDebugLoc() : DebugLoc();
-    BuildMI(MBB, I, dl, TII-&gt;get(Cpu0::LD), Cpu0::GP).addFrameIndex(FI)
+      // Insert ld.
+      ++I;
+      DebugLoc dl = I != MBB.end() ? I-&gt;getDebugLoc() : DebugLoc();
+      BuildMI(MBB, I, dl, TII-&gt;get(Cpu0::LD), Cpu0::GP).addFrameIndex(FI)
                              .addImm(0);
-    Changed = true;
-  }
-
-  while (I != MFI-&gt;end()) {
-    if (I-&gt;getOpcode() != Cpu0::JALR) {
-    ++I;
-    continue;
+      Changed = true;
     }
 
-    DebugLoc dl = I-&gt;getDebugLoc();
-    // emit ld $gp, ($gp save slot on stack) after jalr
-    BuildMI(MBB, ++I, dl, TII-&gt;get(Cpu0::LD), Cpu0::GP).addFrameIndex(FI)
-                             .addImm(0);
-    Changed = true;
-  }
+    while (I != MFI-&gt;end()) {
+      if (I-&gt;getOpcode() != Cpu0::JALR) {
+        ++I;
+        continue;
+      }
+
+      DebugLoc dl = I-&gt;getDebugLoc();
+      // emit ld $gp, ($gp save slot on stack) after jalr
+      BuildMI(MBB, ++I, dl, TII-&gt;get(Cpu0::LD), Cpu0::GP).addFrameIndex(FI)
+                               .addImm(0);
+      Changed = true;
+    }
   }
 
   return Changed;
@@ -1582,10 +1584,10 @@ void Cpu0AsmPrinter::EmitInstrWithMacroNoAT(const MachineInstr *MI) {
   MCInstLowering.Lower(MI, TmpInst);
   OutStreamer.EmitRawText(StringRef("\t.set\tmacro"));
   if (Cpu0FI-&gt;getEmitNOAT())
-  OutStreamer.EmitRawText(StringRef("\t.set\tat"));
+    OutStreamer.EmitRawText(StringRef("\t.set\tat"));
   OutStreamer.EmitInstruction(TmpInst);
   if (Cpu0FI-&gt;getEmitNOAT())
-  OutStreamer.EmitRawText(StringRef("\t.set\tnoat"));
+    OutStreamer.EmitRawText(StringRef("\t.set\tnoat"));
   OutStreamer.EmitRawText(StringRef("\t.set\tnomacro"));
 }
 
@@ -1597,29 +1599,29 @@ void Cpu0AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
   switch (Opc) {
   case Cpu0::CPRESTORE: {
-  const MachineOperand &amp;MO = MI-&gt;getOperand(0);
-  assert(MO.isImm() &amp;&amp; "CPRESTORE's operand must be an immediate.");
-  int64_t Offset = MO.getImm();
+    const MachineOperand &amp;MO = MI-&gt;getOperand(0);
+    assert(MO.isImm() &amp;&amp; "CPRESTORE's operand must be an immediate.");
+    int64_t Offset = MO.getImm();
 
-  if (OutStreamer.hasRawTextSupport()) {
-    if (!isInt&lt;16&gt;(Offset)) {
-    EmitInstrWithMacroNoAT(MI);
-    return;
+    if (OutStreamer.hasRawTextSupport()) {
+      if (!isInt&lt;16&gt;(Offset)) {
+        EmitInstrWithMacroNoAT(MI);
+        return;
+      }
+    } else {
+      MCInstLowering.LowerCPRESTORE(Offset, MCInsts);
+
+      for (SmallVector&lt;MCInst, 4&gt;::iterator I = MCInsts.begin();
+         I != MCInsts.end(); ++I)
+      OutStreamer.EmitInstruction(*I);
+
+      return;
     }
-  } else {
-    MCInstLowering.LowerCPRESTORE(Offset, MCInsts);
 
-    for (SmallVector&lt;MCInst, 4&gt;::iterator I = MCInsts.begin();
-       I != MCInsts.end(); ++I)
-    OutStreamer.EmitInstruction(*I);
-
-    return;
-  }
-
-  break;
+    break;
   }
   default:
-  break;
+    break;
   }
 
   MCInstLowering.Lower(MI, TmpInst0);
@@ -1629,15 +1631,15 @@ void Cpu0AsmPrinter::EmitInstruction(const MachineInstr *MI) {
 void Cpu0AsmPrinter::EmitFunctionBodyStart() {
   ...
   if (OutStreamer.hasRawTextSupport()) {
-  ...
-  if (Cpu0FI-&gt;getEmitNOAT())
-    OutStreamer.EmitRawText(StringRef("\t.set\tnoat"));
+    ...
+    if (Cpu0FI-&gt;getEmitNOAT())
+      OutStreamer.EmitRawText(StringRef("\t.set\tnoat"));
   } else if (EmitCPLoad) {
-  SmallVector&lt;MCInst, 4&gt; MCInsts;
-  MCInstLowering.LowerCPLOAD(MCInsts);
-  for (SmallVector&lt;MCInst, 4&gt;::iterator I = MCInsts.begin();
-     I != MCInsts.end(); ++I)
-    OutStreamer.EmitInstruction(*I);
+    SmallVector&lt;MCInst, 4&gt; MCInsts;
+    MCInstLowering.LowerCPLOAD(MCInsts);
+    for (SmallVector&lt;MCInst, 4&gt;::iterator I = MCInsts.begin();
+       I != MCInsts.end(); ++I)
+      OutStreamer.EmitInstruction(*I);
   }
 }
 
@@ -1690,18 +1692,18 @@ void Cpu0MCInstLower::LowerCPRESTORE(int64_t Offset,
   MCOperand ZEROReg = MCOperand::CreateReg(Cpu0::ZERO);
 
   if (!isInt&lt;16&gt;(Offset)) {
-  unsigned Hi = ((Offset + 0x8000) &gt;&gt; 16) &amp; 0xffff;
-  Offset &amp;= 0xffff;
-  MCOperand ATReg = MCOperand::CreateReg(Cpu0::AT);
-  BaseReg = ATReg;
+    unsigned Hi = ((Offset + 0x8000) &gt;&gt; 16) &amp; 0xffff;
+    Offset &amp;= 0xffff;
+    MCOperand ATReg = MCOperand::CreateReg(Cpu0::AT);
+    BaseReg = ATReg;
 
-  // addiu   at,zero,hi
-  // shl     at,at,16
-  // add     at,at,sp
-  MCInsts.resize(3);
-  CreateMCInst(MCInsts[0], Cpu0::ADDiu, ATReg, ZEROReg, MCOperand::CreateImm(Hi));
-  CreateMCInst(MCInsts[1], Cpu0::SHL, ATReg, ATReg, MCOperand::CreateImm(16));
-  CreateMCInst(MCInsts[2], Cpu0::ADD, ATReg, ATReg, SPReg);
+    // addiu   at,zero,hi
+    // shl     at,at,16
+    // add     at,at,sp
+    MCInsts.resize(3);
+    CreateMCInst(MCInsts[0], Cpu0::ADDiu, ATReg, ZEROReg, MCOperand::CreateImm(Hi));
+    CreateMCInst(MCInsts[1], Cpu0::SHL, ATReg, ATReg, MCOperand::CreateImm(16));
+    CreateMCInst(MCInsts[2], Cpu0::ADD, ATReg, ATReg, SPReg);
   }
 
   MCInst St;
@@ -1714,11 +1716,11 @@ LowerCPRESTORE() when user run with “llc -filetype=obj”.
 The above added code of Cpu0MCInstLower.cpp take care the .cpload and
 .cprestore machine instructions.
 It translate pseudo asm .cpload into four machine instructions, and .cprestore
-into one machine instruction as follows.
-As mentioned in <a class="reference external" href="http://jonathan2251.github.com/lbd/globalvar.html#global-variable">section Global variable</a>.
-When the share library main() function be loaded, the loader will assign the
+into one machine instruction as below.
+As mentioned in &#8220;section Global variable&#8221; <a class="footnote-reference" href="#id16" id="id7">[7]</a>.
+When the share library main() function be loaded, the loader will set the
 $t9 value to $gp when meet “.cpload $t9”.
-After that, the $gp value is $9 which point to main(), and the global variable
+After that, the $gp value is $t9 which point to main(), and the global variable
 address is the relative address to main().
 The _gp_disp is zero as the following reason from Mips ABI.</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Lower &quot;.cpload $reg&quot; to</span>
@@ -1792,11 +1794,19 @@ asm ch7_2.bc -o ch7_2.cpu0.s
 ...
 </pre></div>
 </div>
-<p>The ch7_1_2.cpp, ch7_1_3.cpp and ch7_1_4.cpp are example code more for test.</p>
+<p>Run with llc -obj, you can find the Cx of “jsub Cx” is 0 since the Cx is
+calculated by linker as below.
+Mips has the same 0 in it&#8217;s jal instruction.
+The ch7_1_2.cpp, ch7_1_3.cpp and ch7_1_4.cpp are example code more for test.</p>
+<div class="highlight-bash"><div class="highlight"><pre>// jsub _Z5sum_iiiiiii translate into 2B 00 00 00
+00F0: 2B 00 00 00 01 2D 00 34 00 ED 00 3C 09 DD 00 40
+</pre></div>
+</div>
 </div>
 <div class="section" id="variable-number-of-arguments">
 <h2>Variable number of arguments<a class="headerlink" href="#variable-number-of-arguments" title="Permalink to this headline">¶</a></h2>
-<p>Until now, we support fixed number of arguments is formal function definition.
+<p>Until now, we support fixed number of arguments in formal function definition
+(Incoming Arguments).
 This section support variable number of arguments since C language support
 this feature.
 Run 7/7/Cpu0 with ch7_3.cpp to get the following,</p>
@@ -1997,7 +2007,7 @@ We believe the arg &lt; 40 is satisfied because the native Intel CPU has the
 arg_ptr &lt; 40 in it&#8217;s assembly code and the Intel CPU native execution file can
 print correct result.
 You will see it soon in the bellow code.
-If the arg_ptr &lt; 40 is satisfied and <a href="#id1"><span class="problematic" id="id2">*</span></a>(20($sp)) = arg_offset = 12, then the
+If the arg_ptr &lt; 40 is satisfied and <a href="#id8"><span class="problematic" id="id9">*</span></a>(20($sp)) = arg_offset = 12, then the
 assembly output is correct.
 The llvm IR and mips assembly output as follows,</p>
 <div class="highlight-bash"><pre>118-165-78-221:InputFiles Jonathan$ llvm-dis ch7_3.bc -o ch7_3.ll
@@ -2518,7 +2528,7 @@ SDValue Cpu0TargetLowering::LowerVASTART(SDValue Op, SelectionDAG &amp;DAG) cons
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Mips qemu reference <a class="reference external" href="http://developer.mips.com/clang-llvm/">http://developer.mips.com/clang-llvm/</a>.</p>
+<p>Mips qemu reference .</p>
 </div>
 <div class="section" id="summary-of-this-chapter">
 <h2>Summary of this chapter<a class="headerlink" href="#summary-of-this-chapter" title="Permalink to this headline">¶</a></h2>
@@ -2529,6 +2539,54 @@ Look back the chapter of “Back end structure”, there are 3,000 lines of sour
 code with taking three instructions only.
 With this 80% more of code, it can translate tens of instructions, global
 variable, control flow statement and function call.</p>
+<table class="docutils footnote" frame="void" id="id10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/ctrlflow.html#risc-cpu-knowledge">http://jonathan2251.github.com/lbd/ctrlflow.html#risc-cpu-knowledge</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id11" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="https://www.dropbox.com/sh/2pkh1fewlq2zag9/OHnrYn2nOs/doc/MIPSproAssemblyLanguageProgrammerGuide">https://www.dropbox.com/sh/2pkh1fewlq2zag9/OHnrYn2nOs/doc/MIPSproAssemblyLanguageProgrammerGuide</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id12" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><a class="reference external" href="http://www.linux-mips.org/pub/linux/mips/doc/ABI/mipsabi.pdf">http://www.linux-mips.org/pub/linux/mips/doc/ABI/mipsabi.pdf</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id14" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[5]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/globalvar.html#global-variable">http://jonathan2251.github.com/lbd/globalvar.html#global-variable</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id15" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[6]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/globalvar.html#global-variable">http://jonathan2251.github.com/lbd/globalvar.html#global-variable</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id16" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[7]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/globalvar.html#global-variable">http://jonathan2251.github.com/lbd/globalvar.html#global-variable</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[8]</td><td><a class="reference external" href="http://developer.mips.com/clang-llvm/">http://developer.mips.com/clang-llvm/</a></td></tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -2557,8 +2615,8 @@ variable, control flow statement and function call.</p>
   <p class="topless"><a href="ctrlflow.html"
                         title="previous chapter">Control flow statement</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="appendix.html"
-                        title="next chapter">Appendix</a></p>
+  <p class="topless"><a href="elf.html"
+                        title="next chapter">ELF</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/funccall.txt"
@@ -2588,7 +2646,7 @@ variable, control flow statement and function call.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="appendix.html" title="Appendix"
+          <a href="elf.html" title="ELF"
              >next</a> |</li>
         <li class="right" >
           <a href="ctrlflow.html" title="Control flow statement"

@@ -11,17 +11,15 @@ build documentation that covers this.  For Linux machines, we are building and
 debugging (using gdb) our LLVM installations on a Fedora 17 system.  We will 
 not be using an IDE for Linux, but once again, if you have experience building/
 debugging LLVM using Eclipse or other major IDEs, please contact the authors. 
-For information on using ``cmake`` to build LLVM, please refer to the `Building 
-LLVM with CMake`_ documentation for further information.  We are using cmake 
-version 2.8.9.
+For information on using ``cmake`` to build LLVM, please refer to the "Building 
+LLVM with CMake" [#]_ documentation for further information. 
+We are using cmake version 2.8.9.
 
 We will install two llvm directories in this chapter. One is the directory 
 llvm/3.1/ which contains the clang, clang++ compiler we will use to translate 
 the C/C++ input file into llvm IR. 
 The other is the directory llvm/3.1.test/cpu0/1 which contains our cpu0 backend 
 program and without clang and clang++.
-
-.. _Building LLVM with CMake: http://llvm.org/docs/CMake.html?highlight=cmake
 
 Install LLVM 3.1 release on Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,3 +119,5 @@ Install cpu0 debug build on Linux
     .. code-block:: bash
 
       $ gdb bin/llc
+
+.. [#] http://www.llvm.org/docs/CMake.html

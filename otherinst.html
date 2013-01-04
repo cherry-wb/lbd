@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.1.2',
+        VERSION:     '3.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -166,7 +166,7 @@ are designed from two different hardware circuits, and more, their data path is
 separate. We think the cpu0 is the same even though no explanation in it&#8217;s web
 site.
 So, these two function units can be executed at same time (instruction level
-parallelism).</p>
+parallelism). Reference <a class="footnote-reference" href="#id5" id="id1">[1]</a> for instruction itineraries.</p>
 <p>Now, let&#8217;s build 4/1/Cpu0 and run with input file ch4_2.cpp.
 This version can process <strong>+, -, *, /, &amp;, |, ^, &lt;&lt;,</strong> and <strong>&gt;&gt;</strong> operators in C
 language.
@@ -233,10 +233,9 @@ because overflow). In case of x is signed int, x &lt;&lt; 1 is correct for -1G ~
 So, implementation by “shift 1bit to left and fill the least bit with 0”
 satisfy the definition x = x*2 for x &lt;&lt; 1, no matter operand x is signed or
 unsigned int.</p>
-<p>References as follows,</p>
-<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/336xbhcz%28v=vs.80%29.aspx">http://msdn.microsoft.com/en-us/library/336xbhcz%28v=vs.80%29.aspx</a></p>
-<p>The sub-section &#8220;‘ashr‘ Instruction&#8221; of <a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></p>
-<p>he sub-section &#8220;‘lshr‘ Instruction&#8221; of <a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></p>
+<p>Micorsoft implementation references as <a class="footnote-reference" href="#id6" id="id2">[2]</a>.</p>
+<p>The sub-section &#8220;‘ashr‘ Instruction&#8221; and sub-section &#8220;‘lshr‘ Instruction&#8221; of
+<a class="footnote-reference" href="#id7" id="id3">[3]</a>.</p>
 <p>The 4/1 version just add 40 lines code in td files.
 With these 40 lines code, it process 9 operators more for C language and their
 corresponding llvm IR instructions.
@@ -384,11 +383,11 @@ Now, let&#8217;s examine Cpu0MCTargetDesc.cpp.</p>
 </pre></div>
 </div>
 <p>Cpu0MCTargetDesc.cpp do the target registration as mentioned in
-<a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">section Target Registration</a> of the last chapter.
+&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id8" id="id4">[4]</a> of the last chapter.
 Drawing the register function and those class it registered in
 <a class="reference internal" href="#otherinst-f1"><em>Register Cpu0MCAsmInfo</em></a> to <a class="reference internal" href="#otherinst-f9"><em>Register Cpu0InstPrinter</em></a> for explanation.</p>
 <div class="figure align-center" id="otherinst-f1">
-<a class="reference internal image-reference" href="_images/113.png"><img alt="_images/113.png" src="_images/113.png" style="width: 731.0px; height: 634.0px;" /></a>
+<a class="reference internal image-reference" href="_images/114.png"><img alt="_images/114.png" src="_images/114.png" style="width: 731.0px; height: 634.0px;" /></a>
 <p class="caption">Figure 1: Register Cpu0MCAsmInfo</p>
 </div>
 <div class="figure align-center" id="otherinst-f2">
@@ -474,6 +473,30 @@ Cpu0.td information.
 for instructions.
 Like <a class="reference internal" href="#otherinst-f1"><em>Register Cpu0MCAsmInfo</em></a> to <a class="reference internal" href="#otherinst-f4"><em>Register MCRegisterInfo</em></a>, it has been defined in
 4/1/Cpu0 code for assembly file generated support.</p>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://llvm.org/docs/doxygen/html/structllvm_1_1InstrStage.html">http://llvm.org/docs/doxygen/html/structllvm_1_1InstrStage.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="http://msdn.microsoft.com/en-us/library/336xbhcz%28v=vs.80%29.aspx">http://msdn.microsoft.com/en-us/library/336xbhcz%28v=vs.80%29.aspx</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
+</tbody>
+</table>
 </div>
 </div>
 
