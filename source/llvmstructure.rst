@@ -134,25 +134,26 @@ and add constant to a register. So, it's powerful and fully contains the ldi
 ability. 
 These two instructions format as :ref:`llvmstructure_f4` and :ref:`llvmstructure_f5`.
 
-.. _llvmstructure_f4: 
+.. _llvmstructure-f4:
 .. figure:: ../Fig/llvmstructure/4.png
 	:align: center
 
 	Cpu0 ldi instruction
 
-.. _llvmstructure_f5: 
+.. _llvmstructure-f5:
 .. figure:: ../Fig/llvmstructure/5.png
 	:align: center
 
 	Mips addiu instruction format
 
-From :ref:`llvmstructure_f4` and :ref:`llvmstructure_f5`, you can find ldi $Ra, 
-5 can be replaced by addiu $Ra, $zero, 5. 
-And more, addiu can do addiu $Ra, $Rb, 5 which add $Rb and 5 then save to $Ra, 
-but ldi cannot. 
-As a cpu design, it's common to redesign CPU instruction when find a better 
-solution during design the compiler backend for that CPU. 
-So, we add addiu instruction to cpu0. 
+From :num:`figure #llvmstructure-f4` and :num:`figure #llvmstructure-f5`,
+you can find ``ldi $Ra, 5`` can be replaced by ``addiu $Ra, $zero, 5``.
+And more, ``addiu`` can do ``addiu $Ra, $Rb, 5`` which add $Rb and 5 then
+save to $Ra, but ldi cannot.
+
+As a CPU design, it's common to redesign CPU instruction when find a better
+solution during design the compiler backend for that CPU.
+So, we add addiu instruction to cpu0.
 The cpu0 is my brother's work, I will find time to talk with him.
 
 LLVM structure
@@ -162,17 +163,17 @@ Following came from AOSA [#]_.
 
 The most popular design for a traditional static compiler (like most C 
 compilers) is the three phase design whose major components are the front end, 
-the optimizer and the back end (:ref:`llvmstructure_f6`). 
+the optimizer and the back end (:num:`figure #llvmstructure-f6`).
 The front end parses source code, checking it for errors, and builds a 
 language-specific Abstract Syntax Tree (AST) to represent the input code. 
 The AST is optionally converted to a new representation for optimization, and 
 the optimizer and back end are run on the code.
 
-.. _llvmstructure_f6: 
+.. _llvmstructure-f6:
 .. figure:: ../Fig/llvmstructure/6.png
 	:align: center
 
-	Tree major components of a Three Phase Compiler
+	Three major components of a Three Phase Compiler
 
 The optimizer is responsible for doing a broad variety of transformations to 
 try to improve the code's running time, such as eliminating redundant 

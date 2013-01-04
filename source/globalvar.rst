@@ -25,18 +25,7 @@ Global variable
 5/1/Cpu0 support the global variable, let's compile ch5_1.cpp with this version 
 first, and explain the code changes after that.
 
-.. code-block:: c++
-
-    // ch5_1.cpp
-    int gI = 100; 
-    int main() 
-    { 
-      int c = 0; 
-    
-      c = gI; 
-    
-      return c; 
-    } 
+.. literalinclude:: ../example/input/ch5_1.cpp
 
 .. code-block:: bash
 
