@@ -1,3 +1,3 @@
-[submodule "lbd-example"]
-	path = lbd-example
+[submodule "example"]
+	path = example
 	url = git://github.com/azru0512/lbd-example.git
