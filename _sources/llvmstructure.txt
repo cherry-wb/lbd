@@ -128,31 +128,34 @@ Replace ldi instruction by addiu instruction
 We have recognized the ldi instruction is a bad design and replace it with mips 
 instruction addiu. 
 The reason we replace ldi with addiu is that ldi use only one register even 
-though ldi is L type format and has two registers, as :ref:`llvmstructure_f4`. 
+though ldi is L type format and has two registers, as :num:`llvmstructure-f4`.
 Mips addiu which allow programmer to do load constant to register like ldi, 
 and add constant to a register. So, it's powerful and fully contains the ldi 
 ability. 
-These two instructions format as :ref:`llvmstructure_f4` and :ref:`llvmstructure_f5`.
 
-.. _llvmstructure_f4: 
+The two instruction formats are shown in :num:`figure #llvmstructure-f4`
+and :num:`figure #llvmstructure-f5`.
+
+.. _llvmstructure-f4:
 .. figure:: ../Fig/llvmstructure/4.png
 	:align: center
 
 	Cpu0 ldi instruction
 
-.. _llvmstructure_f5: 
+.. _llvmstructure-f5:
 .. figure:: ../Fig/llvmstructure/5.png
 	:align: center
 
 	Mips addiu instruction format
 
-From :ref:`llvmstructure_f4` and :ref:`llvmstructure_f5`, you can find ldi $Ra, 
-5 can be replaced by addiu $Ra, $zero, 5. 
-And more, addiu can do addiu $Ra, $Rb, 5 which add $Rb and 5 then save to $Ra, 
-but ldi cannot. 
-As a cpu design, it's common to redesign CPU instruction when find a better 
-solution during design the compiler backend for that CPU. 
-So, we add addiu instruction to cpu0. 
+From :num:`figure #llvmstructure-f4` and :num:`figure #llvmstructure-f5`,
+you can find ``ldi $Ra, 5`` can be replaced by ``addiu $Ra, $zero, 5``.
+And more, ``addiu`` can do ``addiu $Ra, $Rb, 5`` which add $Rb and 5 then
+save to $Ra, but ldi cannot.
+
+As a CPU design, it's common to redesign CPU instruction when find a better
+solution during design the compiler backend for that CPU.
+So, we add addiu instruction to cpu0.
 The cpu0 is my brother's work, I will find time to talk with him.
 
 LLVM structure
@@ -162,17 +165,17 @@ Following came from AOSA [#]_.
 
 The most popular design for a traditional static compiler (like most C 
 compilers) is the three phase design whose major components are the front end, 
-the optimizer and the back end (:ref:`llvmstructure_f6`). 
+the optimizer and the back end (:num:`figure #simple-compiler`).
 The front end parses source code, checking it for errors, and builds a 
 language-specific Abstract Syntax Tree (AST) to represent the input code. 
 The AST is optionally converted to a new representation for optimization, and 
 the optimizer and back end are run on the code.
 
-.. _llvmstructure_f6: 
-.. figure:: ../Fig/llvmstructure/6.png
+.. _simple-compiler:
+.. figure:: ../Fig/llvmstructure/SimpleCompiler.png
 	:align: center
 
-	Tree major components of a Three Phase Compiler
+	Three major components of a Three Phase Compiler
 
 The optimizer is responsible for doing a broad variety of transformations to 
 try to improve the code's running time, such as eliminating redundant 
@@ -193,10 +196,10 @@ to support multiple source languages or target architectures.
 If the compiler uses a common code representation in its optimizer, then a 
 front end can be written for any language that can compile to it, and a back 
 end can be written for any target that can compile from it, as shown in 
-:ref:`llvmstructure_f7`.
+:num:`figure #retargetablity`.
 
-.. _llvmstructure_f7: 
-.. figure:: ../Fig/llvmstructure/7.png
+.. _retargetablity:
+.. figure:: ../Fig/llvmstructure/RetargetableCompiler.png
 	:align: center
 
 	Retargetablity
@@ -280,8 +283,11 @@ for a front end to generate and be expressive enough to allow important
 optimizations to be performed for real targets.
 	
 
-Target Description td
----------------------
+Introduce Target Description File
+---------------------------------
+
+.. note::
+   This section comes from AOSA
 
 The "mix and match" approach allows target authors to choose what makes sense 
 for their architecture and permits a large amount of code reuse across 
@@ -294,11 +300,11 @@ register operands.
 LLVM's solution to this is for each target to provide a target description 
 in a declarative domain-specific language (a set of .td files) processed by the 
 tblgen tool. 
-The (simplified) build process for the x86 target is shown in 
-:ref:`llvmstructure_f8`.
+The (simplified) build process for the x86 target is shown in :num:`figure #x86-target` .
 
-.. _llvmstructure_f8: 
-.. figure:: ../Fig/llvmstructure/8.png
+.. _x86-target:
+
+.. figure:: ../Fig/llvmstructure/X86Target.png
 	:align: center
 
 	Simplified x86 Target Definition
@@ -312,25 +318,24 @@ are all caps) like this:
 .. literalinclude:: ../code_fragment/llvmstructure/2.txt
 
 
-Write td (Target Description)
------------------------------
+Writing Target Description File
+-------------------------------
 
-The llvm using .td file (Target Description) to describe register and 
-instruction format. 
-After finish the .td files, llvm can generate C++ files (\*.inc) by llvm-tblgen 
-tools. 
-The \*.inc file is a text file (C++ file) with table driven in concept. 
-[#]_ is the web site.
+LLVM use target description files (.td) to describe target register file and
+instruction format. After you writing up those .td files, LLVM generates C++
+files (\*.inc) by ``llvm-tblgen``. Those \*.inc files are C++ files with table
+driven in concept. [#]_ is the web site.
 
-Every back end has a target td which define it's own target information. 
-File td is like C++ in syntax. For example the Cpu0.td as follows,
+You should write one ``XX.td`` under your target subdirectory, it then includes
+other target description files defining various target information. The syntax
+of target description file is pretty similar to C++. Below is ``Cpu0.td``.
 
-.. literalinclude:: ../code_fragment/llvmstructure/3.txt
+.. literalinclude:: ../code_fragment/2/Cpu0/Cpu0.td
 
-The registers td named Cpu0RegisterInfo.td included by Cpu0.td is defined as 
-follows,
+As shown above, ``Cpu0.td`` includes ``Cpu0RegisterInfo.td`` which defines
+the Cpu0 register file.
 
-.. literalinclude:: ../code_fragment/llvmstructure/4.txt
+.. literalinclude:: ../code_fragment/2/Cpu0/Cpu0RegisterInfo.td
 
 In C++ the data layout is declared by class. Declaration tells the variable 
 layout; definition allocates memory for the variable. 
@@ -357,16 +362,20 @@ RegisterClass, where the RegisterClass is a llvm built-in class.
 The type of RegisterClass is a set/group of Register, so CPURegs variable is 
 defined with a set of Register.
 
+``Cpu0InstrFormats.td`` defines Cpu0 instruction format. We define a base class
+``Cpu0Inst``, then define class ``FA``, ``FI`` and ``FJ`` for each Cpu0 instruction
+types.
+
+.. literalinclude:: ../code_fragment/2/Cpu0/Cpu0InstrFormats.td
+
 The cpu0 instructions td is named to Cpu0InstrInfo.td which contents as follows,
 
 .. literalinclude:: ../code_fragment/llvmstructure/6.txt
 
-The Cpu0InstrFormats.td is included by Cpu0InstInfo.td as follows,
+Here we take ``ADDiu`` as an example. ``ADDiu`` is an instance of class ``ArithLogicI``
+which is a subclass of class ``FL``.
 
-.. literalinclude:: ../code_fragment/llvmstructure/7.txt
-
-ADDiu is class ArithLogicI inherited from FL, can expand and get member value 
-as follows,
+.. literalinclude:: ../code_fragment/2/Cpu0/Cpu0InstrInfo_ADDiu.td
 
 .. literalinclude:: ../code_fragment/llvmstructure/8.txt
 
@@ -392,9 +401,9 @@ Writing configuration files
 You must have to add one LLVMBuild.txt under ``Target/Cpu0`` directory.
 If you want to support cmake, then CMakeLists.txt needed to be added.
 
-.. literalinclude:: ../lbd-example/2/Cpu0/CMakeLists.txt
+.. literalinclude:: ../example/2/Cpu0/CMakeLists.txt
 
-.. literalinclude:: ../lbd-example/2/Cpu0/LLVMBuild.txt
+.. literalinclude:: ../example/2/Cpu0/LLVMBuild.txt
 
 LLVMBuild.txt files are written in a simple variant of the INI or configuration 
 file format. 

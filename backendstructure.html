@@ -275,7 +275,7 @@ will be extracted by Cpu0InstrInfo.h.</p>
 <span class="cp">#endif </span><span class="c1">// GET_INSTRINFO_HEADER </span>
 </pre></div>
 </div>
-<p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id7" id="id2">[1]</a>.</p>
+<p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id9" id="id2">[1]</a>.</p>
 <p>Now, the code in 3/1/Cpu0 add class Cpu0TargetMachine(Cpu0TargetMachine.h and
 cpp), Cpu0Subtarget (Cpu0Subtarget.h and .cpp), Cpu0InstrInfo (Cpu0InstrInfo.h
 and .cpp), Cpu0FrameLowering (Cpu0FrameLowering.h and .cpp), Cpu0TargetLowering
@@ -474,7 +474,7 @@ follows,</p>
 </pre></div>
 </div>
 <p>Now, it&#8217;s time to work with AsmPrinter. According section
-&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id8" id="id3">[2]</a>, we can register our AsmPrinter when we need it
+&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id10" id="id3">[2]</a>, we can register our AsmPrinter when we need it
 as follows,</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0AsmPrinter.cpp</span>
 <span class="c1">// Force static initialization.</span>
@@ -522,13 +522,13 @@ sections.</p>
 <img alt="_images/51.png" src="_images/51.png" />
 <p class="caption">Figure 9: tricore_llvm.pdf: Code generation sequence. On the path from LLVM code to assembly code, numerous passes are run through and several data structures are used to represent the intermediate results.</p>
 </div>
-<p>LLVM is a Static Single Assignment (SSA) based representation.
-LLVM provides an infinite virtual registers which can hold values of primitive
-type (integral, floating point, or pointer values).
-So, every operand can save in different virtual register in llvm SSA
+<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id11" id="id4">[3]</a> based representation.
+LLVM provides infinite virtual registers which can hold value of primitive
+type (integral, floating point, or pointer).
+So, every operand can save in different virtual register in LLVM SSA
 representation.
-Comment is “;” in llvm representation.
-Following is the llvm SSA instructions.</p>
+Comment is prefixed with <tt class="docutils literal"><span class="pre">;</span></tt> in LLVM representation.</p>
+<p>Following is a LLVM IR example.</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="n">store</span> <span class="n">i32</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">a</span>  <span class="p">;</span> <span class="n">store</span> <span class="n">i32</span> <span class="n">type</span> <span class="n">of</span> <span class="mi">0</span> <span class="n">to</span> <span class="k">virtual</span> <span class="k">register</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="o">%</span><span class="n">a</span> <span class="n">is</span>
                       <span class="p">;</span>  <span class="n">pointer</span> <span class="n">type</span> <span class="n">which</span> <span class="n">point</span> <span class="n">to</span> <span class="n">i32</span> <span class="n">value</span>
 <span class="n">store</span> <span class="n">i32</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span> <span class="p">;</span> <span class="n">store</span> <span class="o">%</span><span class="n">b</span> <span class="n">contents</span> <span class="n">to</span> <span class="o">%</span><span class="n">c</span> <span class="n">point</span> <span class="n">to</span><span class="p">,</span> <span class="o">%</span><span class="n">b</span> <span class="n">isi32</span> <span class="n">type</span> <span class="k">virtual</span>
@@ -540,65 +540,73 @@ Following is the llvm SSA instructions.</p>
 </div>
 <p>We explain the code generation process as below.
 If you don&#8217;t feel comfortable, please check tricore_llvm.pdf section 4.2 first.
-You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id9" id="id4">[3]</a>
-and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id10" id="id5">[4]</a>
+You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id12" id="id5">[4]</a>
+and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id13" id="id6">[5]</a>
 before go ahead, but we think read section
 4.2 of tricore_llvm.pdf is enough.
 We suggest you read the web site documents as above only when you are still not
 quite understand, even though you have read this section and next 2 sections
 article for DAG and Instruction Selection.</p>
-<ol class="arabic simple">
-<li>Instruction Selection</li>
-</ol>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// In this stage, transfer the llvm opcode into machine opcode, but the operand</span>
-<span class="c1">//  still is llvm virtual operand.</span>
-      <span class="n">store</span> <span class="n">i16</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">a</span> <span class="c1">// store 0 of i16 type to where virtual register %a</span>
-                           <span class="c1">//  point to</span>
+<p>&#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
+<a class="footnote-reference" href="#id14" id="id7">[6]</a> section 4.2.</p>
+<ol class="arabic">
+<li><p class="first">Instruction Selection</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre>    <span class="c1">// In this stage, transfer the llvm opcode into machine opcode, but the operand</span>
+    <span class="c1">// still is llvm virtual operand.</span>
+    <span class="n">store</span> <span class="n">i16</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">a</span> <span class="c1">// store 0 of i16 type to where virtual register %a</span>
+                         <span class="c1">// point to</span>
+
 <span class="o">=&gt;</span>  <span class="n">addiu</span> <span class="n">i16</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">a</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li>Scheduling and Formation</li>
-</ol>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// In this stage, reorder the instructions sequence for optimization in</span>
-<span class="c1">//  instructions cycle or in register pressure.</span>
-      <span class="n">st</span> <span class="n">i32</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i16</span> <span class="mi">5</span> <span class="c1">// st %a to *(%b+5)</span>
-      <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
-      <span class="o">%</span><span class="n">d</span> <span class="o">=</span> <span class="n">ld</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span>
+</div></blockquote>
+</li>
+<li><p class="first">Scheduling and Formation</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre>    <span class="c1">// In this stage, reorder the instructions sequence for optimization in</span>
+    <span class="c1">// instructions cycle or in register pressure.</span>
+    <span class="n">st</span> <span class="n">i32</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">5</span> <span class="p">;</span> <span class="n">st</span> <span class="o">%</span><span class="n">a</span> <span class="n">to</span> <span class="o">*</span><span class="p">(</span><span class="o">%</span><span class="n">b</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
+    <span class="o">%</span><span class="n">d</span> <span class="o">=</span> <span class="n">ld</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span>
 
-<span class="c1">// Transfer above instructions order as follows. In RISC like Mips the ld %c use</span>
-<span class="c1">//  the previous instruction st %c, must wait more than 1</span>
-<span class="c1">// cycles. Meaning the ld cannot follow st immediately.</span>
+    <span class="c1">// Transfer above instructions order as follows. In RISC architecture like</span>
+    <span class="c1">// Mips, since the &quot;ld %c&quot; depends on previous instruction &quot;st %c&quot;, it must</span>
+    <span class="c1">// wait more than 1 cycles. Therefore, the ld cannot follow st immediately.</span>
 <span class="o">=&gt;</span>  <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
-      <span class="n">st</span> <span class="n">i32</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i16</span> <span class="mi">5</span>
-      <span class="o">%</span><span class="n">d</span> <span class="o">=</span> <span class="n">ld</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
-<span class="c1">// If without reorder instructions, a instruction nop which do nothing must be</span>
-<span class="c1">//  filled, contribute one instruction cycle more than optimization. (Actually,</span>
-<span class="c1">//  Mips is scheduled with hardware dynamically and will insert nop between st</span>
-<span class="c1">//  and ld instructions if compiler didn&#39;t insert nop.)</span>
-      <span class="n">st</span> <span class="n">i32</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i16</span> <span class="mi">5</span>
-      <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
-      <span class="n">nop</span>
-      <span class="o">%</span><span class="n">d</span> <span class="o">=</span> <span class="n">ld</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
+    <span class="n">st</span> <span class="n">i32</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i16</span> <span class="mi">5</span>
+    <span class="o">%</span><span class="n">d</span> <span class="o">=</span> <span class="n">ld</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
 
-<span class="c1">// Minimum register pressure</span>
-<span class="c1">//  Suppose %c is alive after the instructions basic block (meaning %c will be</span>
-<span class="c1">//  used after the basic block), %a and %b are not alive after that.</span>
-<span class="c1">// The following no reorder version need 3 registers at least</span>
-      <span class="o">%</span><span class="n">a</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
-      <span class="o">%</span><span class="n">b</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
-      <span class="n">st</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span>
-      <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="c1">// If without reordering instructions, a instruction nop which does nothing</span>
+    <span class="c1">// must be inserted as a bubble, contribute one instruction cycle more than</span>
+    <span class="c1">// optimization.</span>
+    <span class="c1">// Actually, Mips is scheduled with hardware dynamically and will insert nop</span>
+    <span class="c1">// between st and ld instructions if compiler didn&#39;t insert nop.</span>
+    <span class="n">st</span> <span class="n">i32</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span> <span class="n">i16</span><span class="o">*</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i16</span> <span class="mi">5</span>
+    <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
+<span class="o">=&gt;</span>  <span class="n">nop</span>
+    <span class="o">%</span><span class="n">d</span> <span class="o">=</span> <span class="n">ld</span> <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="n">i16</span> <span class="mi">0</span>
 
-<span class="c1">// The reorder version need 2 registers only (by allocate %a and %b in the same</span>
-<span class="c1">//  register)</span>
-<span class="o">=&gt;</span> <span class="o">%</span><span class="n">a</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
-      <span class="n">st</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span>
-      <span class="o">%</span><span class="n">b</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
-      <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="c1">// Minimum register pressure</span>
+    <span class="c1">//</span>
+    <span class="c1">// Suppose %c is alive after this basic block (meaning %c will be</span>
+    <span class="c1">// used after this basic block), %a and %b are not dead after this</span>
+    <span class="c1">// one. The following non-reordering version need 3 registers at least.</span>
+    <span class="o">%</span><span class="n">a</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
+    <span class="o">%</span><span class="n">b</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
+    <span class="n">st</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">2</span>
+
+    <span class="c1">// The reordering version need 2 registers only (by allocate %a and %b in the same</span>
+    <span class="c1">// register)</span>
+<span class="o">=&gt;</span>  <span class="o">%</span><span class="n">a</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
+    <span class="n">st</span> <span class="o">%</span><span class="n">a</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="o">%</span><span class="n">b</span> <span class="o">=</span> <span class="n">add</span> <span class="n">i32</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i32</span> <span class="mi">0</span>
+    <span class="n">st</span> <span class="o">%</span><span class="n">b</span><span class="p">,</span>  <span class="n">i32</span><span class="o">*</span> <span class="o">%</span><span class="n">c</span><span class="p">,</span> <span class="mi">2</span>
 </pre></div>
 </div>
-<ol class="arabic" start="3">
+</div></blockquote>
+</li>
 <li><p class="first">SSA-based Machine Code Optimization</p>
 <blockquote>
 <div><p>For example, common expression remove, shown in next section DAG.</p>
@@ -616,14 +624,17 @@ article for DAG and Instruction Selection.</p>
 </li>
 <li><p class="first">Late Machine Code Optimizations</p>
 <blockquote>
-<div><p>Any “last-minute” peephole optimizations of the final machine code can be applied during this phase. For example, replace x = x * 2 by x = x &lt; 1 for integer operand.</p>
+<div><p>Any &#8220;last-minute&#8221; peephole optimizations of the final machine code can
+be applied during this phase. For example, replace &#8220;x = x * 2&#8221; by
+&#8220;x = x &lt; 1&#8221; for integer operand.</p>
 </div></blockquote>
 </li>
-<li><dl class="first docutils">
-<dt>Code Emission</dt>
-<dd><p class="first last">Finally, the completed machine code is emitted. For static compilation, the end result is an assembly code file; for JIT compilation, the opcodes of the machine instructions are written into memory.</p>
-</dd>
-</dl>
+<li><p class="first">Code Emission</p>
+<blockquote>
+<div><p>Finally, the completed machine code is emitted. For static compilation,
+the end result is an assembly code file; for JIT compilation, the opcodes
+of the machine instructions are written into memory.</p>
+</div></blockquote>
 </li>
 </ol>
 </div>
@@ -650,8 +661,8 @@ const/immediate/offset) is leaf.
 It can also be represented by list as prefix order in tree.
 For example, (+ b, c), (+ b, 1) is IR DAG representation.</p>
 </div>
-<div class="section" id="id6">
-<h2>Instruction Selection<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>Instruction Selection<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>In back end, we need to translate IR code into machine code at Instruction
 Selection Process as <a class="reference internal" href="#backendstructure-f7"><em>IR and it&#8217;s corresponding machine instruction</em></a>.</p>
 <div class="figure align-center" id="backendstructure-f7">
@@ -972,28 +983,40 @@ Even the complicate X86 CPU which CISC outside and RISC inside (micro
 instruction), has only 45,000 lines with comments.
 In next chapter, we will show you that add a new instruction support is as easy
 as 123.</p>
-<table class="docutils footnote" frame="void" id="id7" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#TargetMachine">http://llvm.org/docs/WritingAnLLVMBackend.html#TargetMachine</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
+<table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id14" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[6]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -1015,7 +1038,7 @@ as 123.</p>
 <li><a class="reference internal" href="#step-3-add-asmprinter">Step 3. Add AsmPrinter</a></li>
 <li><a class="reference internal" href="#llvm-code-generation-sequence">LLVM Code Generation Sequence</a></li>
 <li><a class="reference internal" href="#dag-directed-acyclic-graph">DAG (Directed Acyclic Graph)</a></li>
-<li><a class="reference internal" href="#id6">Instruction Selection</a></li>
+<li><a class="reference internal" href="#id8">Instruction Selection</a></li>
 <li><a class="reference internal" href="#add-cpu0dagtodagisel-class">Add Cpu0DAGToDAGISel class</a></li>
 <li><a class="reference internal" href="#add-prologue-epilogue-functions">Add Prologue/Epilogue functions</a></li>
 <li><a class="reference internal" href="#summary-of-this-chapter">Summary of this Chapter</a></li>
