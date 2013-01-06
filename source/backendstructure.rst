@@ -199,7 +199,7 @@ Cpu0InstrInfo.cpp, Cpu0TargetMachine.h, and modify CMakeLists.txt as follows,
 
 Now, let's replace 3/1/Cpu0 with 3/2/Cpu0 of adding register class definition 
 and rebuild. 
-After that, let's try to run the llc compile command to see what happen,
+After that, let's try to run the ``llc`` compile command to see what happen,
 
 .. literalinclude:: ../terminal_io/backendstructure/2.txt
 
