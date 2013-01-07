@@ -101,63 +101,70 @@ information, frame/stack ...etc. The Cpu0TargetMachine contents as follows,
 
 .. literalinclude:: ../code_fragment/backendstructure/1.txt
 
-.. _backendstructure_f1: 
-.. figure:: ../Fig/backendstructure/1.png
-	:align: center
+..
+  .. _backendstructure_f1: 
+  .. figure:: ../Fig/backendstructure/1.png
+  	:align: center
+  
+  	TargetMachine class diagram 1
+  
+  The inheritance tree of class ``Cpu0TargetMachine`` and its data members are shown above.
+  
+  :ref:`backendstructure_f1` shows Cpu0TargetMachine inherit tree and it's 
+  Cpu0InstrInfo class inherit tree. 
+  Cpu0TargetMachine contains Cpu0InstrInfo and ... other class. 
+  Cpu0InstrInfo contains Cpu0RegisterInfo class, RI. Cpu0InstrInfo.td and 
+  Cpu0RegisterInfo.td will generate Cpu0GenInstrInfo.inc and 
+  Cpu0GenRegisterInfo.inc which contain some member functions implementation for 
+  class Cpu0InstrInfo and Cpu0RegisterInfo.
+  
+  :ref:`backendstructure_f2` as below shows Cpu0TargetMachine contains class 
+  TSInfo: Cpu0SelectionDAGInfo, FrameLowering: Cpu0FrameLowering, Subtarget: 
+  Cpu0Subtarget and TLInfo: Cpu0TargetLowering.
+  
+  .. _backendstructure_f2:  
+  .. figure:: ../Fig/backendstructure/2.png
+  	:align: center
+  
+  	TargetMachine class diagram 2
+  
+  .. _backendstructure_f3: 
+  .. figure:: ../Fig/backendstructure/3.png
+  	:align: center
+  
+  	TargetMachine members and operators
+  
+  :ref:`backendstructure_f3` shows some members and operators (member function) 
+  of the parent class TargetMachine's. 
+  :ref:`backendstructure_f4` as below shows some members of class InstrInfo, 
+  RegisterInfo and TargetLowering. 
+  Class DAGInfo is skipped here.
+  
+  .. _backendstructure_f4: 
+  .. figure:: ../Fig/backendstructure/4.png
+  	:align: center
+  
+  	Other class members and operators
 
-	TargetMachine class diagram 1
+Due to the OO design of LLVM, most member functions are already implemented by
+base classes. We only need to override some member functions for our target machine.
 
-The inheritance tree of class ``Cpu0TargetMachine`` and its data members are shown above.
+After writing up our target description files, ``llvm-tblgen`` generates C++ files
+included by others. Take ``Cpu0InstrInfo.td`` as an example, ``llvm-tblgen`` generates
+``Cpu0GenInstrInfo.inc`` from ``Cpu0InstrInfo.td``. Then ``Cpu0InstrInfo.h`` defines
+``GET_INSTRINFO_HEADER`` marco so that it can get code it needs from ``Cpu0GenInstrInfo.inc``
+Below is the code fragment from Cpu0GenInstrInfo.inc.
 
-:ref:`backendstructure_f1` shows Cpu0TargetMachine inherit tree and it's 
-Cpu0InstrInfo class inherit tree. 
-Cpu0TargetMachine contains Cpu0InstrInfo and ... other class. 
-Cpu0InstrInfo contains Cpu0RegisterInfo class, RI. Cpu0InstrInfo.td and 
-Cpu0RegisterInfo.td will generate Cpu0GenInstrInfo.inc and 
-Cpu0GenRegisterInfo.inc which contain some member functions implementation for 
-class Cpu0InstrInfo and Cpu0RegisterInfo.
-
-:ref:`backendstructure_f2` as below shows Cpu0TargetMachine contains class 
-TSInfo: Cpu0SelectionDAGInfo, FrameLowering: Cpu0FrameLowering, Subtarget: 
-Cpu0Subtarget and TLInfo: Cpu0TargetLowering.
-
-.. _backendstructure_f2:  
-.. figure:: ../Fig/backendstructure/2.png
-	:align: center
-
-	TargetMachine class diagram 2
-
-.. _backendstructure_f3: 
-.. figure:: ../Fig/backendstructure/3.png
-	:align: center
-
-	TargetMachine members and operators
-
-:ref:`backendstructure_f3` shows some members and operators (member function) 
-of the parent class TargetMachine's. 
-:ref:`backendstructure_f4` as below shows some members of class InstrInfo, 
-RegisterInfo and TargetLowering. 
-Class DAGInfo is skipped here.
-
-.. _backendstructure_f4: 
-.. figure:: ../Fig/backendstructure/4.png
-	:align: center
-
-	Other class members and operators
-
-Benefit from the inherit tree structure, we just need to implement few code in 
-instruction, frame/stack, select DAG class. 
-Many code implemented by their parent class. 
-The llvm-tblgen generate Cpu0GenInstrInfo.inc from Cpu0InstrInfo.td. 
-Cpu0InstrInfo.h extract those code it need from Cpu0GenInstrInfo.inc by define 
-“#define GET_INSTRINFO_HEADER”. 
-Following is the code fragment from Cpu0GenInstrInfo.inc. 
-Code between “#if def  GET_INSTRINFO_HEADER” and “#endif // GET_INSTRINFO_HEADER” 
-will be extracted by Cpu0InstrInfo.h.
+Code between ``#if def  GET_INSTRINFO_HEADER`` and ``#endif // GET_INSTRINFO_HEADER`` 
+will be extracted by ``Cpu0InstrInfo.h.``
 
 .. literalinclude:: ../code_fragment/backendstructure/2.txt
 
 Reference Write An LLVM Backend web site [#]_.
+
+    .. code-block:: bash
+
+     $ cp -rf $Example_SRC/3/1/Cpu0 lib/Target
 
 Now, the code in 3/1/Cpu0 add class Cpu0TargetMachine(Cpu0TargetMachine.h and 
 cpp), Cpu0Subtarget (Cpu0Subtarget.h and .cpp), Cpu0InstrInfo (Cpu0InstrInfo.h 
@@ -251,9 +258,9 @@ Now, run 3/3/Cpu0 for AsmPrinter support, will get error message as follows,
 
 .. literalinclude:: ../terminal_io/backendstructure/3.txt
 
-The llc fails to compile IR code into machine code since we didn't implement 
-class Cpu0DAGToDAGISel. Before the implementation, we will introduce the LLVM 
-Code Generation Sequence, DAG, and LLVM instruction selection in next 3 
+``llc`` fails to compile LLVM IR into target machine code since we don't
+implement class ``Cpu0DAGToDAGISel`` yet. Before moving on, we will introduce
+LLVM code generation sequence, DAG, and instruction selection in next three 
 sections.
 
 LLVM Code Generation Sequence
@@ -353,23 +360,26 @@ For example, (+ b, c), (+ b, 1) is IR DAG representation.
 Instruction Selection
 ---------------------
 
-In back end, we need to translate IR code into machine code at Instruction 
-Selection Process as :ref:`backendstructure_f7`.
+In the compiler backend, we need to translate compiler intermediate representation
+, i.e., IR code into machine code at instruction selection stage [#]_.
 
-.. _backendstructure_f7: 
-.. figure:: ../Fig/backendstructure/7.png
+:num:`figure #ir-and-machine-code` shows a simple example to illustrate the
+before and after instruction selection.
+
+.. _ir_and_machine_code:
+.. figure:: ../Fig/backendstructure/ir_and_machine_code.png
 	:align: center
 
 	IR and it's corresponding machine instruction
 
 For machine instruction selection, the better solution is represent IR and 
 machine instruction by DAG. 
-In :ref:`backendstructure_f7`, we skip the register leaf. 
+In :num:`figure #instruction-tree-patterns`, we skip the register leaf. 
 The rj + rk is IR DAG representation (for symbol notation, not llvm SSA form). 
 ADD is machine instruction.
 
-.. _backendstructure_f8: 
-.. figure:: ../Fig/backendstructure/8.png
+.. _instruction-tree-patterns:
+.. figure:: ../Fig/backendstructure/instruction_tree_patterns.png
 	:align: center
 
 	Instruction DAG representation
@@ -426,8 +436,8 @@ following machine code,
 .. literalinclude:: ../code_fragment/backendstructure/19.txt
 
 
-Add Cpu0DAGToDAGISel class
---------------------------
+Step 4. Add Cpu0DAGToDAGISel
+----------------------------
 
 The IR DAG to machine instruction DAG transformation is introduced in the 
 previous section. 
@@ -458,11 +468,12 @@ message for 3/4 as follows,
 .. literalinclude:: ../terminal_io/backendstructure/4.txt
 
 
-Add Prologue/Epilogue functions
--------------------------------
+Step 5. Add Prologue/Epilogue
+-----------------------------
 
-Following came from tricore_llvm.pdf section “4.4.2 Non-static Register 
-Information ”.
+Following came from
+"Design and Implementation of a TriCore Backend for the LLVM Compiler Framework"
+[#]_ section 4.4.2.
 
 For some target architectures, some aspects of the target architecture’s 
 register set are dependent upon variable factors and have to be determined at 
@@ -551,7 +562,7 @@ as 123.
 
 
 
-.. [#] http://llvm.org/docs/WritingAnLLVMBackend.html#TargetMachine
+.. [#] http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine
 
 .. [#] http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration
 
@@ -560,5 +571,9 @@ as 123.
 .. [#] http://llvm.org/docs/CodeGenerator.html
 
 .. [#] http://llvm.org/docs/LangRef.html
+
+.. [#] http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf
+
+.. [#] http://en.wikipedia.org/wiki/Instruction_selection
 
 .. [#] http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf
