@@ -20,7 +20,7 @@ Anoushe Jamshidi
 Revision history
 ----------------
 
-Version 3.2.1, Released Not yet
+Version 3.2.1, Released January 7, 2013
 	Add Footnote for references.
 	Reorganize chapters.
 Version 3.2.0, Released January 1, 2013
