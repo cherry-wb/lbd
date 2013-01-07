@@ -223,47 +223,15 @@ information, frame/stack ...etc. The Cpu0TargetMachine contents as follows,</p>
 <span class="cp">#endif</span>
 </pre></div>
 </div>
-<div class="figure align-center" id="backendstructure-f1">
-<img alt="_images/17.png" src="_images/17.png" />
-<p class="caption">Figure 5: TargetMachine class diagram 1</p>
-</div>
-<p>The inheritance tree of class <tt class="docutils literal"><span class="pre">Cpu0TargetMachine</span></tt> and its data members are shown above.</p>
-<p><a class="reference internal" href="#backendstructure-f1"><em>TargetMachine class diagram 1</em></a> shows Cpu0TargetMachine inherit tree and it&#8217;s
-Cpu0InstrInfo class inherit tree.
-Cpu0TargetMachine contains Cpu0InstrInfo and ... other class.
-Cpu0InstrInfo contains Cpu0RegisterInfo class, RI. Cpu0InstrInfo.td and
-Cpu0RegisterInfo.td will generate Cpu0GenInstrInfo.inc and
-Cpu0GenRegisterInfo.inc which contain some member functions implementation for
-class Cpu0InstrInfo and Cpu0RegisterInfo.</p>
-<p><a class="reference internal" href="#backendstructure-f2"><em>TargetMachine class diagram 2</em></a> as below shows Cpu0TargetMachine contains class
-TSInfo: Cpu0SelectionDAGInfo, FrameLowering: Cpu0FrameLowering, Subtarget:
-Cpu0Subtarget and TLInfo: Cpu0TargetLowering.</p>
-<div class="figure align-center" id="backendstructure-f2">
-<img alt="_images/21.png" src="_images/21.png" />
-<p class="caption">Figure 6: TargetMachine class diagram 2</p>
-</div>
-<div class="figure align-center" id="backendstructure-f3">
-<img alt="_images/31.png" src="_images/31.png" />
-<p class="caption">Figure 7: TargetMachine members and operators</p>
-</div>
-<p><a class="reference internal" href="#backendstructure-f3"><em>TargetMachine members and operators</em></a> shows some members and operators (member function)
-of the parent class TargetMachine&#8217;s.
-<a class="reference internal" href="#backendstructure-f4"><em>Other class members and operators</em></a> as below shows some members of class InstrInfo,
-RegisterInfo and TargetLowering.
-Class DAGInfo is skipped here.</p>
-<div class="figure align-center" id="backendstructure-f4">
-<img alt="_images/41.png" src="_images/41.png" />
-<p class="caption">Figure 8: Other class members and operators</p>
-</div>
-<p>Benefit from the inherit tree structure, we just need to implement few code in
-instruction, frame/stack, select DAG class.
-Many code implemented by their parent class.
-The llvm-tblgen generate Cpu0GenInstrInfo.inc from Cpu0InstrInfo.td.
-Cpu0InstrInfo.h extract those code it need from Cpu0GenInstrInfo.inc by define
-“#define GET_INSTRINFO_HEADER”.
-Following is the code fragment from Cpu0GenInstrInfo.inc.
-Code between “#if def  GET_INSTRINFO_HEADER” and “#endif // GET_INSTRINFO_HEADER”
-will be extracted by Cpu0InstrInfo.h.</p>
+<p>Due to the OO design of LLVM, most member functions are already implemented by
+base classes. We only need to override some member functions for our target machine.</p>
+<p>After writing up our target description files, <tt class="docutils literal"><span class="pre">llvm-tblgen</span></tt> generates C++ files
+included by others. Take <tt class="docutils literal"><span class="pre">Cpu0InstrInfo.td</span></tt> as an example, <tt class="docutils literal"><span class="pre">llvm-tblgen</span></tt> generates
+<tt class="docutils literal"><span class="pre">Cpu0GenInstrInfo.inc</span></tt> from <tt class="docutils literal"><span class="pre">Cpu0InstrInfo.td</span></tt>. Then <tt class="docutils literal"><span class="pre">Cpu0InstrInfo.h</span></tt> defines
+<tt class="docutils literal"><span class="pre">GET_INSTRINFO_HEADER</span></tt> marco so that it can get code it needs from <tt class="docutils literal"><span class="pre">Cpu0GenInstrInfo.inc</span></tt>
+Below is the code fragment from Cpu0GenInstrInfo.inc.</p>
+<p>Code between <tt class="docutils literal"><span class="pre">#if</span> <span class="pre">def</span>&nbsp; <span class="pre">GET_INSTRINFO_HEADER</span></tt> and <tt class="docutils literal"><span class="pre">#endif</span> <span class="pre">//</span> <span class="pre">GET_INSTRINFO_HEADER</span></tt>
+will be extracted by <tt class="docutils literal"><span class="pre">Cpu0InstrInfo.h.</span></tt></p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">//- Cpu0GenInstInfo.inc which generate from Cpu0InstrInfo.td </span>
 <span class="cp">#ifdef GET_INSTRINFO_HEADER </span>
 <span class="cp">#undef GET_INSTRINFO_HEADER </span>
@@ -275,7 +243,12 @@ will be extracted by Cpu0InstrInfo.h.</p>
 <span class="cp">#endif </span><span class="c1">// GET_INSTRINFO_HEADER </span>
 </pre></div>
 </div>
-<p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id9" id="id2">[1]</a>.</p>
+<p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id11" id="id2">[1]</a>.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>cp -rf <span class="nv">$Example_SRC</span>/3/1/Cpu0 lib/Target
+</pre></div>
+</div>
+</div></blockquote>
 <p>Now, the code in 3/1/Cpu0 add class Cpu0TargetMachine(Cpu0TargetMachine.h and
 cpp), Cpu0Subtarget (Cpu0Subtarget.h and .cpp), Cpu0InstrInfo (Cpu0InstrInfo.h
 and .cpp), Cpu0FrameLowering (Cpu0FrameLowering.h and .cpp), Cpu0TargetLowering
@@ -308,7 +281,7 @@ Command as follows,</p>
 </div>
 <div class="section" id="step-2-add-registerinfo">
 <h2>Step 2. Add RegisterInfo<a class="headerlink" href="#step-2-add-registerinfo" title="Permalink to this headline">¶</a></h2>
-<p>As depicted in <a class="reference internal" href="#backendstructure-f1"><em>TargetMachine class diagram 1</em></a>, the Cpu0InstrInfo class should
+<p>As depicted in <em class="xref std std-ref">backendstructure_f1</em>, the Cpu0InstrInfo class should
 contains Cpu0RegisterInfo.
 So 3/2/Cpu0 add Cpu0RegisterInfo class (Cpu0RegisterInfo.h,
 Cpu0RegisterInfo.cpp), and Cpu0RegisterInfo class in files Cpu0InstrInfo.h,
@@ -474,7 +447,7 @@ follows,</p>
 </pre></div>
 </div>
 <p>Now, it&#8217;s time to work with AsmPrinter. According section
-&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id10" id="id3">[2]</a>, we can register our AsmPrinter when we need it
+&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id12" id="id3">[2]</a>, we can register our AsmPrinter when we need it
 as follows,</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0AsmPrinter.cpp</span>
 <span class="c1">// Force static initialization.</span>
@@ -510,9 +483,9 @@ bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s
 rt generation of this file type! 
 </pre>
 </div>
-<p>The llc fails to compile IR code into machine code since we didn&#8217;t implement
-class Cpu0DAGToDAGISel. Before the implementation, we will introduce the LLVM
-Code Generation Sequence, DAG, and LLVM instruction selection in next 3
+<p><tt class="docutils literal"><span class="pre">llc</span></tt> fails to compile LLVM IR into target machine code since we don&#8217;t
+implement class <tt class="docutils literal"><span class="pre">Cpu0DAGToDAGISel</span></tt> yet. Before moving on, we will introduce
+LLVM code generation sequence, DAG, and instruction selection in next three
 sections.</p>
 </div>
 <div class="section" id="llvm-code-generation-sequence">
@@ -520,9 +493,9 @@ sections.</p>
 <p>Following diagram came from tricore_llvm.pdf.</p>
 <div class="figure align-center" id="backendstructure-f5">
 <img alt="_images/51.png" src="_images/51.png" />
-<p class="caption">Figure 9: tricore_llvm.pdf: Code generation sequence. On the path from LLVM code to assembly code, numerous passes are run through and several data structures are used to represent the intermediate results.</p>
+<p class="caption">Figure 5: tricore_llvm.pdf: Code generation sequence. On the path from LLVM code to assembly code, numerous passes are run through and several data structures are used to represent the intermediate results.</p>
 </div>
-<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id11" id="id4">[3]</a> based representation.
+<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id13" id="id4">[3]</a> based representation.
 LLVM provides infinite virtual registers which can hold value of primitive
 type (integral, floating point, or pointer).
 So, every operand can save in different virtual register in LLVM SSA
@@ -540,15 +513,15 @@ Comment is prefixed with <tt class="docutils literal"><span class="pre">;</span>
 </div>
 <p>We explain the code generation process as below.
 If you don&#8217;t feel comfortable, please check tricore_llvm.pdf section 4.2 first.
-You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id12" id="id5">[4]</a>
-and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id13" id="id6">[5]</a>
+You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id14" id="id5">[4]</a>
+and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id15" id="id6">[5]</a>
 before go ahead, but we think read section
 4.2 of tricore_llvm.pdf is enough.
 We suggest you read the web site documents as above only when you are still not
 quite understand, even though you have read this section and next 2 sections
 article for DAG and Instruction Selection.</p>
 <p>&#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
-<a class="footnote-reference" href="#id14" id="id7">[6]</a> section 4.2.</p>
+<a class="footnote-reference" href="#id16" id="id7">[6]</a> section 4.2.</p>
 <ol class="arabic">
 <li><p class="first">Instruction Selection</p>
 <blockquote>
@@ -645,7 +618,7 @@ block into DAG. For example, the basic block code and it&#8217;s corresponding D
 <a class="reference internal" href="#backendstructure-f6"><em>DAG example</em></a>.</p>
 <div class="figure align-center" id="backendstructure-f6">
 <img alt="_images/61.png" src="_images/61.png" />
-<p class="caption">Figure 10: DAG example</p>
+<p class="caption">Figure 6: DAG example</p>
 </div>
 <p>If b is not live on exit from the block, then we can do common expression
 remove to get the following code.</p>
@@ -663,20 +636,22 @@ For example, (+ b, c), (+ b, 1) is IR DAG representation.</p>
 </div>
 <div class="section" id="id8">
 <h2>Instruction Selection<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<p>In back end, we need to translate IR code into machine code at Instruction
-Selection Process as <a class="reference internal" href="#backendstructure-f7"><em>IR and it&#8217;s corresponding machine instruction</em></a>.</p>
-<div class="figure align-center" id="backendstructure-f7">
-<img alt="_images/71.png" src="_images/71.png" />
-<p class="caption">Figure 11: IR and it&#8217;s corresponding machine instruction</p>
+<p>In the compiler backend, we need to translate compiler intermediate representation
+, i.e., IR code into machine code at instruction selection stage <a class="footnote-reference" href="#id17" id="id9">[7]</a>.</p>
+<p><a class="pageref" href="#ir-and-machine-code">figure  7</a> shows a simple example to illustrate the
+before and after instruction selection.</p>
+<div class="figure align-center" id="ir-and-machine-code">
+<img alt="_images/ir_and_machine_code.png" src="_images/ir_and_machine_code.png" />
+<p class="caption">Figure 7: IR and it&#8217;s corresponding machine instruction</p>
 </div>
 <p>For machine instruction selection, the better solution is represent IR and
 machine instruction by DAG.
-In <a class="reference internal" href="#backendstructure-f7"><em>IR and it&#8217;s corresponding machine instruction</em></a>, we skip the register leaf.
+In <a class="pageref" href="#instruction-tree-patterns">figure  8</a>, we skip the register leaf.
 The rj + rk is IR DAG representation (for symbol notation, not llvm SSA form).
 ADD is machine instruction.</p>
-<div class="figure align-center" id="backendstructure-f8">
-<img alt="_images/81.png" src="_images/81.png" />
-<p class="caption">Figure 12: Instruction DAG representation</p>
+<div class="figure align-center" id="instruction-tree-patterns">
+<img alt="_images/instruction_tree_patterns.png" src="_images/instruction_tree_patterns.png" />
+<p class="caption">Figure 8: Instruction DAG representation</p>
 </div>
 <p>The IR DAG and machine instruction DAG can also represented as list.
 For example, (+ ri, rj), (- ri, 1) are lists for IR DAG; (ADD ri, rj),
@@ -735,7 +710,7 @@ d = a – d
 %e = fmadd %a, %c, %b	// in llvm SSA IR form
 </pre>
 </div>
-<p>We can apply <a class="reference internal" href="#backendstructure-f7"><em>IR and it&#8217;s corresponding machine instruction</em></a> Instruction tree pattern to get the
+<p>We can apply <em class="xref std std-ref">backendstructure_f7</em> Instruction tree pattern to get the
 following machine code,</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="n">load</span>	<span class="n">rb</span><span class="p">,</span> <span class="n">M</span><span class="p">(</span><span class="n">sp</span><span class="o">+</span><span class="mi">8</span><span class="p">);</span> <span class="c1">// assume b allocate in sp+8, sp is stack point register</span>
 <span class="n">load</span>	<span class="n">rc</span><span class="p">,</span> <span class="n">M</span><span class="p">(</span><span class="n">sp</span><span class="o">+</span><span class="mi">16</span><span class="p">);</span>
@@ -746,8 +721,8 @@ following machine code,</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="add-cpu0dagtodagisel-class">
-<h2>Add Cpu0DAGToDAGISel class<a class="headerlink" href="#add-cpu0dagtodagisel-class" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-4-add-cpu0dagtodagisel">
+<h2>Step 4. Add Cpu0DAGToDAGISel<a class="headerlink" href="#step-4-add-cpu0dagtodagisel" title="Permalink to this headline">¶</a></h2>
 <p>The IR DAG to machine instruction DAG transformation is introduced in the
 previous section.
 Now, let&#8217;s check what IR DAG node the file ch3.bc has. List ch3.ll as follows,</p>
@@ -829,10 +804,11 @@ Aborted (core dumped)
 </pre>
 </div>
 </div>
-<div class="section" id="add-prologue-epilogue-functions">
-<h2>Add Prologue/Epilogue functions<a class="headerlink" href="#add-prologue-epilogue-functions" title="Permalink to this headline">¶</a></h2>
-<p>Following came from tricore_llvm.pdf section “4.4.2 Non-static Register
-Information ”.</p>
+<div class="section" id="step-5-add-prologue-epilogue">
+<h2>Step 5. Add Prologue/Epilogue<a class="headerlink" href="#step-5-add-prologue-epilogue" title="Permalink to this headline">¶</a></h2>
+<p>Following came from
+&#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
+<a class="footnote-reference" href="#id18" id="id10">[8]</a> section 4.4.2.</p>
 <p>For some target architectures, some aspects of the target architecture’s
 register set are dependent upon variable factors and have to be determined at
 runtime.
@@ -853,7 +829,7 @@ Among them are the following points:</p>
 <p>If the addressing mode of the affected instruction cannot handle the address because the offset is too large (the offset field has 10 bits for the BO addressing mode and 16 bits for the BOL mode), a sequence of instructions is emitted that explicitly computes the effective address. Interim results are put into an unused address register. If none is available, an already occupied address register is scavenged. For this purpose, LLVM’s framework offers a class named RegScavenger that takes care of all the details.</p>
 <div class="figure align-center" id="backendstructure-f9">
 <img alt="_images/91.png" src="_images/91.png" />
-<p class="caption">Figure 13: Addressing of a variable a located on the stack. If the stack frame has a variable size, slot must be addressed relative to the frame pointer</p>
+<p class="caption">Figure 9: Addressing of a variable a located on the stack. If the stack frame has a variable size, slot must be addressed relative to the frame pointer</p>
 </div>
 <p>We will explain the Prologue and Epilogue further by example code.
 So for the following llvm IR code, Cpu0 back end will emit the corresponding
@@ -983,40 +959,52 @@ Even the complicate X86 CPU which CISC outside and RISC inside (micro
 instruction), has only 45,000 lines with comments.
 In next chapter, we will show you that add a new instruction support is as easy
 as 123.</p>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#TargetMachine">http://llvm.org/docs/WritingAnLLVMBackend.html#TargetMachine</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine">http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id15" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id16" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id7">[6]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[7]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Instruction_selection">http://en.wikipedia.org/wiki/Instruction_selection</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id18" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[8]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -1039,8 +1027,8 @@ as 123.</p>
 <li><a class="reference internal" href="#llvm-code-generation-sequence">LLVM Code Generation Sequence</a></li>
 <li><a class="reference internal" href="#dag-directed-acyclic-graph">DAG (Directed Acyclic Graph)</a></li>
 <li><a class="reference internal" href="#id8">Instruction Selection</a></li>
-<li><a class="reference internal" href="#add-cpu0dagtodagisel-class">Add Cpu0DAGToDAGISel class</a></li>
-<li><a class="reference internal" href="#add-prologue-epilogue-functions">Add Prologue/Epilogue functions</a></li>
+<li><a class="reference internal" href="#step-4-add-cpu0dagtodagisel">Step 4. Add Cpu0DAGToDAGISel</a></li>
+<li><a class="reference internal" href="#step-5-add-prologue-epilogue">Step 5. Add Prologue/Epilogue</a></li>
 <li><a class="reference internal" href="#summary-of-this-chapter">Summary of this Chapter</a></li>
 </ul>
 </li>

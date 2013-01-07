@@ -88,7 +88,7 @@ registers reserved for function call. For example, Mips pass the first 4
 arguments in register $a0, $a1, $a2, $a3, and the other arguments in stack
 if it over 4 arguments. <a class="reference internal" href="#funccall-f1"><em>Mips stack frame</em></a> is the Mips stack frame.</p>
 <div class="figure align-center" id="funccall-f1">
-<a class="reference internal image-reference" href="_images/19.png"><img alt="_images/19.png" src="_images/19.png" style="width: 688.0px; height: 531.0px;" /></a>
+<a class="reference internal image-reference" href="_images/18.png"><img alt="_images/18.png" src="_images/18.png" style="width: 688.0px; height: 531.0px;" /></a>
 <p class="caption">Figure 1: Mips stack frame</p>
 </div>
 <p>Run llc with -march=mips for ch7_1.bc, you will get the following result.</p>
@@ -205,7 +205,7 @@ It load argument 5 from 48($sp) in sum_i() since the argument 5 is saved to
 The stack size of sum_i() is 32, so 16+32($sp) is the location of incoming
 argument 5.</p>
 <div class="figure align-center" id="funccall-f2">
-<a class="reference internal image-reference" href="_images/22.png"><img alt="_images/22.png" src="_images/22.png" style="width: 740.0px; height: 577.0px;" /></a>
+<a class="reference internal image-reference" href="_images/21.png"><img alt="_images/21.png" src="_images/21.png" style="width: 740.0px; height: 577.0px;" /></a>
 <p class="caption">Figure 2: Mips arguments location in stack frame</p>
 </div>
 <p>The 007-2418-003.pdf in <a class="footnote-reference" href="#id11" id="id2">[2]</a> is the Mips assembly language manual.
@@ -1146,7 +1146,7 @@ language books. The outgoing arguments is the actual arguments.
 Summary callee incoming arguments and caller outgoing arguments as
 <a class="reference internal" href="#funccall-t1"><em>Callee incoming arguments and caller outgoing arguments</em></a>.</p>
 <div class="figure align-center" id="funccall-t1">
-<a class="reference internal image-reference" href="_images/110.png"><img alt="_images/110.png" src="_images/110.png" style="width: 697.0px; height: 156.0px;" /></a>
+<a class="reference internal image-reference" href="_images/19.png"><img alt="_images/19.png" src="_images/19.png" style="width: 697.0px; height: 156.0px;" /></a>
 <p class="caption">Figure 3: Callee incoming arguments and caller outgoing arguments</p>
 </div>
 </div>

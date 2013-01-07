@@ -82,6 +82,12 @@ If you are using IDE, please see :ref:`appendix` for more information.
 Install cpu0 debug build on Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#. Download the example code.
+
+    .. code-block:: bash
+
+     $ git clone git://github.com/azru0512/lbd-example.git example
+
 #. Make a new directory.
 
     .. code-block:: bash
@@ -93,7 +99,7 @@ Install cpu0 debug build on Linux
 
     .. code-block:: bash
 
-     $ cp -rf $Example_SRC/src_files_modify/src/* .
+     $ cp -rf $Example_SRC/top-level/* .
 
 #. Update subdirecotry ``lib/Target``.
 
