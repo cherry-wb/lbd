@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.0',
+        VERSION:     '3.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -68,7 +68,7 @@ the Mips backend. In this chapter, we will focus on the relationship between cla
 involved in writing a LLVM backend. Once knowing the overall structure, you can
 quickly create a simple backend from scratch.</p>
 <div class="section" id="overview">
-<span id="testing"></span><h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>首先介紹編譯的基本知識，編譯流程可以簡化成 <a class="pageref" href="#compilation-pipeline">figure  1</a> 。
 源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
 產生目標平台語言。<a class="pageref" href="#compilation-flow">figure  2</a> 展示了更進一步的編譯流程。</p>
@@ -133,7 +133,7 @@ You should define a <tt class="docutils literal"><span class="pre">XXTargetMachi
 where XX is your target name. In our tutorial we name it as <tt class="docutils literal"><span class="pre">Cpu0TargetMachine</span></tt>.
 Class Cpu0TargetMachine has data members which define target layout, instruction
 information, frame/stack ...etc. The Cpu0TargetMachine contents as follows,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//===-- Cpu0TargetMachine.h - Define TargetMachine for Cpu0 -----*- C++ -*-===//</span>
+<div class="highlight-c++" id="cpu0-target-machine"><div class="highlight"><pre><span class="c1">//===-- Cpu0TargetMachine.h - Define TargetMachine for Cpu0 -----*- C++ -*-===//</span>
 <span class="c1">//</span>
 <span class="c1">//                     The LLVM Compiler Infrastructure</span>
 <span class="c1">//</span>
@@ -240,7 +240,20 @@ will be extracted by <tt class="docutils literal"><span class="pre">Cpu0InstrInf
   <span class="k">explicit</span> <span class="n">Cpu0GenInstrInfo</span><span class="p">(</span><span class="kt">int</span> <span class="n">SO</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">DO</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span> 
 <span class="p">};</span> 
 <span class="p">}</span> <span class="c1">// End llvm namespace </span>
-<span class="cp">#endif </span><span class="c1">// GET_INSTRINFO_HEADER </span>
+<span class="cp">#endif </span><span class="c1">// GET_INSTRINFO_HEADER</span>
+
+<span class="c1">//- Cpu0InstrInfo.h extracts above code by defining GET_INSTRINFO_HEADER</span>
+<span class="cp">#define GET_INSTRINFO_HEADER</span>
+<span class="cp">#include &quot;Cpu0GenInstrInfo.inc&quot;</span>
+
+<span class="k">namespace</span> <span class="n">llvm</span> <span class="p">{</span>
+
+<span class="k">class</span> <span class="nc">Cpu0InstrInfo</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Cpu0GenInstrInfo</span> <span class="p">{</span>
+  <span class="n">Cpu0TargetMachine</span> <span class="o">&amp;</span><span class="n">TM</span><span class="p">;</span>
+  <span class="k">public</span><span class="o">:</span>
+    <span class="k">explicit</span> <span class="n">Cpu0InstrInfo</span><span class="p">(</span><span class="n">Cpu0TargetMachine</span> <span class="o">&amp;</span><span class="n">TM</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id11" id="id2">[1]</a>.</p>
@@ -249,12 +262,16 @@ will be extracted by <tt class="docutils literal"><span class="pre">Cpu0InstrInf
 </pre></div>
 </div>
 </div></blockquote>
-<p>Now, the code in 3/1/Cpu0 add class Cpu0TargetMachine(Cpu0TargetMachine.h and
-cpp), Cpu0Subtarget (Cpu0Subtarget.h and .cpp), Cpu0InstrInfo (Cpu0InstrInfo.h
-and .cpp), Cpu0FrameLowering (Cpu0FrameLowering.h and .cpp), Cpu0TargetLowering
-(Cpu0ISelLowering.h and .cpp) and Cpu0SelectionDAGInfo ( Cpu0SelectionDAGInfo.h
-and .cpp).
-CMakeLists.txt  modified with those new added *.cpp as follows,</p>
+<p>We add the following files in this section, and we have to modify CMakefile.txt
+to include thhose new added C++ files.</p>
+<ol class="arabic simple">
+<li>Cpu0TargetMachine.[h,cpp]</li>
+<li>Cpu0Subtarget.[h,cpp]</li>
+<li>Cpu0InstrInfo.[h,cpp]</li>
+<li>Cpu0FrameLowering.[h,cpp]</li>
+<li>Cpu0TargetLowering.[h,cpp]</li>
+<li>Cpu0SelectionDAGInfo.[h,cpp]</li>
+</ol>
 <div class="highlight-c++"><div class="highlight"><pre><span class="cp"># CMakeLists.txt </span>
 <span class="p">...</span>
 <span class="n">add_llvm_target</span><span class="p">(</span><span class="n">Cpu0CodeGen</span> 
@@ -267,42 +284,49 @@ CMakeLists.txt  modified with those new added *.cpp as follows,</p>
   <span class="p">)</span>
 </pre></div>
 </div>
-<p>Please take a look for 3/1 code.
-After that, building 3/1 by make as chapter 2 (of course, you should remove old
-Target/Cpu0 and replace with 3/1/Cpu0).
-You can remove lib/Target/Cpu0/*.inc before do “make” to ensure your code
-rebuild completely.
-By remove *.inc, all files those have included .inc will be rebuild, then your
-Target library will regenerate.
-Command as follows,</p>
-<div class="highlight-c++"><pre>[Gamma@localhost cmake_debug_build]$ rm -rf lib/Target/Cpu0/* 
-</pre>
+<p>Please follow commands below to build example code for this section.</p>
+<ol class="arabic">
+<li><p class="first">Prepare the source code.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>cpu0
+<span class="nv">$ </span>mkdir -p 3/1/src; <span class="nb">cd </span>3/1/src
+<span class="nv">$ </span>cp -rf ../../../2/src/* .
+<span class="nv">$ </span>cp -rf <span class="nv">$Example_SRC</span>/3/1/Cpu0/ lib/Target/
+</pre></div>
 </div>
+</div></blockquote>
+</li>
+<li><p class="first">Build</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>mkdir debug; <span class="nb">cd </span>debug
+<span class="nv">$ </span>cmake -DCMAKE_CXX_COMPILER<span class="o">=</span>clang++ -DCMAKE_C_COMPILER<span class="o">=</span>clang <span class="se">\</span>
+  -DLLVM_TARGETS_TO_BUILD<span class="o">=</span><span class="s2">&quot;Mips;Cpu0&quot;</span> <span class="se">\</span>
+  -DCMAKE_BUILD_TYPE<span class="o">=</span>Debug -G <span class="s2">&quot;Unix Makefiles&quot;</span> ../src/
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
 </div>
 <div class="section" id="step-2-add-registerinfo">
 <h2>Step 2. Add RegisterInfo<a class="headerlink" href="#step-2-add-registerinfo" title="Permalink to this headline">¶</a></h2>
-<p>As depicted in <em class="xref std std-ref">backendstructure_f1</em>, the Cpu0InstrInfo class should
-contains Cpu0RegisterInfo.
-So 3/2/Cpu0 add Cpu0RegisterInfo class (Cpu0RegisterInfo.h,
-Cpu0RegisterInfo.cpp), and Cpu0RegisterInfo class in files Cpu0InstrInfo.h,
-Cpu0InstrInfo.cpp, Cpu0TargetMachine.h, and modify CMakeLists.txt as follows,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0InstrInfo.h</span>
+<p>class <cite>Cpu0InstrInfo</cite> has a data member of class <cite>Cpu0RegisterInfo</cite>.
+This section adds class <cite>Cpu0RegisterInfo</cite>, then includes it in <cite>Cpu0InstrInfo.h</cite>
+and <cite>Cpu0TargetMachine.h</cite>. Finally, we modify CMakefile.txt to add our new added
+file <cite>Cpu0RegisterInfo.cpp</cite>.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//- Cpu0InstrInfo.h</span>
 <span class="k">class</span> <span class="nc">Cpu0InstrInfo</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Cpu0GenInstrInfo</span> <span class="p">{</span> 
   <span class="n">Cpu0TargetMachine</span> <span class="o">&amp;</span><span class="n">TM</span><span class="p">;</span> 
   <span class="k">const</span> <span class="n">Cpu0RegisterInfo</span> <span class="n">RI</span><span class="p">;</span> 
 <span class="k">public</span><span class="o">:</span> 
   <span class="k">explicit</span> <span class="n">Cpu0InstrInfo</span><span class="p">(</span><span class="n">Cpu0TargetMachine</span> <span class="o">&amp;</span><span class="n">TM</span><span class="p">);</span> 
 
-  <span class="c1">/// getRegisterInfo - TargetInstrInfo is a superset of MRegister info.  As </span>
-  <span class="c1">/// such, whenever a client has an instance of instruction info, it should </span>
-  <span class="c1">/// always be able to get register info as well (through this method). </span>
-  <span class="c1">/// </span>
   <span class="k">virtual</span> <span class="k">const</span> <span class="n">Cpu0RegisterInfo</span> <span class="o">&amp;</span><span class="n">getRegisterInfo</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span> 
 
 <span class="k">public</span><span class="o">:</span> 
 <span class="p">};</span>
 
-<span class="c1">// Cpu0InstrInfo.cpp</span>
+<span class="c1">//- Cpu0InstrInfo.cpp</span>
 <span class="n">Cpu0InstrInfo</span><span class="o">::</span><span class="n">Cpu0InstrInfo</span><span class="p">(</span><span class="n">Cpu0TargetMachine</span> <span class="o">&amp;</span><span class="n">tm</span><span class="p">)</span> 
   <span class="o">:</span> 
     <span class="n">TM</span><span class="p">(</span><span class="n">tm</span><span class="p">),</span> 
@@ -327,37 +351,59 @@ Cpu0InstrInfo.cpp, Cpu0TargetMachine.h, and modify CMakeLists.txt as follows,</p
 </pre></div>
 </div>
 <p>Now, let&#8217;s replace 3/1/Cpu0 with 3/2/Cpu0 of adding register class definition
-and rebuild.
-After that, let&#8217;s try to run the llc compile command to see what happen,</p>
-<div class="highlight-c++"><pre>[Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s 
-llc: /usr/local/llvm/3.1.test/cpu0/1/src/lib/CodeGen/LLVMTargetMachine.cpp:78: l
-lvm::LLVMTargetMachine::LLVMTargetMachine(const llvm::Target &amp;, llvm::StringRef,
- llvm::StringRef, llvm::StringRef, llvm::TargetOptions, Reloc::Model, CodeModel:
- :Model, CodeGenOpt::Level): Assertion `AsmInfo &amp;&amp; "MCAsmInfo not initialized." 
- "Make sure you include the correct TargetSelect.h" "and that InitializeAllTarge
- tMCs() is being invoked!"' failed. 
-Stack dump: 
-0.	Program arguments: /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc
- -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s 
-Aborted (core dumped) 
-</pre>
+and rebuild.</p>
+<ol class="arabic">
+<li><p class="first">Prepare the source code.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>cpu0/3
+<span class="nv">$ </span>mkdir -p 2/src; <span class="nb">cd </span>2/src
+<span class="nv">$ </span>cp -rf ../../1/src/* .
+<span class="nv">$ </span>cp -rf <span class="nv">$Example_SRC</span>/3/2/Cpu0/ lib/Target/
+</pre></div>
 </div>
-<p>The errors say that we have not Target AsmPrinter.
-Let&#8217;s add it in next section.</p>
+</div></blockquote>
+</li>
+<li><p class="first">Build</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>mkdir debug; <span class="nb">cd </span>debug
+<span class="nv">$ </span>cmake -DCMAKE_CXX_COMPILER<span class="o">=</span>clang++ -DCMAKE_C_COMPILER<span class="o">=</span>clang <span class="se">\</span>
+  -DLLVM_TARGETS_TO_BUILD<span class="o">=</span><span class="s2">&quot;Mips;Cpu0&quot;</span> <span class="se">\</span>
+  -DCMAKE_BUILD_TYPE<span class="o">=</span>Debug -G <span class="s2">&quot;Unix Makefiles&quot;</span> ../src/
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>Now, let&#8217;s run <tt class="docutils literal"><span class="pre">llc</span></tt> to compile a LLVM bitcode to see what happen.</p>
+<ol class="arabic">
+<li><p class="first">Prepare LLVM bitcode.</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>clang -c example/input/ch3.cpp -emit-llvm -o ch3.bc
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Compile</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>llc -march<span class="o">=</span>cpu0 -relocation-model<span class="o">=</span>pic -filetype<span class="o">=</span>asm ch3.bc -o ch3.cpu0.s
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<div class="highlight-bash"><pre>llc: /cpu0/3/2/src/lib/CodeGen/LLVMTargetMachine.cpp:78: llvm::LLVMTargetMachine::LLVMTargetMachine(const llvm::Target &amp;, llvm::StringRef, llvm::StringRef, llvm::StringRef, llvm::TargetOptions, Reloc::Model, CodeModel::Model, CodeGenOpt::Level): Assertion `AsmInfo &amp;&amp; "MCAsmInfo not initialized." "Make sure you include the correct TargetSelect.h" "and that InitializeAllTargetMCs() is being invoked!"' failed.
+Stack dump:
+0.      Program arguments: ./bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s
+Aborted</pre>
+</div>
+<p>Look into the assertion in above error message, it tell us that we don&#8217;t have
+a ASMPrinter for our target to print assembly. We will add it in next section.</p>
 </div>
 <div class="section" id="step-3-add-asmprinter">
 <h2>Step 3. Add AsmPrinter<a class="headerlink" href="#step-3-add-asmprinter" title="Permalink to this headline">¶</a></h2>
-<p>3/3/cpu0 contains the Cpu0AsmPrinter definition. First, we add definitions in
-Cpu0.td to support AssemblyWriter.
-Cpu0.td is added with the following fragment,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0.td</span>
-<span class="c1">//...</span>
-<span class="c1">//===----------------------------------------------------------------------===//</span>
-<span class="c1">// Cpu0 processors supported. </span>
-<span class="c1">//===----------------------------------------------------------------------===//</span>
-
-<span class="k">class</span> <span class="nc">Proc</span><span class="o">&lt;</span><span class="n">string</span> <span class="n">Name</span><span class="p">,</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">SubtargetFeature</span><span class="o">&gt;</span> <span class="n">Features</span><span class="o">&gt;</span> 
+<p>First, wee modify <tt class="docutils literal"><span class="pre">Cpu0.td</span></tt> to add support for ASMPrinter. LLVM now has a newer
+ASMPrinter called MCAsmWriter, we explictly say we will support MCAsmWriter.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Proc</span><span class="o">&lt;</span><span class="n">string</span> <span class="n">Name</span><span class="p">,</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">SubtargetFeature</span><span class="o">&gt;</span> <span class="n">Features</span><span class="o">&gt;</span> 
  <span class="o">:</span> <span class="n">Processor</span><span class="o">&lt;</span><span class="n">Name</span><span class="p">,</span> <span class="n">Cpu0GenericItineraries</span><span class="p">,</span> <span class="n">Features</span><span class="o">&gt;</span><span class="p">;</span> 
 
 <span class="n">def</span> <span class="o">:</span> <span class="n">Proc</span><span class="o">&lt;</span><span class="s">&quot;cpu032&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">FeatureCpu032</span><span class="p">]</span><span class="o">&gt;</span><span class="p">;</span> 
@@ -367,29 +413,19 @@ Cpu0.td is added with the following fragment,</p>
   <span class="n">bit</span> <span class="n">isMCAsmWriter</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> 
 <span class="p">}</span> 
 
-<span class="c1">// Will generate Cpu0GenAsmWrite.inc included by Cpu0InstPrinter.cpp, contents</span>
-<span class="c1">//  as follows, </span>
-<span class="c1">// void Cpu0InstPrinter::printInstruction(const MCInst *MI, raw_ostream &amp;O) </span>
-<span class="c1">//  {...}</span>
-<span class="c1">// const char *Cpu0InstPrinter::getRegisterName(unsigned RegNo) {...} </span>
 <span class="n">def</span> <span class="n">Cpu0</span> <span class="o">:</span> <span class="n">Target</span> <span class="p">{</span> 
-<span class="c1">// def Cpu0InstrInfo : InstrInfo as before. </span>
   <span class="n">let</span> <span class="n">InstructionSet</span> <span class="o">=</span> <span class="n">Cpu0InstrInfo</span><span class="p">;</span> 
   <span class="n">let</span> <span class="n">AssemblyWriters</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cpu0AsmWriter</span><span class="p">];</span> 
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>As comments indicate, it will generate Cpu0GenAsmWrite.inc which is included
-by Cpu0InstPrinter.cpp.
-Cpu0GenAsmWrite.inc has the implementation of
-Cpu0InstPrinter::printInstruction() and Cpu0InstPrinter::getRegisterName().
-Both of these functions can be auto-generated from the information we defined
-in Cpu0InstrInfo.td and Cpu0RegisterInfo.td.
-To let these two functions work in our code, the only thing need to do is add a
-class Cpu0InstPrinter and include them.</p>
-<p>File 3/3/Cpu0/InstPrinter/Cpu0InstPrinter.cpp include Cpu0GenAsmWrite.inc and
-call the auto-generated functions as follows,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//  Cpu0InstPrinter.cpp</span>
+<p><tt class="docutils literal"><span class="pre">llvm-tblgen</span></tt> will generate <tt class="docutils literal"><span class="pre">Cpu0GenAsmWrite.inc</span></tt> included by <tt class="docutils literal"><span class="pre">Cpu0InstPrinter.cpp</span></tt>
+which will be added soon. <tt class="docutils literal"><span class="pre">Cpu0GenAsmWrite.inc</span></tt> implements two member functions:
+<tt class="docutils literal"><span class="pre">printInstruction</span></tt> and <tt class="docutils literal"><span class="pre">getRegisterName</span></tt> for class <tt class="docutils literal"><span class="pre">Cpu0InstPrinter</span></tt>.
+Both of them are auto-generated from target description files we added before,
+i.e., <tt class="docutils literal"><span class="pre">Cpu0InstrInfo.td</span></tt> and <tt class="docutils literal"><span class="pre">Cpu0RegisterInfo.td</span></tt>. The last thing we have to
+do is adding class <tt class="docutils literal"><span class="pre">Cpu0InstPrinter</span></tt>, then include <tt class="docutils literal"><span class="pre">Cpu0GenAsmWrite.inc</span></tt> in it.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//-  Cpu0InstPrinter.cpp</span>
 <span class="cp">#include &quot;Cpu0GenAsmWriter.inc&quot; </span>
 
 <span class="kt">void</span> <span class="n">Cpu0InstPrinter</span><span class="o">::</span><span class="n">printRegName</span><span class="p">(</span><span class="n">raw_ostream</span> <span class="o">&amp;</span><span class="n">OS</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">RegNo</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> 
@@ -407,13 +443,16 @@ call the auto-generated functions as follows,</p>
 <span class="p">}</span> 
 </pre></div>
 </div>
-<p>Next, add Cpu0AsmPrinter (Cpu0AsmPrinter.h, Cpu0AsmPrinter.cpp),
-Cpu0MCInstLower (Cpu0MCInstLower.h, Cpu0MCInstLower.cpp), Cpu0BaseInfo.h,
-Cpu0FixupKinds.h and Cpu0MCAsmInfo (Cpu0MCAsmInfo.h, Cpu0MCAsmInfo.cpp) in
-sub-directory MCTargetDesc.</p>
-<p>Finally, add code in Cpu0MCTargetDesc.cpp to register Cpu0InstPrinter as
-follows,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//  Cpu0MCTargetDesc.cpp</span>
+<p>Next, add files below into new subdirectory <tt class="docutils literal"><span class="pre">MCTargetDesc</span></tt>.</p>
+<ol class="arabic simple">
+<li>Cpu0AsmPrinter.[h,cpp]</li>
+<li>Cpu0MCInstLower.[h,cpp]</li>
+<li>Cpu0BaseInfo.[h,cpp]</li>
+<li>Cpu0FixupKinds.[h,cpp]</li>
+<li>Cpu0MCAsmInfo.[h,cpp]</li>
+</ol>
+<p>We register our target MCAsmInfo and InstPrinter in <tt class="docutils literal"><span class="pre">Cpu0MCTargetDesc.cpp</span></tt>.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//-  Cpu0MCTargetDesc.cpp</span>
 <span class="k">static</span> <span class="n">MCAsmInfo</span> <span class="o">*</span><span class="n">createCpu0MCAsmInfo</span><span class="p">(</span><span class="k">const</span> <span class="n">Target</span> <span class="o">&amp;</span><span class="n">T</span><span class="p">,</span> <span class="n">StringRef</span> <span class="n">TT</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">MCAsmInfo</span> <span class="o">*</span><span class="n">MAI</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Cpu0MCAsmInfo</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">TT</span><span class="p">);</span>
 
@@ -446,10 +485,9 @@ follows,</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Now, it&#8217;s time to work with AsmPrinter. According section
-&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id12" id="id3">[2]</a>, we can register our AsmPrinter when we need it
-as follows,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0AsmPrinter.cpp</span>
+<p>Then we register AsmPrinter in <tt class="docutils literal"><span class="pre">Cpu0AsmPrinter.cpp</span></tt>.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//- Cpu0AsmPrinter.cpp</span>
+
 <span class="c1">// Force static initialization.</span>
 <span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">LLVMInitializeCpu0AsmPrinter</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">RegisterAsmPrinter</span><span class="o">&lt;</span><span class="n">Cpu0AsmPrinter</span><span class="o">&gt;</span> <span class="n">X</span><span class="p">(</span><span class="n">TheCpu0Target</span><span class="p">);</span>
@@ -457,11 +495,11 @@ as follows,</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The dynamic register mechanism is a good idea, right.</p>
-<p>Except add the new .cpp files to CMakeLists.txt, please remember to add
-subdirectory InstPrinter, enable asmprinter, add libraries AsmPrinter and
-Cpu0AsmPrinter to LLVMBuild.txt as follows,</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//  LLVMBuild.txt</span>
+<p>This sections adds two subdirectories: <tt class="docutils literal"><span class="pre">InstPrinter</span></tt> and <tt class="docutils literal"><span class="pre">MCTargetDesc</span></tt>.
+You have to modify top-level LLVMBuild.txt and CMakefile.txt accordingly,
+and add LLVMBuild.txt and CMakefile.txt into those subdirectories also.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//-  top-level LLVMBuild.txt</span>
+
 <span class="p">[</span><span class="n">common</span><span class="p">]</span> 
 <span class="n">subdirectories</span> <span class="o">=</span> <span class="n">InstPrinter</span> <span class="n">MCTargetDesc</span> <span class="n">TargetInfo</span> 
 
@@ -476,12 +514,11 @@ Cpu0AsmPrinter to LLVMBuild.txt as follows,</p>
 <span class="n">required_libraries</span> <span class="o">=</span> <span class="n">AsmPrinter</span> <span class="n">CodeGen</span> <span class="n">Core</span> <span class="n">MC</span> <span class="n">Cpu0AsmPrinter</span> <span class="n">Cpu0Desc</span> <span class="n">Cpu0Info</span>
 </pre></div>
 </div>
-<p>Now, run 3/3/Cpu0 for AsmPrinter support, will get error message as follows,</p>
-<div class="highlight-c++"><pre>[Gamma@localhost InputFiles]$ /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/
-bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s 
-/usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc: target does not suppo
-rt generation of this file type! 
-</pre>
+<p>O.K., let&#8217;s build example code, then run <tt class="docutils literal"><span class="pre">llc</span></tt> as before. You will see
+error below:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>./bin/llc -march<span class="o">=</span>cpu0 ../../2/debug/ch3.bc
+./bin/llc: target does not support generation of this file <span class="nb">type</span>!
+</pre></div>
 </div>
 <p><tt class="docutils literal"><span class="pre">llc</span></tt> fails to compile LLVM IR into target machine code since we don&#8217;t
 implement class <tt class="docutils literal"><span class="pre">Cpu0DAGToDAGISel</span></tt> yet. Before moving on, we will introduce
@@ -490,12 +527,16 @@ sections.</p>
 </div>
 <div class="section" id="llvm-code-generation-sequence">
 <h2>LLVM Code Generation Sequence<a class="headerlink" href="#llvm-code-generation-sequence" title="Permalink to this headline">¶</a></h2>
-<p>Following diagram came from tricore_llvm.pdf.</p>
-<div class="figure align-center" id="backendstructure-f5">
-<img alt="_images/51.png" src="_images/51.png" />
-<p class="caption">Figure 5: tricore_llvm.pdf: Code generation sequence. On the path from LLVM code to assembly code, numerous passes are run through and several data structures are used to represent the intermediate results.</p>
+<p>Following content came from
+&#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
+<a class="footnote-reference" href="#id16" id="id3">[6]</a> section 4.2 Code Generation Process.</p>
+<p><a class="pageref" href="#code-generation-sequence">figure  5</a>
+gives an overview of LLVM code generation sequence.</p>
+<div class="align-center figure" id="code-generation-sequence">
+<img alt="_images/code_generation_sequence.png" src="_images/code_generation_sequence.png" />
+<p class="caption">Figure 5: LLVM code generation sequence</p>
 </div>
-<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id13" id="id4">[3]</a> based representation.
+<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id12" id="id4">[2]</a> based representation.
 LLVM provides infinite virtual registers which can hold value of primitive
 type (integral, floating point, or pointer).
 So, every operand can save in different virtual register in LLVM SSA
@@ -513,15 +554,15 @@ Comment is prefixed with <tt class="docutils literal"><span class="pre">;</span>
 </div>
 <p>We explain the code generation process as below.
 If you don&#8217;t feel comfortable, please check tricore_llvm.pdf section 4.2 first.
-You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id14" id="id5">[4]</a>
-and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id15" id="id6">[5]</a>
+You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id13" id="id5">[3]</a>
+and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id14" id="id6">[4]</a>
 before go ahead, but we think read section
 4.2 of tricore_llvm.pdf is enough.
 We suggest you read the web site documents as above only when you are still not
 quite understand, even though you have read this section and next 2 sections
 article for DAG and Instruction Selection.</p>
 <p>&#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
-<a class="footnote-reference" href="#id16" id="id7">[6]</a> section 4.2.</p>
+<a class="footnote-reference" href="#id15" id="id7">[5]</a> section 4.2.</p>
 <ol class="arabic">
 <li><p class="first">Instruction Selection</p>
 <blockquote>
@@ -637,7 +678,7 @@ For example, (+ b, c), (+ b, 1) is IR DAG representation.</p>
 <div class="section" id="id8">
 <h2>Instruction Selection<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>In the compiler backend, we need to translate compiler intermediate representation
-, i.e., IR code into machine code at instruction selection stage <a class="footnote-reference" href="#id17" id="id9">[7]</a>.</p>
+, i.e., IR code into machine code at instruction selection stage <a class="footnote-reference" href="#id16" id="id9">[6]</a>.</p>
 <p><a class="pageref" href="#ir-and-machine-code">figure  7</a> shows a simple example to illustrate the
 before and after instruction selection.</p>
 <div class="figure align-center" id="ir-and-machine-code">
@@ -808,7 +849,7 @@ Aborted (core dumped)
 <h2>Step 5. Add Prologue/Epilogue<a class="headerlink" href="#step-5-add-prologue-epilogue" title="Permalink to this headline">¶</a></h2>
 <p>Following came from
 &#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
-<a class="footnote-reference" href="#id18" id="id10">[8]</a> section 4.4.2.</p>
+<a class="footnote-reference" href="#id16" id="id10">[6]</a> section 4.4.2.</p>
 <p>For some target architectures, some aspects of the target architecture’s
 register set are dependent upon variable factors and have to be determined at
 runtime.
@@ -947,8 +988,10 @@ instructions”.
 The point is we have created a frame work for cpu0 target machine (please
 look back the llvm back end structure class inherit tree early in this
 chapter).
-Until now, we have 3000 lines of source code with comments which include files
+Until now, we have 3027 lines of source code with comments which include files
 *.cpp, *.h, *.td, CMakeLists.txt and LLVMBuild.txt.
+It can be counted by command <tt class="docutils literal"><span class="pre">wc</span> <span class="pre">`find</span> <span class="pre">dir</span> <span class="pre">-name</span> <span class="pre">*.cpp`</span></tt> for files *.cpp,
+*.h, *.td, *.txt.
 LLVM front end tutorial have 700 lines of source code without comments totally.
 Don&#8217;t feel down with this result.
 In reality, write a back end is warm up slowly but run fast.
@@ -968,43 +1011,31 @@ as 123.</p>
 <table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[3]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id6">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id15" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[5]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[6]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id17" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9">[7]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Instruction_selection">http://en.wikipedia.org/wiki/Instruction_selection</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id18" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id10">[8]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id9">[6]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Instruction_selection">http://en.wikipedia.org/wiki/Instruction_selection</a></td></tr>
 </tbody>
 </table>
 </div>
