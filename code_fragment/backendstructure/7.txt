@@ -1,4 +1,4 @@
-//  Cpu0MCTargetDesc.cpp
+//-  Cpu0MCTargetDesc.cpp
 static MCAsmInfo *createCpu0MCAsmInfo(const Target &T, StringRef TT) {
   MCAsmInfo *MAI = new Cpu0MCAsmInfo(T, TT);
 

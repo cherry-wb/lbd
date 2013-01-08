@@ -6,4 +6,17 @@ struct Cpu0GenInstrInfo : public TargetInstrInfoImpl {
   explicit Cpu0GenInstrInfo(int SO = -1, int DO = -1); 
 }; 
 } // End llvm namespace 
-#endif // GET_INSTRINFO_HEADER 
+#endif // GET_INSTRINFO_HEADER
+
+//- Cpu0InstrInfo.h extracts above code by defining GET_INSTRINFO_HEADER
+#define GET_INSTRINFO_HEADER
+#include "Cpu0GenInstrInfo.inc"
+
+namespace llvm {
+
+class Cpu0InstrInfo : public Cpu0GenInstrInfo {
+  Cpu0TargetMachine &TM;
+  public:
+    explicit Cpu0InstrInfo(Cpu0TargetMachine &TM);
+  };
+}

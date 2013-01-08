@@ -1,4 +1,5 @@
-// Cpu0AsmPrinter.cpp
+//- Cpu0AsmPrinter.cpp
+
 // Force static initialization.
 extern "C" void LLVMInitializeCpu0AsmPrinter() {
   RegisterAsmPrinter<Cpu0AsmPrinter> X(TheCpu0Target);

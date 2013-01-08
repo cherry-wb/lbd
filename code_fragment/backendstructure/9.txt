@@ -1,4 +1,5 @@
-//  LLVMBuild.txt
+//-  top-level LLVMBuild.txt
+
 [common] 
 subdirectories = InstPrinter MCTargetDesc TargetInfo 
 

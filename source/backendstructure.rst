@@ -15,8 +15,6 @@ the Mips backend. In this chapter, we will focus on the relationship between cla
 involved in writing a LLVM backend. Once knowing the overall structure, you can
 quickly create a simple backend from scratch.
 
-.. _testing:
-
 Overview
 --------
 首先介紹編譯的基本知識，編譯流程可以簡化成 :num:`figure #compilation-pipeline` 。
@@ -99,52 +97,9 @@ where XX is your target name. In our tutorial we name it as ``Cpu0TargetMachine`
 Class Cpu0TargetMachine has data members which define target layout, instruction
 information, frame/stack ...etc. The Cpu0TargetMachine contents as follows,
 
-.. literalinclude:: ../code_fragment/backendstructure/1.txt
+.. _cpu0-target-machine:
 
-..
-  .. _backendstructure_f1: 
-  .. figure:: ../Fig/backendstructure/1.png
-  	:align: center
-  
-  	TargetMachine class diagram 1
-  
-  The inheritance tree of class ``Cpu0TargetMachine`` and its data members are shown above.
-  
-  :ref:`backendstructure_f1` shows Cpu0TargetMachine inherit tree and it's 
-  Cpu0InstrInfo class inherit tree. 
-  Cpu0TargetMachine contains Cpu0InstrInfo and ... other class. 
-  Cpu0InstrInfo contains Cpu0RegisterInfo class, RI. Cpu0InstrInfo.td and 
-  Cpu0RegisterInfo.td will generate Cpu0GenInstrInfo.inc and 
-  Cpu0GenRegisterInfo.inc which contain some member functions implementation for 
-  class Cpu0InstrInfo and Cpu0RegisterInfo.
-  
-  :ref:`backendstructure_f2` as below shows Cpu0TargetMachine contains class 
-  TSInfo: Cpu0SelectionDAGInfo, FrameLowering: Cpu0FrameLowering, Subtarget: 
-  Cpu0Subtarget and TLInfo: Cpu0TargetLowering.
-  
-  .. _backendstructure_f2:  
-  .. figure:: ../Fig/backendstructure/2.png
-  	:align: center
-  
-  	TargetMachine class diagram 2
-  
-  .. _backendstructure_f3: 
-  .. figure:: ../Fig/backendstructure/3.png
-  	:align: center
-  
-  	TargetMachine members and operators
-  
-  :ref:`backendstructure_f3` shows some members and operators (member function) 
-  of the parent class TargetMachine's. 
-  :ref:`backendstructure_f4` as below shows some members of class InstrInfo, 
-  RegisterInfo and TargetLowering. 
-  Class DAGInfo is skipped here.
-  
-  .. _backendstructure_f4: 
-  .. figure:: ../Fig/backendstructure/4.png
-  	:align: center
-  
-  	Other class members and operators
+.. literalinclude:: ../code_fragment/backendstructure/1.txt
 
 Due to the OO design of LLVM, most member functions are already implemented by
 base classes. We only need to override some member functions for our target machine.
@@ -166,97 +121,148 @@ Reference Write An LLVM Backend web site [#]_.
 
      $ cp -rf $Example_SRC/3/1/Cpu0 lib/Target
 
-Now, the code in 3/1/Cpu0 add class Cpu0TargetMachine(Cpu0TargetMachine.h and 
-cpp), Cpu0Subtarget (Cpu0Subtarget.h and .cpp), Cpu0InstrInfo (Cpu0InstrInfo.h 
-and .cpp), Cpu0FrameLowering (Cpu0FrameLowering.h and .cpp), Cpu0TargetLowering 
-(Cpu0ISelLowering.h and .cpp) and Cpu0SelectionDAGInfo ( Cpu0SelectionDAGInfo.h 
-and .cpp). 
-CMakeLists.txt  modified with those new added \*.cpp as follows,
+We add the following files in this section, and we have to modify CMakefile.txt
+to include thhose new added C++ files.
+
+#. Cpu0TargetMachine.[h,cpp]
+
+#. Cpu0Subtarget.[h,cpp]
+
+#. Cpu0InstrInfo.[h,cpp]
+
+#. Cpu0FrameLowering.[h,cpp]
+
+#. Cpu0TargetLowering.[h,cpp]
+
+#. Cpu0SelectionDAGInfo.[h,cpp]
 
 .. literalinclude:: ../code_fragment/backendstructure/3.txt
 
-Please take a look for 3/1 code. 
-After that, building 3/1 by make as chapter 2 (of course, you should remove old 
-Target/Cpu0 and replace with 3/1/Cpu0). 
-You can remove lib/Target/Cpu0/\*.inc before do “make” to ensure your code 
-rebuild completely. 
-By remove \*.inc, all files those have included .inc will be rebuild, then your 
-Target library will regenerate. 
-Command as follows,
+Please follow commands below to build example code for this section.
 
-.. literalinclude:: ../terminal_io/backendstructure/1.txt
+#. Prepare the source code.
+
+    .. code-block:: bash
+
+     $ cd cpu0
+     $ mkdir -p 3/1/src; cd 3/1/src
+     $ cp -rf ../../../2/src/* .
+     $ cp -rf $Example_SRC/3/1/Cpu0/ lib/Target/
+
+#. Build
+
+    .. code-block:: bash
+
+     $ mkdir debug; cd debug
+     $ cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
+       -DLLVM_TARGETS_TO_BUILD="Mips;Cpu0" \
+       -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" ../src/
 
 Step 2. Add RegisterInfo
 ------------------------
 
-As depicted in :ref:`backendstructure_f1`, the Cpu0InstrInfo class should 
-contains Cpu0RegisterInfo. 
-So 3/2/Cpu0 add Cpu0RegisterInfo class (Cpu0RegisterInfo.h, 
-Cpu0RegisterInfo.cpp), and Cpu0RegisterInfo class in files Cpu0InstrInfo.h, 
-Cpu0InstrInfo.cpp, Cpu0TargetMachine.h, and modify CMakeLists.txt as follows,
+class `Cpu0InstrInfo` has a data member of class `Cpu0RegisterInfo`. 
+This section adds class `Cpu0RegisterInfo`, then includes it in `Cpu0InstrInfo.h`
+and `Cpu0TargetMachine.h`. Finally, we modify CMakefile.txt to add our new added
+file `Cpu0RegisterInfo.cpp`.
 
 .. literalinclude:: ../code_fragment/backendstructure/4.txt
 
 Now, let's replace 3/1/Cpu0 with 3/2/Cpu0 of adding register class definition 
 and rebuild. 
-After that, let's try to run the ``llc`` compile command to see what happen,
 
-.. literalinclude:: ../terminal_io/backendstructure/2.txt
+#. Prepare the source code.
 
-The errors say that we have not Target AsmPrinter. 
-Let's add it in next section.
+    .. code-block:: bash
 
+     $ cd cpu0/3
+     $ mkdir -p 2/src; cd 2/src
+     $ cp -rf ../../1/src/* .
+     $ cp -rf $Example_SRC/3/2/Cpu0/ lib/Target/
+
+#. Build
+
+    .. code-block:: bash
+
+     $ mkdir debug; cd debug
+     $ cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
+       -DLLVM_TARGETS_TO_BUILD="Mips;Cpu0" \
+       -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" ../src/
+
+Now, let's run ``llc`` to compile a LLVM bitcode to see what happen.
+
+#. Prepare LLVM bitcode.
+
+    .. code-block:: bash
+
+     $ clang -c example/input/ch3.cpp -emit-llvm -o ch3.bc       
+
+#. Compile 
+
+    .. code-block:: bash
+
+     $ llc -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s
+
+.. code-block:: bash
+
+     llc: /cpu0/3/2/src/lib/CodeGen/LLVMTargetMachine.cpp:78: llvm::LLVMTargetMachine::LLVMTargetMachine(const llvm::Target &, llvm::StringRef, llvm::StringRef, llvm::StringRef, llvm::TargetOptions, Reloc::Model, CodeModel::Model, CodeGenOpt::Level): Assertion `AsmInfo && "MCAsmInfo not initialized." "Make sure you include the correct TargetSelect.h" "and that InitializeAllTargetMCs() is being invoked!"' failed.
+     Stack dump:
+     0.      Program arguments: ./bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch3.bc -o ch3.cpu0.s
+     Aborted
+
+Look into the assertion in above error message, it tell us that we don't have
+a ASMPrinter for our target to print assembly. We will add it in next section.
 
 Step 3. Add AsmPrinter
 ----------------------
 
-3/3/cpu0 contains the Cpu0AsmPrinter definition. First, we add definitions in 
-Cpu0.td to support AssemblyWriter. 
-Cpu0.td is added with the following fragment,
+First, wee modify ``Cpu0.td`` to add support for ASMPrinter. LLVM now has a newer
+ASMPrinter called MCAsmWriter, we explictly say we will support MCAsmWriter.
 
 .. literalinclude:: ../code_fragment/backendstructure/5.txt
 
-As comments indicate, it will generate Cpu0GenAsmWrite.inc which is included 
-by Cpu0InstPrinter.cpp. 
-Cpu0GenAsmWrite.inc has the implementation of 
-Cpu0InstPrinter::printInstruction() and Cpu0InstPrinter::getRegisterName(). 
-Both of these functions can be auto-generated from the information we defined 
-in Cpu0InstrInfo.td and Cpu0RegisterInfo.td. 
-To let these two functions work in our code, the only thing need to do is add a 
-class Cpu0InstPrinter and include them.
-
-File 3/3/Cpu0/InstPrinter/Cpu0InstPrinter.cpp include Cpu0GenAsmWrite.inc and 
-call the auto-generated functions as follows,
+``llvm-tblgen`` will generate ``Cpu0GenAsmWrite.inc`` included by ``Cpu0InstPrinter.cpp``
+which will be added soon. ``Cpu0GenAsmWrite.inc`` implements two member functions:
+``printInstruction`` and ``getRegisterName`` for class ``Cpu0InstPrinter``.
+Both of them are auto-generated from target description files we added before,
+i.e., ``Cpu0InstrInfo.td`` and ``Cpu0RegisterInfo.td``. The last thing we have to
+do is adding class ``Cpu0InstPrinter``, then include ``Cpu0GenAsmWrite.inc`` in it.
 
 .. literalinclude:: ../code_fragment/backendstructure/6.txt
 
-Next, add Cpu0AsmPrinter (Cpu0AsmPrinter.h, Cpu0AsmPrinter.cpp), 
-Cpu0MCInstLower (Cpu0MCInstLower.h, Cpu0MCInstLower.cpp), Cpu0BaseInfo.h, 
-Cpu0FixupKinds.h and Cpu0MCAsmInfo (Cpu0MCAsmInfo.h, Cpu0MCAsmInfo.cpp) in 
-sub-directory MCTargetDesc.
+Next, add files below into new subdirectory ``MCTargetDesc``.
 
-Finally, add code in Cpu0MCTargetDesc.cpp to register Cpu0InstPrinter as 
-follows,
+#. Cpu0AsmPrinter.[h,cpp]
+
+#. Cpu0MCInstLower.[h,cpp]
+
+#. Cpu0BaseInfo.[h,cpp]
+
+#. Cpu0FixupKinds.[h,cpp]
+
+#. Cpu0MCAsmInfo.[h,cpp]
+
+We register our target MCAsmInfo and InstPrinter in ``Cpu0MCTargetDesc.cpp``.
 
 .. literalinclude:: ../code_fragment/backendstructure/7.txt
 
-Now, it's time to work with AsmPrinter. According section 
-"section Target Registration" [#]_, we can register our AsmPrinter when we need it 
-as follows,
+Then we register AsmPrinter in ``Cpu0AsmPrinter.cpp``.
 
 .. literalinclude:: ../code_fragment/backendstructure/8.txt
 
-The dynamic register mechanism is a good idea, right.
-
-Except add the new .cpp files to CMakeLists.txt, please remember to add 
-subdirectory InstPrinter, enable asmprinter, add libraries AsmPrinter and 
-Cpu0AsmPrinter to LLVMBuild.txt as follows,
+This sections adds two subdirectories: ``InstPrinter`` and ``MCTargetDesc``.
+You have to modify top-level LLVMBuild.txt and CMakefile.txt accordingly,
+and add LLVMBuild.txt and CMakefile.txt into those subdirectories also.
 
 .. literalinclude:: ../code_fragment/backendstructure/9.txt
 
-Now, run 3/3/Cpu0 for AsmPrinter support, will get error message as follows,
+O.K., let's build example code, then run ``llc`` as before. You will see
+error below:
 
-.. literalinclude:: ../terminal_io/backendstructure/3.txt
+.. code-block:: bash
+
+   $ ./bin/llc -march=cpu0 ../../2/debug/ch3.bc
+   ./bin/llc: target does not support generation of this file type!
 
 ``llc`` fails to compile LLVM IR into target machine code since we don't
 implement class ``Cpu0DAGToDAGISel`` yet. Before moving on, we will introduce
@@ -266,13 +272,20 @@ sections.
 LLVM Code Generation Sequence
 -----------------------------
 
-Following diagram came from tricore_llvm.pdf.
+.. note::
+Following content came from
+"Design and Implementation of a TriCore Backend for the LLVM Compiler Framework"
+[6]_ section 4.2 Code Generation Process.
 
-.. _backendstructure_f5: 
-.. figure:: ../Fig/backendstructure/5.png
-	:align: center
+:num:`figure #code-generation-sequence`
+gives an overview of LLVM code generation sequence.
 
-	tricore_llvm.pdf: Code generation sequence. On the path from LLVM code to assembly code, numerous passes are run through and several data structures are used to represent the intermediate results.
+.. _code-generation-sequence:
+
+.. figure:: ../Fig/backendstructure/code_generation_sequence.png
+   :figclass: align-center
+
+   LLVM code generation sequence
 
 LLVM IR is a Static Single Assignment (SSA) [#]_ based representation. 
 LLVM provides infinite virtual registers which can hold value of primitive 
@@ -473,7 +486,7 @@ Step 5. Add Prologue/Epilogue
 
 Following came from
 "Design and Implementation of a TriCore Backend for the LLVM Compiler Framework"
-[#]_ section 4.4.2.
+[6]_ section 4.4.2.
 
 For some target architectures, some aspects of the target architecture’s 
 register set are dependent upon variable factors and have to be determined at 
@@ -566,8 +579,6 @@ as 123.
 
 .. [#] http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine
 
-.. [#] http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration
-
 .. [#] http://en.wikipedia.org/wiki/Static_single_assignment_form
 
 .. [#] http://llvm.org/docs/CodeGenerator.html
@@ -577,5 +588,3 @@ as 123.
 .. [#] http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf
 
 .. [#] http://en.wikipedia.org/wiki/Instruction_selection
-
-.. [#] http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf
