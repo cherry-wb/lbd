@@ -67,35 +67,57 @@
 <li class="toctree-l2"><a class="reference internal" href="install.html#install-cpu0-debug-build-on-linux">Install cpu0 debug build on Linux</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="llvmstructure.html">Cpu0 Instruction and LLVM Target Description</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#cpu0-processor-architecture">CPU0 processor architecture</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#brief-introduction">Brief introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#instruction-set-for-cpu0">Instruction Set for CPU0</a></li>
-<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#status-register">Status register</a></li>
-<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#the-execution-of-the-instruction-step">The execution of the instruction step</a></li>
-<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#replace-ldi-instruction-by-addiu-instruction">Replace ldi instruction by addiu instruction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llvmstructure.html">Introduce Cpu0 and LLVM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#cpu0-architecture">Cpu0 Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#instruction-set">Instruction Set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#status-register">Status Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#pipeline">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#instruction-change">Instruction Change</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#llvm-structure">LLVM structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#introduce-target-description-file">Introduce Target Description File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#writing-target-description-file">Writing Target Description File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#writing-configuration-files">Writing configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#id3">LLVM Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#detail">Detail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#introduce-target-description-file">Introduce Target Description File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#writing-target-description-file">Writing Target Description File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="llvmstructure.html#writing-configuration-files">Writing configuration files</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#target-registration">Target Registration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="llvmstructure.html#build-libraries-and-td">Build libraries and td</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="backendstructure.html">LLVM Backend Structure</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="backendstructure.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#step-0-build-example-code">Step 0. Build Example Code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#step-1-add-xxtargetmachine">Step 1. Add XXTargetMachine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#step-2-add-registerinfo">Step 2. Add RegisterInfo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#step-3-add-asmprinter">Step 3. Add AsmPrinter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#llvm-code-generation-sequence">LLVM Code Generation Sequence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#dag-directed-acyclic-graph">DAG (Directed Acyclic Graph)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#id8">Instruction Selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#step-4-add-cpu0dagtodagisel">Step 4. Add Cpu0DAGToDAGISel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#step-5-add-prologue-epilogue">Step 5. Add Prologue/Epilogue</a></li>
-<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#summary-of-this-chapter">Summary of this Chapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#code-generation-process">Code Generation Process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#id3">Instruction Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#scheduling-and-formation">Scheduling and Formation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#ssa-based-machine-code-optimization">SSA-based Machine Code Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#register-allocation">Register Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#prologue-epilogue-code-insertion">Prologue/Epilogue Code Insertion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#late-machine-code-optimizations">Late Machine Code Optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#code-emission">Code Emission</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#general-target-information">General Target Information</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#target-machine-characteristics">Target Machine Characteristics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#build-example-code">Build Example Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#step-1-add-xxtargetmachine">Step 1. Add XXTargetMachine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#step-2-add-registerinfo">Step 2. Add RegisterInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#step-3-add-asmprinter">Step 3. Add AsmPrinter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#llvm-code-generation-sequence">LLVM Code Generation Sequence</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#dag-directed-acyclic-graph">DAG (Directed Acyclic Graph)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#id11">Instruction Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#step-4-add-cpu0dagtodagisel">Step 4. Add Cpu0DAGToDAGISel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backendstructure.html#step-5-add-prologue-epilogue">Step 5. Add Prologue/Epilogue</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="backendstructure.html#summary">Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="otherinst.html">Other instructions</a><ul>
@@ -113,6 +135,7 @@
 <li class="toctree-l3"><a class="reference internal" href="otherinst.html#mips-solution">Mips solution</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="otherinst.html#full-support">Full support %</a></li>
 <li class="toctree-l2"><a class="reference internal" href="otherinst.html#summary">Summary</a></li>
 </ul>
 </li>
@@ -145,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="funccall.html#pseudo-hook-instruction-adjcallstackdown-and-adjcallstackup">Pseudo hook instruction ADJCALLSTACKDOWN and ADJCALLSTACKUP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="funccall.html#handle-gp-register-in-pic-addressing-mode">Handle $gp register in PIC addressing mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="funccall.html#variable-number-of-arguments">Variable number of arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="funccall.html#verify-div-for-operator">Verify DIV for operator %</a></li>
 <li class="toctree-l2"><a class="reference internal" href="funccall.html#summary-of-this-chapter">Summary of this chapter</a></li>
 </ul>
 </li>
@@ -154,22 +178,6 @@
 <li class="toctree-l2"><a class="reference internal" href="elf.html#relocation-record">Relocation Record</a></li>
 <li class="toctree-l2"><a class="reference internal" href="elf.html#cpu0-elf-related-files">Cpu0 ELF related files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="elf.html#lld">lld</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="appendix.html#setting-up-your-mac">Setting Up Your Mac</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#installing-llvm-xcode-and-cmake">Installing LLVM, Xcode and cmake</a></li>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#create-llvm-xcodeproj-by-cmake-graphic-ui">Create LLVM.xcodeproj by cmake Graphic UI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#build-llvm-by-xcode">Build llvm by Xcode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#create-llvm-xcodeproj-of-supporting-cpu0-by-terminal-cmake-command">Create LLVM.xcodeproj of supporting cpu0 by terminal cmake command</a></li>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#install-other-tools-on-imac">Install other tools on iMac</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="appendix.html#setting-up-your-linux-machine">Setting Up Your Linux Machine</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#install-llvm-3-1-release-build-on-linux">Install LLVM 3.1 release build on Linux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="appendix.html#install-cpu0-debug-build-on-linux">Install cpu0 debug build on Linux</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">Todo List</a></li>

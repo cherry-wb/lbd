@@ -29,7 +29,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
     <link rel="next" title="Other instructions" href="otherinst.html" />
-    <link rel="prev" title="Cpu0 Instruction and LLVM Target Description" href="llvmstructure.html" /> 
+    <link rel="prev" title="Introduce Cpu0 and LLVM" href="llvmstructure.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,7 +42,7 @@
           <a href="otherinst.html" title="Other instructions"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="llvmstructure.html" title="Cpu0 Instruction and LLVM Target Description"
+          <a href="llvmstructure.html" title="Introduce Cpu0 and LLVM"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>
@@ -54,7 +54,7 @@
           <div class="body">
             
   <div class="section" id="llvm-backend-structure">
-<h1>LLVM Backend Structure<a class="headerlink" href="#llvm-backend-structure" title="Permalink to this headline">¶</a></h1>
+<span id="backend-structure"></span><h1>LLVM Backend Structure<a class="headerlink" href="#llvm-backend-structure" title="Permalink to this headline">¶</a></h1>
 <p>This chapter introduces the LLVM backend class inheritance tree and class members
 first. Next, we follow the LLVM backend structure and add class implementation one
 by one in each section. In this chapter, we need some compiler knowledge, like
@@ -69,31 +69,110 @@ involved in writing a LLVM backend. Once knowing the overall structure, you can
 quickly create a simple backend from scratch.</p>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>首先介紹編譯的基本知識，編譯流程可以簡化成 <a class="pageref" href="#compilation-pipeline">figure  1</a> 。
-源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
-產生目標平台語言。<a class="pageref" href="#compilation-flow">figure  2</a> 展示了更進一步的編譯流程。</p>
-<div class="align-center figure" id="compilation-pipeline">
-<img alt="_images/compilation_pipeline.png" src="_images/compilation_pipeline.png" />
-<p class="caption">Figure 1: Compilation Pipeline</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Following content came from &#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221; <a class="footnote-reference" href="#id19" id="id1">[6]</a> Chapter 4. I already got author&#8217;s approve on the Chinese translation work. :-)</p>
 </div>
-<div class="align-center figure" id="compilation-flow">
-<img alt="_images/compilation_flow_part_1.png" src="_images/compilation_flow_part_1.png" />
-<p class="caption">Figure 2: Compilation Flow</p>
+<p>As mentioned in Chapter 2, LLVM provides developers with an extensive generic frame
+work for code generation. It prescribes a fixed directory layout and class hierarchy
+template. Each backend is located in its own subdirectory within lib/Target, where
+most of the code to be implemented goes. Apart from this, only a handful of the original
+files in the LLVM source tree have to be modified in order to integrate the new backend
+with the existing LLVM codebase.</p>
+<p>如同第二章所提到，LLVM 提供開發者一套相當通用的框架用來開發後端。LLVM 提供一個
+固定的目錄布局，和類別階層。每一個後端都位在各自位於 <tt class="docutils literal"><span class="pre">lib/Target</span></tt> 的子目錄，
+大部分的實作代碼都在該子目錄底下。除此之外，只有少部分 LLVM 代碼需要修改以將
+新增的後端整合進 LLVM 代碼庫。</p>
+<p>The target code generator is divided into several components, each of which is discussed
+in a separate section. For a better overview, each section contains a list of the source
+files that comprise the respective component</p>
+<p>目標後端被分為數個元件，底下各節將分別加以討論。為了加強讀者整體印象，各節會列出
+相應的檔案。</p>
+<p>The given class hierarchy specifies a number of abstract base classes with virtual
+functions and requires the backend developer to implement subclasses for each of them.
+Most of these classes do not provide any immediate functionality for code generation, but
+merely give selected information about the characteristics and properties of the target
+machine. This makes it possible to keep the bulk of the actual algorithms and procedures
+fully target-independent by accessing all the required target-specific information through
+the specified interfaces.</p>
+<p>LLVM 的類別階層指定數個抽象基礎類別，其中定義數個虛擬函式。後端開發者必須實做前述
+抽象類別的子類別，並依據需要實做虛擬函式。大部分的類別僅提供目標的各項資訊和特性，
+與後端代碼生成並不相關。這使得演算法和其它程序與底層目標無關，僅透過指定的界面存取
+目標資訊。</p>
 </div>
-<p>LLVM 後端的四大功能標明在 <a class="pageref" href="#llvm-backend">figure  3</a> 。</p>
-<ol class="arabic simple">
-<li>將 LLVM IR 編譯成匯編文本文件: 傳統的靜態編譯。</li>
-<li>將 LLVM IR 編譯成目標二進制文件: .o file writer。</li>
-<li>將匯編文本文件轉譯為目標二進製文件: 匯編。</li>
-<li>將目標二進制文件還原為匯編文本文件: 反匯編。</li>
-</ol>
-<div class="align-center figure" id="llvm-backend">
-<img alt="_images/llvm_backend.png" src="_images/llvm_backend.png" />
-<p class="caption">Figure 3: LLVM 後端</p>
+<div class="section" id="code-generation-process">
+<h2>Code Generation Process<a class="headerlink" href="#code-generation-process" title="Permalink to this headline">¶</a></h2>
+<p>為了瞭解 LLVM 後端的結構，先理解 LLVM  後端是如何生成目標代碼是必要的。
+將 LLVM IR 轉成目標代碼，後端需要經過數個步驟 <a class="footnote-reference" href="#id14" id="id2">[1]</a> 。</p>
+<div class="section" id="id3">
+<h3>Instruction Selection<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>目標代碼生成的第一步，是將 LLVM IR 轉成一組 <tt class="docutils literal"><span class="pre">SelectionDAG</span></tt> ，
+這是一個有向無環圖，其中每一個節點代表一條 LLVM 指令。任兩條指令之間的 definition-use
+關係由一條從 using node 指向 defining node 的邊描述，邊上伴隨受影響變數的型別其資訊。
+如果指令之間有 control flow dependency ，會以額外的邊加以表示。由於目標並不保證支持
+所有 LLVM 提供的型別和操作，前述的 DAG 必須先加以合法化，也就是要先將其轉成目標支持
+的型別和操作。合法化的 DAG 再交由 instruction selector 以樣式匹配的方式，創建以目標
+指令為內容的 DAG 節點。對於每一個匹配到的 LLVM DAG 節點，相應目標指令的 DAG 節點
+會被建立。instruction selector 的輸入和輸出都是 DAG，只是其內容由 LLVM 指令轉成目標指令。</p>
+</div>
+<div class="section" id="scheduling-and-formation">
+<h3>Scheduling and Formation<a class="headerlink" href="#scheduling-and-formation" title="Permalink to this headline">¶</a></h3>
+<p>前述由目標指令所構成的的 DAG 將會在此階段被解構成目標指令序列 (list)。每一個函式以
+一個 <a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1MachineFunction.html">MachineFunction</a> 加以表示，其中包含 <a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1MachineBasicBlock.html">MachineBlock</a> 串列。 <a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1MachineBasicBlock.html">MachineBlock</a>
+中又包含數條 <a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1MachineInstr.html">MachineInstr</a> 。Scheduler 必須決定以何種順序將目標指令寫出，這會受
+到許多因素影響，例如: 最小 register pressure，亦即減少因暫存器數量不足，而需要將
+暫存器內容暫時搬移至內存的次數。</p>
+<p>此時，目標指令序列仍舊保持 SSA 形式，它並非合法的匯編。除了少數例外 (像是將返回值
+搬移至 ABI 所規定的暫存器)，所有的指令仍舊操作 LLVM 提供的無限量虛擬暫存器，且所有
+存取棧的指令均是存取虛擬的棧空間，而非真正的偏移量。</p>
+</div>
+<div class="section" id="ssa-based-machine-code-optimization">
+<h3>SSA-based Machine Code Optimization<a class="headerlink" href="#ssa-based-machine-code-optimization" title="Permalink to this headline">¶</a></h3>
+<p>在分配物理暫存器之前，後端有機會針對保有 SSA 形式的目標指令序列進行 SSA 相關的優化。</p>
+</div>
+<div class="section" id="register-allocation">
+<h3>Register Allocation<a class="headerlink" href="#register-allocation" title="Permalink to this headline">¶</a></h3>
+<p>虛擬暫存器將在此階段被消除，改以物理暫存器對應之。LLVM 暫存器分配器將會為每一個虛擬
+暫存器分配一個物理暫存器。如果虛擬暫存器數量超過實際可用的物理暫存器，暫存器分配器
+會產生 spill code 將某個物理暫存器搬移至內存以供使用。因為暫存器有可能重疊，例如:
+<tt class="docutils literal"><span class="pre">%e2</span></tt> 暫存器分別由 <tt class="docutils literal"><span class="pre">%d3</span></tt> 和 <tt class="docutils literal"><span class="pre">%d2</span></tt> 構成其上下半部，暫存器分配器必須考慮到這種
+情況。虛擬暫存器的消除同時伴隨著 SSA 形式的解構。為建立 SSA 形式所插入的 phi 指令
+將被 copy 指令所取代。</p>
+</div>
+<div class="section" id="prologue-epilogue-code-insertion">
+<h3>Prologue/Epilogue Code Insertion<a class="headerlink" href="#prologue-epilogue-code-insertion" title="Permalink to this headline">¶</a></h3>
+<p>在暫存器分配器運行之後，我們可以計算每一個函式將會需要多少棧空間。進而在函式的出入口
+寫入相對應的 prologue 和 epilogue。之前存取虛擬棧空間的指令，現在可以存取到相對應
+棧頂 (sp) 或是棧底 (fp) 指針的偏移量。</p>
+</div>
+<div class="section" id="late-machine-code-optimizations">
+<h3>Late Machine Code Optimizations<a class="headerlink" href="#late-machine-code-optimizations" title="Permalink to this headline">¶</a></h3>
+<p>在將目標指令寫出之前，可以做窺孔優化 (peephole optimization)，對目標指令做細部調整。</p>
+</div>
+<div class="section" id="code-emission">
+<h3>Code Emission<a class="headerlink" href="#code-emission" title="Permalink to this headline">¶</a></h3>
+<p>最後，完整的目標代碼被寫出。對於靜態編譯，其結果可以是匯編文本; 對於 JIT 編譯，目標指
+令的編碼將被寫入內存。</p>
 </div>
 </div>
-<div class="section" id="step-0-build-example-code">
-<h2>Step 0. Build Example Code<a class="headerlink" href="#step-0-build-example-code" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="general-target-information">
+<h2>General Target Information<a class="headerlink" href="#general-target-information" title="Permalink to this headline">¶</a></h2>
+<p>每一個 LLVM 後端都必須要提供一個介面供上層原件調用。後端必須實現 <a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1LLVMTargetMachine.html">LLVMTargetMachine</a>
+的子類，提供目標平台必要資訊，並向 LLVM 代碼生成器註冊。</p>
+<div class="section" id="target-machine-characteristics">
+<h3>Target Machine Characteristics<a class="headerlink" href="#target-machine-characteristics" title="Permalink to this headline">¶</a></h3>
+<p>類別 <tt class="docutils literal"><span class="pre">XXTargetMachine</span></tt> 扮演著中心的角色，它是目標後端和 LLVM 其它原件之間的界面。
+它創建並擁有數個物件描述目標平台資訊，LLVM 代碼生成器透過 <tt class="docutils literal"><span class="pre">XXTargetMachine</span></tt> 取
+得相應資訊。</p>
+<ul class="simple">
+<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1DataLayout.html">DataLayout</a></li>
+<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetFrameLowering_8h.html">TargetFrameLowering</a></li>
+<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetInstrInfo_8h_source.html">TargetInstrInfo</a> 、 <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetLowering_8h.html">TargetLowering</a> 和  <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetRegisterInfo_8h_source.html">TargetRegisterInfo</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="build-example-code">
+<h2>Build Example Code<a class="headerlink" href="#build-example-code" title="Permalink to this headline">¶</a></h2>
 <p>We build our example code first, then add components step by step.</p>
 <ol class="arabic">
 <li><p class="first">Prepare the source code.</p>
@@ -117,15 +196,14 @@ quickly create a simple backend from scratch.</p>
 </div></blockquote>
 </li>
 </ol>
-</div>
 <div class="section" id="step-1-add-xxtargetmachine">
-<h2>Step 1. Add XXTargetMachine<a class="headerlink" href="#step-1-add-xxtargetmachine" title="Permalink to this headline">¶</a></h2>
-<p>The role of TargetMachine in the LLVM backend structure is shown in <a class="pageref" href="#target-machine">figure  4</a>. <a class="reference external" href="http://llvm.org/docs/CommandGuide/llc.html">llc</a> is LLVM static compiler.
+<h3>Step 1. Add XXTargetMachine<a class="headerlink" href="#step-1-add-xxtargetmachine" title="Permalink to this headline">¶</a></h3>
+<p>The role of TargetMachine in the LLVM backend structure is shown in <a class="pageref" href="#target-machine">figure  1</a>. <a class="reference external" href="http://llvm.org/docs/CommandGuide/llc.html">llc</a> is LLVM static compiler.
 When you invoke <tt class="docutils literal"><span class="pre">llc</span></tt> command with option <tt class="docutils literal"><span class="pre">-march=XX</span></tt>, it will trigger the
 corresponding callback functions.</p>
 <div class="align-center figure" id="target-machine">
 <img alt="_images/target_machine.png" src="_images/target_machine.png" />
-<p class="caption">Figure 4: The role of TargetMachine</p>
+<p class="caption">Figure 1: The role of TargetMachine</p>
 </div>
 <p><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine">Target Machine</a> is
 a base class for targets implemented with the LLVM target-independent code generator.
@@ -256,7 +334,7 @@ will be extracted by <tt class="docutils literal"><span class="pre">Cpu0InstrInf
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id11" id="id2">[1]</a>.</p>
+<p>Reference Write An LLVM Backend web site <a class="footnote-reference" href="#id15" id="id5">[2]</a>.</p>
 <blockquote>
 <div><div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>cp -rf <span class="nv">$Example_SRC</span>/3/1/Cpu0 lib/Target
 </pre></div>
@@ -309,7 +387,7 @@ to include thhose new added C++ files.</p>
 </ol>
 </div>
 <div class="section" id="step-2-add-registerinfo">
-<h2>Step 2. Add RegisterInfo<a class="headerlink" href="#step-2-add-registerinfo" title="Permalink to this headline">¶</a></h2>
+<h3>Step 2. Add RegisterInfo<a class="headerlink" href="#step-2-add-registerinfo" title="Permalink to this headline">¶</a></h3>
 <p>class <cite>Cpu0InstrInfo</cite> has a data member of class <cite>Cpu0RegisterInfo</cite>.
 This section adds class <cite>Cpu0RegisterInfo</cite>, then includes it in <cite>Cpu0InstrInfo.h</cite>
 and <cite>Cpu0TargetMachine.h</cite>. Finally, we modify CMakefile.txt to add our new added
@@ -400,7 +478,7 @@ Aborted</pre>
 a ASMPrinter for our target to print assembly. We will add it in next section.</p>
 </div>
 <div class="section" id="step-3-add-asmprinter">
-<h2>Step 3. Add AsmPrinter<a class="headerlink" href="#step-3-add-asmprinter" title="Permalink to this headline">¶</a></h2>
+<h3>Step 3. Add AsmPrinter<a class="headerlink" href="#step-3-add-asmprinter" title="Permalink to this headline">¶</a></h3>
 <p>First, wee modify <tt class="docutils literal"><span class="pre">Cpu0.td</span></tt> to add support for ASMPrinter. LLVM now has a newer
 ASMPrinter called MCAsmWriter, we explictly say we will support MCAsmWriter.</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Proc</span><span class="o">&lt;</span><span class="n">string</span> <span class="n">Name</span><span class="p">,</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">SubtargetFeature</span><span class="o">&gt;</span> <span class="n">Features</span><span class="o">&gt;</span> 
@@ -525,18 +603,19 @@ implement class <tt class="docutils literal"><span class="pre">Cpu0DAGToDAGISel<
 LLVM code generation sequence, DAG, and instruction selection in next three
 sections.</p>
 </div>
+</div>
 <div class="section" id="llvm-code-generation-sequence">
 <h2>LLVM Code Generation Sequence<a class="headerlink" href="#llvm-code-generation-sequence" title="Permalink to this headline">¶</a></h2>
 <p>Following content came from
 &#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
-<a class="footnote-reference" href="#id16" id="id3">[6]</a> section 4.2 Code Generation Process.</p>
-<p><a class="pageref" href="#code-generation-sequence">figure  5</a>
+<a class="footnote-reference" href="#id19" id="id6">[6]</a> section 4.2 Code Generation Process.</p>
+<p><a class="pageref" href="#code-generation-sequence">figure  2</a>
 gives an overview of LLVM code generation sequence.</p>
 <div class="align-center figure" id="code-generation-sequence">
 <img alt="_images/code_generation_sequence.png" src="_images/code_generation_sequence.png" />
-<p class="caption">Figure 5: LLVM code generation sequence</p>
+<p class="caption">Figure 2: LLVM code generation sequence</p>
 </div>
-<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id12" id="id4">[2]</a> based representation.
+<p>LLVM IR is a Static Single Assignment (SSA) <a class="footnote-reference" href="#id16" id="id7">[3]</a> based representation.
 LLVM provides infinite virtual registers which can hold value of primitive
 type (integral, floating point, or pointer).
 So, every operand can save in different virtual register in LLVM SSA
@@ -554,15 +633,15 @@ Comment is prefixed with <tt class="docutils literal"><span class="pre">;</span>
 </div>
 <p>We explain the code generation process as below.
 If you don&#8217;t feel comfortable, please check tricore_llvm.pdf section 4.2 first.
-You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id13" id="id5">[3]</a>
-and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id14" id="id6">[4]</a>
+You can  read “The LLVM Target-Independent Code Generator” from <a class="footnote-reference" href="#id17" id="id8">[4]</a>
+and “LLVM Language Reference Manual” from <a class="footnote-reference" href="#id18" id="id9">[5]</a>
 before go ahead, but we think read section
 4.2 of tricore_llvm.pdf is enough.
 We suggest you read the web site documents as above only when you are still not
 quite understand, even though you have read this section and next 2 sections
 article for DAG and Instruction Selection.</p>
 <p>&#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
-<a class="footnote-reference" href="#id15" id="id7">[5]</a> section 4.2.</p>
+<a class="footnote-reference" href="#id19" id="id10">[6]</a> section 4.2.</p>
 <ol class="arabic">
 <li><p class="first">Instruction Selection</p>
 <blockquote>
@@ -651,15 +730,14 @@ of the machine instructions are written into memory.</p>
 </div></blockquote>
 </li>
 </ol>
-</div>
 <div class="section" id="dag-directed-acyclic-graph">
-<h2>DAG (Directed Acyclic Graph)<a class="headerlink" href="#dag-directed-acyclic-graph" title="Permalink to this headline">¶</a></h2>
+<h3>DAG (Directed Acyclic Graph)<a class="headerlink" href="#dag-directed-acyclic-graph" title="Permalink to this headline">¶</a></h3>
 <p>Many important techniques for local optimization begin by transforming a basic
 block into DAG. For example, the basic block code and it&#8217;s corresponding DAG as
 <a class="reference internal" href="#backendstructure-f6"><em>DAG example</em></a>.</p>
 <div class="figure align-center" id="backendstructure-f6">
 <img alt="_images/61.png" src="_images/61.png" />
-<p class="caption">Figure 6: DAG example</p>
+<p class="caption">Figure 3: DAG example</p>
 </div>
 <p>If b is not live on exit from the block, then we can do common expression
 remove to get the following code.</p>
@@ -675,24 +753,24 @@ const/immediate/offset) is leaf.
 It can also be represented by list as prefix order in tree.
 For example, (+ b, c), (+ b, 1) is IR DAG representation.</p>
 </div>
-<div class="section" id="id8">
-<h2>Instruction Selection<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h3>Instruction Selection<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>In the compiler backend, we need to translate compiler intermediate representation
-, i.e., IR code into machine code at instruction selection stage <a class="footnote-reference" href="#id16" id="id9">[6]</a>.</p>
-<p><a class="pageref" href="#ir-and-machine-code">figure  7</a> shows a simple example to illustrate the
+, i.e., IR code into machine code at instruction selection stage <a class="footnote-reference" href="#id20" id="id12">[7]</a>.</p>
+<p><a class="pageref" href="#ir-and-machine-code">figure  4</a> shows a simple example to illustrate the
 before and after instruction selection.</p>
 <div class="figure align-center" id="ir-and-machine-code">
 <img alt="_images/ir_and_machine_code.png" src="_images/ir_and_machine_code.png" />
-<p class="caption">Figure 7: IR and it&#8217;s corresponding machine instruction</p>
+<p class="caption">Figure 4: IR and it&#8217;s corresponding machine instruction</p>
 </div>
 <p>For machine instruction selection, the better solution is represent IR and
 machine instruction by DAG.
-In <a class="pageref" href="#instruction-tree-patterns">figure  8</a>, we skip the register leaf.
+In <a class="pageref" href="#instruction-tree-patterns">figure  5</a>, we skip the register leaf.
 The rj + rk is IR DAG representation (for symbol notation, not llvm SSA form).
 ADD is machine instruction.</p>
 <div class="figure align-center" id="instruction-tree-patterns">
 <img alt="_images/instruction_tree_patterns.png" src="_images/instruction_tree_patterns.png" />
-<p class="caption">Figure 8: Instruction DAG representation</p>
+<p class="caption">Figure 5: Instruction DAG representation</p>
 </div>
 <p>The IR DAG and machine instruction DAG can also represented as list.
 For example, (+ ri, rj), (- ri, 1) are lists for IR DAG; (ADD ri, rj),
@@ -763,7 +841,7 @@ following machine code,</p>
 </div>
 </div>
 <div class="section" id="step-4-add-cpu0dagtodagisel">
-<h2>Step 4. Add Cpu0DAGToDAGISel<a class="headerlink" href="#step-4-add-cpu0dagtodagisel" title="Permalink to this headline">¶</a></h2>
+<h3>Step 4. Add Cpu0DAGToDAGISel<a class="headerlink" href="#step-4-add-cpu0dagtodagisel" title="Permalink to this headline">¶</a></h3>
 <p>The IR DAG to machine instruction DAG transformation is introduced in the
 previous section.
 Now, let&#8217;s check what IR DAG node the file ch3.bc has. List ch3.ll as follows,</p>
@@ -846,10 +924,10 @@ Aborted (core dumped)
 </div>
 </div>
 <div class="section" id="step-5-add-prologue-epilogue">
-<h2>Step 5. Add Prologue/Epilogue<a class="headerlink" href="#step-5-add-prologue-epilogue" title="Permalink to this headline">¶</a></h2>
+<h3>Step 5. Add Prologue/Epilogue<a class="headerlink" href="#step-5-add-prologue-epilogue" title="Permalink to this headline">¶</a></h3>
 <p>Following came from
 &#8220;Design and Implementation of a TriCore Backend for the LLVM Compiler Framework&#8221;
-<a class="footnote-reference" href="#id16" id="id10">[6]</a> section 4.4.2.</p>
+<a class="footnote-reference" href="#id18" id="id13">[5]</a> section 4.4.2.</p>
 <p>For some target architectures, some aspects of the target architecture’s
 register set are dependent upon variable factors and have to be determined at
 runtime.
@@ -870,7 +948,7 @@ Among them are the following points:</p>
 <p>If the addressing mode of the affected instruction cannot handle the address because the offset is too large (the offset field has 10 bits for the BO addressing mode and 16 bits for the BOL mode), a sequence of instructions is emitted that explicitly computes the effective address. Interim results are put into an unused address register. If none is available, an already occupied address register is scavenged. For this purpose, LLVM’s framework offers a class named RegScavenger that takes care of all the details.</p>
 <div class="figure align-center" id="backendstructure-f9">
 <img alt="_images/91.png" src="_images/91.png" />
-<p class="caption">Figure 9: Addressing of a variable a located on the stack. If the stack frame has a variable size, slot must be addressed relative to the frame pointer</p>
+<p class="caption">Figure 6: Addressing of a variable a located on the stack. If the stack frame has a variable size, slot must be addressed relative to the frame pointer</p>
 </div>
 <p>We will explain the Prologue and Epilogue further by example code.
 So for the following llvm IR code, Cpu0 back end will emit the corresponding
@@ -978,8 +1056,9 @@ $tmp1:
 </pre>
 </div>
 </div>
-<div class="section" id="summary-of-this-chapter">
-<h2>Summary of this Chapter<a class="headerlink" href="#summary-of-this-chapter" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>We have finished a simple assembler for cpu0 which only support <strong>addiu</strong>,
 <strong>st</strong> and <strong>ret</strong> 3 instructions.</p>
 <p>We are satisfied with this result.
@@ -1002,40 +1081,46 @@ Even the complicate X86 CPU which CISC outside and RISC inside (micro
 instruction), has only 45,000 lines with comments.
 In next chapter, we will show you that add a new instruction support is as easy
 as 123.</p>
-<table class="docutils footnote" frame="void" id="id11" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine">http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id12" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id13" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[3]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id15" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[5]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[2]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine">http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9">[6]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Instruction_selection">http://en.wikipedia.org/wiki/Instruction_selection</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[3]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Static_single_assignment_form">http://en.wikipedia.org/wiki/Static_single_assignment_form</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/CodeGenerator.html">http://llvm.org/docs/CodeGenerator.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id18" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/LangRef.html">http://llvm.org/docs/LangRef.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id19" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[6]</a></td><td><a class="reference external" href="http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf">http://www.opus.ub.uni-erlangen.de/opus/volltexte/2010/1659/pdf/tricore_llvm.pdf</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id20" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id12">[7]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Instruction_selection">http://en.wikipedia.org/wiki/Instruction_selection</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -1051,23 +1136,41 @@ as 123.</p>
   <ul>
 <li><a class="reference internal" href="#">LLVM Backend Structure</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#step-0-build-example-code">Step 0. Build Example Code</a></li>
+<li><a class="reference internal" href="#code-generation-process">Code Generation Process</a><ul>
+<li><a class="reference internal" href="#id3">Instruction Selection</a></li>
+<li><a class="reference internal" href="#scheduling-and-formation">Scheduling and Formation</a></li>
+<li><a class="reference internal" href="#ssa-based-machine-code-optimization">SSA-based Machine Code Optimization</a></li>
+<li><a class="reference internal" href="#register-allocation">Register Allocation</a></li>
+<li><a class="reference internal" href="#prologue-epilogue-code-insertion">Prologue/Epilogue Code Insertion</a></li>
+<li><a class="reference internal" href="#late-machine-code-optimizations">Late Machine Code Optimizations</a></li>
+<li><a class="reference internal" href="#code-emission">Code Emission</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#general-target-information">General Target Information</a><ul>
+<li><a class="reference internal" href="#target-machine-characteristics">Target Machine Characteristics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#build-example-code">Build Example Code</a><ul>
 <li><a class="reference internal" href="#step-1-add-xxtargetmachine">Step 1. Add XXTargetMachine</a></li>
 <li><a class="reference internal" href="#step-2-add-registerinfo">Step 2. Add RegisterInfo</a></li>
 <li><a class="reference internal" href="#step-3-add-asmprinter">Step 3. Add AsmPrinter</a></li>
-<li><a class="reference internal" href="#llvm-code-generation-sequence">LLVM Code Generation Sequence</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#llvm-code-generation-sequence">LLVM Code Generation Sequence</a><ul>
 <li><a class="reference internal" href="#dag-directed-acyclic-graph">DAG (Directed Acyclic Graph)</a></li>
-<li><a class="reference internal" href="#id8">Instruction Selection</a></li>
+<li><a class="reference internal" href="#id11">Instruction Selection</a></li>
 <li><a class="reference internal" href="#step-4-add-cpu0dagtodagisel">Step 4. Add Cpu0DAGToDAGISel</a></li>
 <li><a class="reference internal" href="#step-5-add-prologue-epilogue">Step 5. Add Prologue/Epilogue</a></li>
-<li><a class="reference internal" href="#summary-of-this-chapter">Summary of this Chapter</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="llvmstructure.html"
-                        title="previous chapter">Cpu0 Instruction and LLVM Target Description</a></p>
+                        title="previous chapter">Introduce Cpu0 and LLVM</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="otherinst.html"
                         title="next chapter">Other instructions</a></p>
@@ -1103,7 +1206,7 @@ as 123.</p>
           <a href="otherinst.html" title="Other instructions"
              >next</a> |</li>
         <li class="right" >
-          <a href="llvmstructure.html" title="Cpu0 Instruction and LLVM Target Description"
+          <a href="llvmstructure.html" title="Introduce Cpu0 and LLVM"
              >previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>

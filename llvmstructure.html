@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Cpu0 Instruction and LLVM Target Description &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
+    <title>Introduce Cpu0 and LLVM &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -53,8 +53,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="cpu0-instruction-and-llvm-target-description">
-<h1>Cpu0 Instruction and LLVM Target Description<a class="headerlink" href="#cpu0-instruction-and-llvm-target-description" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="introduce-cpu0-and-llvm">
+<span id="llvm-structure"></span><h1>Introduce Cpu0 and LLVM<a class="headerlink" href="#introduce-cpu0-and-llvm" title="Permalink to this headline">¶</a></h1>
 <p>Before you start, you should know that you can always examine existing LLVM
 backend code and attempt to port what you find for your own target architecture
 .  The majority of this code can be found in the /lib/Target directory of your
@@ -76,12 +76,12 @@ article from llvm web site. The llvm structure introduced here is extracted
 from the asop web site. You can read the whole article from the asop web site.
 After that we will show you how to write register and instruction definitions
 (Target Description File) which will be used in next chapter.</p>
-<div class="section" id="cpu0-processor-architecture">
-<h2>CPU0 processor architecture<a class="headerlink" href="#cpu0-processor-architecture" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cpu0-architecture">
+<h2>Cpu0 Architecture<a class="headerlink" href="#cpu0-architecture" title="Permalink to this headline">¶</a></h2>
 <p>We copy and redraw figures in english in this section. This
-web site <a class="footnote-reference" href="#id10" id="id1">[1]</a> is chinese version and here <a class="footnote-reference" href="#id11" id="id2">[2]</a> is english version.</p>
-<div class="section" id="brief-introduction">
-<h3>Brief introduction<a class="headerlink" href="#brief-introduction" title="Permalink to this headline">¶</a></h3>
+web site <a class="footnote-reference" href="#id11" id="id1">[1]</a> is chinese version and here <a class="footnote-reference" href="#id12" id="id2">[2]</a> is english version.</p>
+<div class="section" id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h3>
 <p>CPU0 is a 32-bit processor which has registers R0 .. R15, IR, MAR, MDR, etc.,
 and its structure is shown below.</p>
 <div class="figure align-center" id="llvmstructure-f1">
@@ -94,8 +94,8 @@ and its structure is shown below.</p>
 <p class="caption">Figure 2: Cpu0 registers table</p>
 </div>
 </div>
-<div class="section" id="instruction-set-for-cpu0">
-<h3>Instruction Set for CPU0<a class="headerlink" href="#instruction-set-for-cpu0" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="instruction-set">
+<h3>Instruction Set<a class="headerlink" href="#instruction-set" title="Permalink to this headline">¶</a></h3>
 <p>The CPU0 instruction divided into three types, L-type usually load the saved
 instruction, A-type arithmetic instruction-based J-type usually jump
 instruction, the following figure shows the three types of instruction encoding
@@ -116,7 +116,7 @@ format.</p>
 </div>
 </div>
 <div class="section" id="status-register">
-<h3>Status register<a class="headerlink" href="#status-register" title="Permalink to this headline">¶</a></h3>
+<h3>Status Register<a class="headerlink" href="#status-register" title="Permalink to this headline">¶</a></h3>
 <p>CPU0 status register contains the state of the N, Z, C, V, and I, T and other
 interrupt mode bit.
 Its structure is shown below.</p>
@@ -131,33 +131,40 @@ If Ra = Rb, then the setting state of N = 0, Z = 1.</p>
 <p>So conditional jump the JGT, JLT, JGE, JLE, JEQ, JNE instruction jumps N, Z
 flag in the status register.</p>
 </div>
-<div class="section" id="the-execution-of-the-instruction-step">
-<h3>The execution of the instruction step<a class="headerlink" href="#the-execution-of-the-instruction-step" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pipeline">
+<h3>Pipeline<a class="headerlink" href="#pipeline" title="Permalink to this headline">¶</a></h3>
 <p>CPU0 has three stage pipeline: Instruction fetch, Decode and Execution.</p>
-<ol class="arabic simple">
-<li>Instruction fetch</li>
-</ol>
+<ol class="arabic">
+<li><p class="first">Instruction fetch</p>
 <ul class="simple">
 <li>Action 1. The instruction fetch: IR = [PC]</li>
 <li>Action 2. Update program counter: PC = PC + 4</li>
 </ul>
-<ol class="arabic simple" start="2">
-<li>Decode</li>
-</ol>
-<ul class="simple">
-<li>Action 3. Decode: Control unit decodes IR, then set data flow switch
-and ALU operation mode.</li>
+</li>
+<li><p class="first">Decode</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Action 3. Decode: Control unit decodes IR, then set data flow switch</dt>
+<dd><p class="first last">and ALU operation mode.</p>
+</dd>
+</dl>
+</li>
 </ul>
-<ol class="arabic simple" start="3">
-<li>Execute</li>
-</ol>
-<ul class="simple">
-<li>Action 4. Execute: Data flow into ALU. After ALU done the operation,
-the result stored back into destination register.</li>
+</li>
+<li><p class="first">Execute</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Action 4. Execute: Data flow into ALU. After ALU done the operation,</dt>
+<dd><p class="first last">the result stored back into destination register.</p>
+</dd>
+</dl>
+</li>
 </ul>
+</li>
+</ol>
 </div>
-<div class="section" id="replace-ldi-instruction-by-addiu-instruction">
-<h3>Replace ldi instruction by addiu instruction<a class="headerlink" href="#replace-ldi-instruction-by-addiu-instruction" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="instruction-change">
+<h3>Instruction Change<a class="headerlink" href="#instruction-change" title="Permalink to this headline">¶</a></h3>
 <p>We have recognized the ldi instruction is a bad design and replace it with mips
 instruction addiu.
 The reason we replace ldi with addiu is that ldi use only one register even
@@ -185,19 +192,46 @@ So, we add addiu instruction to cpu0.
 The cpu0 is my brother&#8217;s work, I will find time to talk with him.</p>
 </div>
 </div>
-<div class="section" id="llvm-structure">
-<h2>LLVM structure<a class="headerlink" href="#llvm-structure" title="Permalink to this headline">¶</a></h2>
-<p>Following came from AOSA <a class="footnote-reference" href="#id12" id="id3">[3]</a>.</p>
+<div class="section" id="id3">
+<h2>LLVM Structure<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h3>
+<p>首先介紹編譯的基本知識，編譯流程可以簡化成 <a class="pageref" href="#compilation-pipeline">figure  9</a> 。
+源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
+產生目標平台語言。<a class="pageref" href="#compilation-flow">figure  10</a> 展示了更進一步的編譯流程。</p>
+<div class="align-center figure" id="compilation-pipeline">
+<img alt="_images/compilation_pipeline.png" src="_images/compilation_pipeline.png" />
+<p class="caption">Figure 9: Compilation Pipeline</p>
+</div>
+<div class="align-center figure" id="compilation-flow">
+<img alt="_images/compilation_flow_part_1.png" src="_images/compilation_flow_part_1.png" />
+<p class="caption">Figure 10: Compilation Flow</p>
+</div>
+<p>LLVM 後端的四大功能標明在 <a class="pageref" href="#llvm-backend">figure  11</a> 。</p>
+<ol class="arabic simple">
+<li>將 LLVM IR 編譯成匯編文本文件: 傳統的靜態編譯。</li>
+<li>將 LLVM IR 編譯成目標二進制文件: .o file writer。</li>
+<li>將匯編文本文件轉譯為目標二進製文件: 匯編。</li>
+<li>將目標二進制文件還原為匯編文本文件: 反匯編。</li>
+</ol>
+<div class="align-center figure" id="llvm-backend">
+<img alt="_images/llvm_backend.png" src="_images/llvm_backend.png" />
+<p class="caption">Figure 11: LLVM 後端</p>
+</div>
+</div>
+<div class="section" id="detail">
+<h3>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h3>
+<p>Following came from AOSA <a class="footnote-reference" href="#id13" id="id4">[3]</a>.</p>
 <p>The most popular design for a traditional static compiler (like most C
 compilers) is the three phase design whose major components are the front end,
-the optimizer and the back end (<a class="pageref" href="#simple-compiler">figure  9</a>).
+the optimizer and the back end (<a class="pageref" href="#simple-compiler">figure  12</a>).
 The front end parses source code, checking it for errors, and builds a
 language-specific Abstract Syntax Tree (AST) to represent the input code.
 The AST is optionally converted to a new representation for optimization, and
 the optimizer and back end are run on the code.</p>
 <div class="figure align-center" id="simple-compiler">
 <img alt="_images/SimpleCompiler.png" src="_images/SimpleCompiler.png" />
-<p class="caption">Figure 9: Three major components of a Three Phase Compiler</p>
+<p class="caption">Figure 12: Three major components of a Three Phase Compiler</p>
 </div>
 <p>The optimizer is responsible for doing a broad variety of transformations to
 try to improve the code&#8217;s running time, such as eliminating redundant
@@ -216,10 +250,10 @@ to support multiple source languages or target architectures.
 If the compiler uses a common code representation in its optimizer, then a
 front end can be written for any language that can compile to it, and a back
 end can be written for any target that can compile from it, as shown in
-<a class="pageref" href="#retargetablity">figure  10</a>.</p>
+<a class="pageref" href="#retargetablity">figure  13</a>.</p>
 <div class="figure align-center" id="retargetablity">
 <img alt="_images/RetargetableCompiler.png" src="_images/RetargetableCompiler.png" />
-<p class="caption">Figure 10: Retargetablity</p>
+<p class="caption">Figure 13: Retargetablity</p>
 </div>
 <p>With this design, porting the compiler to support a new source language (e.g.,
 Algol or BASIC) requires implementing a new front end, but the existing
@@ -320,10 +354,10 @@ for a front end to generate and be expressive enough to allow important
 optimizations to be performed for real targets.</p>
 </div>
 <div class="section" id="introduce-target-description-file">
-<h2>Introduce Target Description File<a class="headerlink" href="#introduce-target-description-file" title="Permalink to this headline">¶</a></h2>
+<h3>Introduce Target Description File<a class="headerlink" href="#introduce-target-description-file" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This section comes from AOSA</p>
+<p class="last">This section comes from AOSA. <a class="reference external" href="http://www.ituring.com.cn/article/4206">http://www.ituring.com.cn/article/4206</a></p>
 </div>
 <p>The &#8220;mix and match&#8221; approach allows target authors to choose what makes sense
 for their architecture and permits a large amount of code reuse across
@@ -336,10 +370,10 @@ register operands.
 LLVM&#8217;s solution to this is for each target to provide a target description
 in a declarative domain-specific language (a set of .td files) processed by the
 tblgen tool.
-The (simplified) build process for the x86 target is shown in <a class="pageref" href="#x86-target">figure  11</a> .</p>
+The (simplified) build process for the x86 target is shown in <a class="pageref" href="#x86-target">figure  14</a> .</p>
 <div class="figure align-center" id="x86-target">
 <img alt="_images/X86Target.png" src="_images/X86Target.png" />
-<p class="caption">Figure 11: Simplified x86 Target Definition</p>
+<p class="caption">Figure 14: Simplified x86 Target Definition</p>
 </div>
 <p>The different subsystems supported by the .td files allow target authors to
 build up the different pieces of their target.
@@ -353,11 +387,11 @@ are all caps) like this:</p>
 </div>
 </div>
 <div class="section" id="writing-target-description-file">
-<h2>Writing Target Description File<a class="headerlink" href="#writing-target-description-file" title="Permalink to this headline">¶</a></h2>
+<h3>Writing Target Description File<a class="headerlink" href="#writing-target-description-file" title="Permalink to this headline">¶</a></h3>
 <p>LLVM use target description files (.td) to describe target register file and
 instruction format. After you writing up those .td files, LLVM generates C++
 files (*.inc) by <tt class="docutils literal"><span class="pre">llvm-tblgen</span></tt>. Those *.inc files are C++ files with table
-driven in concept. <a class="footnote-reference" href="#id13" id="id4">[4]</a> is the web site.</p>
+driven in concept. <a class="footnote-reference" href="#id14" id="id5">[4]</a> is the web site.</p>
 <p>You should write one <tt class="docutils literal"><span class="pre">XX.td</span></tt> under your target subdirectory, it then includes
 other target description files defining various target information. The syntax
 of target description file is pretty similar to C++. Below is <tt class="docutils literal"><span class="pre">Cpu0.td</span></tt>.</p>
@@ -862,7 +896,7 @@ Please notify the Pattern =
 We will use it in DAG transformations later.</p>
 </div>
 <div class="section" id="writing-configuration-files">
-<h2>Writing configuration files<a class="headerlink" href="#writing-configuration-files" title="Permalink to this headline">¶</a></h2>
+<h3>Writing configuration files<a class="headerlink" href="#writing-configuration-files" title="Permalink to this headline">¶</a></h3>
 <p>You must have to add one LLVMBuild.txt under <tt class="docutils literal"><span class="pre">Target/Cpu0</span></tt> directory.
 If you want to support cmake, then CMakeLists.txt needed to be added.</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="cp"># CMakeLists.txt</span>
@@ -949,8 +983,9 @@ After building, you will find three libraries: <tt class="docutils literal"><spa
 <tt class="docutils literal"><span class="pre">libLLVMCpu0Desc.a</span></tt> and <tt class="docutils literal"><span class="pre">libLLVMCpu0Info.a</span></tt> in lib/ of your build
 directory.
 For more details please see
-&#8220;Building LLVM with CMake&#8221; <a class="footnote-reference" href="#id14" id="id5">[5]</a> and
-&#8220;LLVMBuild Guide&#8221; <a class="footnote-reference" href="#id15" id="id6">[6]</a>.</p>
+&#8220;Building LLVM with CMake&#8221; <a class="footnote-reference" href="#id15" id="id6">[5]</a> and
+&#8220;LLVMBuild Guide&#8221; <a class="footnote-reference" href="#id16" id="id7">[6]</a>.</p>
+</div>
 </div>
 <div class="section" id="target-registration">
 <h2>Target Registration<a class="headerlink" href="#target-registration" title="Permalink to this headline">¶</a></h2>
@@ -991,13 +1026,13 @@ the empty initialize function since we register nothing in them for this moment.
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Please see &#8220;Target Registration&#8221; <a class="footnote-reference" href="#id16" id="id7">[7]</a> for reference.</p>
+<p>Please see &#8220;Target Registration&#8221; <a class="footnote-reference" href="#id17" id="id8">[7]</a> for reference.</p>
 </div>
 <div class="section" id="build-libraries-and-td">
 <h2>Build libraries and td<a class="headerlink" href="#build-libraries-and-td" title="Permalink to this headline">¶</a></h2>
 <p>The llvm3.1 source code is put in /usr/local/llvm/3.1/src and have llvm3.1
 release-build in /usr/local/llvm/3.1/configure_release_build.
-About how to build llvm, please refer <a class="footnote-reference" href="#id17" id="id8">[8]</a>.
+About how to build llvm, please refer <a class="footnote-reference" href="#id18" id="id9">[8]</a>.
 We made a copy from /usr/local/llvm/3.1/src to
 /usr/local/llvm/3.1.test/cpu0/1/src for working with my Cpu0 target back end.
 Sub-directories src is for source code and cmake_debug_build is for debug
@@ -1070,7 +1105,7 @@ LLVM (http://llvm.org/):
 </div>
 <p>The <tt class="docutils literal"><span class="pre">llc</span> <span class="pre">-version</span></tt> can display <strong>“cpu0”</strong> and <strong>“cpu0el”</strong> message, because
 the following code from file TargetInfo/Cpu0TargetInfo.cpp what in
-&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id18" id="id9">[9]</a> we made.
+&#8220;section Target Registration&#8221; <a class="footnote-reference" href="#id19" id="id10">[9]</a> we made.
 List them as follows again,</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Cpu0TargetInfo.cpp</span>
 <span class="n">Target</span> <span class="n">llvm</span><span class="o">::</span><span class="n">TheCpu0Target</span><span class="p">,</span> <span class="n">llvm</span><span class="o">::</span><span class="n">TheCpu0elTarget</span><span class="p">;</span> 
@@ -1128,58 +1163,58 @@ Aborted (core dumped)
 According to LLVM structure, we need to define our target machine and include
 those td related files.
 The error message say we didn&#8217;t define our target machine.</p>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
+<table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://ccckmit.wikidot.com/ocs:cpu0">http://ccckmit.wikidot.com/ocs:cpu0</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id11" rules="none">
+<table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="http://translate.google.com.tw/translate?js=n&amp;prev=_t&amp;hl=zh-TW&amp;ie=UTF-8&amp;layout=2&amp;eotf=1&amp;sl=zh-CN&amp;tl=en&amp;u=http://ccckmit.wikidot.com/ocs:cpu0">http://translate.google.com.tw/translate?js=n&amp;prev=_t&amp;hl=zh-TW&amp;ie=UTF-8&amp;layout=2&amp;eotf=1&amp;sl=zh-CN&amp;tl=en&amp;u=http://ccckmit.wikidot.com/ocs:cpu0</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id12" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><a class="reference external" href="http://www.aosabook.org/en/llvm.html">http://www.aosabook.org/en/llvm.html</a></td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/TableGenFundamentals.html">http://llvm.org/docs/TableGenFundamentals.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://www.aosabook.org/en/llvm.html">http://www.aosabook.org/en/llvm.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/CMake.html">http://llvm.org/docs/CMake.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://llvm.org/docs/TableGenFundamentals.html">http://llvm.org/docs/TableGenFundamentals.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id15" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[6]</a></td><td><a class="reference external" href="http://llvm.org/docs/LLVMBuild.html">http://llvm.org/docs/LLVMBuild.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td><a class="reference external" href="http://llvm.org/docs/CMake.html">http://llvm.org/docs/CMake.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[7]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#target-registration">http://llvm.org/docs/WritingAnLLVMBackend.html#target-registration</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[6]</a></td><td><a class="reference external" href="http://llvm.org/docs/LLVMBuild.html">http://llvm.org/docs/LLVMBuild.html</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id17" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id8">[8]</a></td><td><a class="reference external" href="http://clang.llvm.org/get_started.html">http://clang.llvm.org/get_started.html</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id8">[7]</a></td><td><a class="reference external" href="http://llvm.org/docs/WritingAnLLVMBackend.html#target-registration">http://llvm.org/docs/WritingAnLLVMBackend.html#target-registration</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id18" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9">[9]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id9">[8]</a></td><td><a class="reference external" href="http://clang.llvm.org/get_started.html">http://clang.llvm.org/get_started.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id19" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[9]</a></td><td><a class="reference external" href="http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration">http://jonathan2251.github.com/lbd/llvmstructure.html#target-registration</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -1193,19 +1228,23 @@ The error message say we didn&#8217;t define our target machine.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Cpu0 Instruction and LLVM Target Description</a><ul>
-<li><a class="reference internal" href="#cpu0-processor-architecture">CPU0 processor architecture</a><ul>
-<li><a class="reference internal" href="#brief-introduction">Brief introduction</a></li>
-<li><a class="reference internal" href="#instruction-set-for-cpu0">Instruction Set for CPU0</a></li>
-<li><a class="reference internal" href="#status-register">Status register</a></li>
-<li><a class="reference internal" href="#the-execution-of-the-instruction-step">The execution of the instruction step</a></li>
-<li><a class="reference internal" href="#replace-ldi-instruction-by-addiu-instruction">Replace ldi instruction by addiu instruction</a></li>
+<li><a class="reference internal" href="#">Introduce Cpu0 and LLVM</a><ul>
+<li><a class="reference internal" href="#cpu0-architecture">Cpu0 Architecture</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#instruction-set">Instruction Set</a></li>
+<li><a class="reference internal" href="#status-register">Status Register</a></li>
+<li><a class="reference internal" href="#pipeline">Pipeline</a></li>
+<li><a class="reference internal" href="#instruction-change">Instruction Change</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#llvm-structure">LLVM structure</a></li>
+<li><a class="reference internal" href="#id3">LLVM Structure</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#detail">Detail</a></li>
 <li><a class="reference internal" href="#introduce-target-description-file">Introduce Target Description File</a></li>
 <li><a class="reference internal" href="#writing-target-description-file">Writing Target Description File</a></li>
 <li><a class="reference internal" href="#writing-configuration-files">Writing configuration files</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#target-registration">Target Registration</a></li>
 <li><a class="reference internal" href="#build-libraries-and-td">Build libraries and td</a></li>
 </ul>

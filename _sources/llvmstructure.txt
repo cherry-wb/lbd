@@ -1,5 +1,8 @@
-Cpu0 Instruction and LLVM Target Description
-============================================
+.. _llvm_structure:
+
+=======================
+Introduce Cpu0 and LLVM 
+=======================
 
 Before you start, you should know that you can always examine existing LLVM 
 backend code and attempt to port what you find for your own target architecture
@@ -24,14 +27,14 @@ from the asop web site. You can read the whole article from the asop web site.
 After that we will show you how to write register and instruction definitions 
 (Target Description File) which will be used in next chapter.
 
-CPU0 processor architecture
----------------------------
+Cpu0 Architecture
+=================
 
 We copy and redraw figures in english in this section. This 
 web site [#]_ is chinese version and here [#]_ is english version.
 
-Brief introduction
-++++++++++++++++++
+Introduction
+------------
 
 CPU0 is a 32-bit processor which has registers R0 .. R15, IR, MAR, MDR, etc., 
 and its structure is shown below.
@@ -50,8 +53,8 @@ Uses of each register as follows:
 
 	Cpu0 registers table
 
-Instruction Set for CPU0
-++++++++++++++++++++++++
+Instruction Set
+---------------
 
 The CPU0 instruction divided into three types, L-type usually load the saved 
 instruction, A-type arithmetic instruction-based J-type usually jump 
@@ -80,8 +83,8 @@ In the second edition of CPU0_v2 we fill the following command:
 
 	CPU0_v2 instruction table
 
-Status register
-+++++++++++++++
+Status Register
+---------------
 
 CPU0 status register contains the state of the N, Z, C, V, and I, T and other 
 interrupt mode bit. 
@@ -102,28 +105,28 @@ If Ra = Rb, then the setting state of N = 0, Z = 1.
 So conditional jump the JGT, JLT, JGE, JLE, JEQ, JNE instruction jumps N, Z 
 flag in the status register.
 
-The execution of the instruction step
-+++++++++++++++++++++++++++++++++++++
+Pipeline
+--------
 
 CPU0 has three stage pipeline: Instruction fetch, Decode and Execution.
 
-1) Instruction fetch
+#. Instruction fetch
 
--	Action 1. The instruction fetch: IR = [PC]
--	Action 2. Update program counter: PC = PC + 4
+   - Action 1. The instruction fetch: IR = [PC]
+   - Action 2. Update program counter: PC = PC + 4
 
-2) Decode
+#. Decode
 
--	Action 3. Decode: Control unit decodes IR, then set data flow switch 
-	and ALU operation mode. 
+   - Action 3. Decode: Control unit decodes IR, then set data flow switch 
+	   and ALU operation mode. 
 
-3) Execute
+#. Execute
 
--	Action 4. Execute: Data flow into ALU. After ALU done the operation, 
-	the result stored back into destination register. 
+   - Action 4. Execute: Data flow into ALU. After ALU done the operation, 
+	   the result stored back into destination register. 
 
-Replace ldi instruction by addiu instruction
-++++++++++++++++++++++++++++++++++++++++++++
+Instruction Change
+------------------
 
 We have recognized the ldi instruction is a bad design and replace it with mips 
 instruction addiu. 
@@ -158,8 +161,49 @@ solution during design the compiler backend for that CPU.
 So, we add addiu instruction to cpu0.
 The cpu0 is my brother's work, I will find time to talk with him.
 
-LLVM structure
---------------
+LLVM Structure
+==============
+
+Overview
+--------
+
+首先介紹編譯的基本知識，編譯流程可以簡化成 :num:`figure #compilation-pipeline` 。
+源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
+產生目標平台語言。:num:`figure #compilation-flow` 展示了更進一步的編譯流程。
+
+.. _compilation-pipeline:
+
+.. figure:: ../Fig/llvmstructure/compilation_pipeline.png
+   :figclass: align-center
+
+   Compilation Pipeline
+
+.. _compilation-flow:
+
+.. figure:: ../Fig/llvmstructure/compilation_flow_part_1.png
+   :figclass: align-center
+
+   Compilation Flow
+
+LLVM 後端的四大功能標明在 :num:`figure #llvm-backend` 。
+
+#. 將 LLVM IR 編譯成匯編文本文件: 傳統的靜態編譯。
+
+#. 將 LLVM IR 編譯成目標二進制文件: .o file writer。
+
+#. 將匯編文本文件轉譯為目標二進製文件: 匯編。
+
+#. 將目標二進制文件還原為匯編文本文件: 反匯編。
+
+.. _llvm-backend:
+
+.. figure:: ../Fig/llvmstructure/llvm_backend.png
+   :figclass: align-center
+
+   LLVM 後端
+
+Detail
+------
 
 Following came from AOSA [#]_.
 
@@ -287,7 +331,7 @@ Introduce Target Description File
 ---------------------------------
 
 .. note::
-   This section comes from AOSA
+   This section comes from AOSA. http://www.ituring.com.cn/article/4206
 
 The "mix and match" approach allows target authors to choose what makes sense 
 for their architecture and permits a large amount of code reuse across 
@@ -422,7 +466,7 @@ For more details please see
 "LLVMBuild Guide" [#]_.
 
 Target Registration
--------------------
+===================
 
 You must also register your target with the TargetRegistry, which is what other 
 LLVM tools use to be able to lookup and use your target at runtime. 
@@ -446,7 +490,7 @@ the empty initialize function since we register nothing in them for this moment.
 Please see "Target Registration" [#]_ for reference.
 
 Build libraries and td
-----------------------
+======================
 
 The llvm3.1 source code is put in /usr/local/llvm/3.1/src and have llvm3.1 
 release-build in /usr/local/llvm/3.1/configure_release_build. 

@@ -1176,7 +1176,7 @@ eliminateCallFramePseudoInstr(MachineFunction &amp;MF, MachineBasicBlock &amp;MB
 <p>With above definition, eliminateCallFramePseudoInstr() will be called when
 llvm meet pseudo instructions ADJCALLSTACKDOWN and ADJCALLSTACKUP.
 We just discard these 2 pseudo instructions.
-Run 8/4/Cpu0 with ch8_1.cpp will get the following result.</p>
+Run 8/5/Cpu0 with ch8_1.cpp will get the following result.</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-76-131:InputFiles Jonathan<span class="nv">$ </span>/Users/Jonathan/llvm/3.1.test/cpu0/1/
 cmake_debug_build/bin/Debug/llc -march<span class="o">=</span>cpu0 -relocation-model<span class="o">=</span>pic -filetype
 <span class="o">=</span>asm ch8_1.bc -o ch8_1.cpu0.s
@@ -1292,7 +1292,7 @@ variable address cannot be decided at compile time.
 But, we can caculate the distance between the global variable address and
 shared library function if they will be loaded to the contiguous memory space
 together.</p>
-<p>Let&#8217;s run 8/5/Cpu0 with ch8_2.cpp to get the following result of we putting the
+<p>Let&#8217;s run 8/6/Cpu0 with ch8_2.cpp to get the following result of we putting the
 comment in it for explanation.</p>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-67-25:InputFiles Jonathan<span class="nv">$ </span>cat ch8_2.cpu0.s
     .section .mdebug.abi32
@@ -1381,7 +1381,7 @@ caller saved register $gp in calling the shared library and the shared library
 how to use $gp to access global variable address. This solution is popular in
 reality and deserve change cpu0 official design as a compiler book.
 Mips use the same solution in 32 bits Mips32 CPU.</p>
-<p>Now, as the following code added in 8/5/Cpu0, we can issue <strong>“.cprestore”</strong> in
+<p>Now, as the following code added in 8/6/Cpu0, we can issue <strong>“.cprestore”</strong> in
 emitPrologue() and emit ld $gp, ($gp save slot on stack) after jalr by create
 file Cpu0EmitGPRestore.cpp which run as a function pass.</p>
 <div class="highlight-c++"><pre>// # CMakeLists.txt
@@ -2530,6 +2530,39 @@ SDValue Cpu0TargetLowering::LowerVASTART(SDValue Op, SelectionDAG &amp;DAG) cons
 </div>
 <p>Mips qemu reference .</p>
 </div>
+<div class="section" id="verify-div-for-operator">
+<h2>Verify DIV for operator %<a class="headerlink" href="#verify-div-for-operator" title="Permalink to this headline">¶</a></h2>
+<p>Now, let&#8217;s run 8/7/Cpu0 with 4_6_2.cpp to get the result as below.
+It translate <strong>“(b+1)%c”</strong> into <strong>“div $zero, $3, $2”</strong> and <strong>“mfhi $2”</strong>.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ch4_6_2.cpp</span>
+<span class="cp">#include &lt;stdlib.h&gt;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+<span class="c1">//  unsigned int b = 11;</span>
+  <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">rand</span><span class="p">();</span>
+
+  <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">c</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre>118-165-70-242:InputFiles Jonathan<span class="nv">$ </span>clang -c ch4_6_2.cpp -I/Applications/
+Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+MacOSX10.8.sdk/usr/include/ -emit-llvm -o ch4_6_2.bc
+118-165-70-242:InputFiles Jonathan<span class="nv">$ </span>/Users/Jonathan/llvm/3.1.test/cpu0/1/cmake
+_debug_build/bin/Debug/llc -march<span class="o">=</span>cpu0 -relocation-model<span class="o">=</span>pic -filetype<span class="o">=</span>asm
+ch4_6_2.bc -o ch4_6_2.cpu0.s
+118-165-70-242:InputFiles Jonathan<span class="nv">$ </span>cat ch4_6_2.cpu0.s
+  ...
+  div <span class="nv">$zero</span>, <span class="nv">$3</span>, <span class="nv">$2</span>
+  mfhi  <span class="nv">$2</span>
+  …
+</pre></div>
+</div>
+</div>
 <div class="section" id="summary-of-this-chapter">
 <h2>Summary of this chapter<a class="headerlink" href="#summary-of-this-chapter" title="Permalink to this headline">¶</a></h2>
 <p>Until now, we have 5,500 lines of source code around in 8/7/Cpu0.
@@ -2594,6 +2627,7 @@ variable, control flow statement and function call.</p>
 <li><a class="reference internal" href="#pseudo-hook-instruction-adjcallstackdown-and-adjcallstackup">Pseudo hook instruction ADJCALLSTACKDOWN and ADJCALLSTACKUP</a></li>
 <li><a class="reference internal" href="#handle-gp-register-in-pic-addressing-mode">Handle $gp register in PIC addressing mode</a></li>
 <li><a class="reference internal" href="#variable-number-of-arguments">Variable number of arguments</a></li>
+<li><a class="reference internal" href="#verify-div-for-operator">Verify DIV for operator %</a></li>
 <li><a class="reference internal" href="#summary-of-this-chapter">Summary of this chapter</a></li>
 </ul>
 </li>
