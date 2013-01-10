@@ -189,6 +189,8 @@ latex_elements = {
 #'preamble': '',
 }
 
+latex_preamble = '''\usepackage{CJKutf8}\n\AtBeginDocument{\\begin{CJK}{UTF8}{bsmi}}\n\AtEndDocument{\end{CJK}}'''
+ 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
