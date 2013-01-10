@@ -1,3 +1,6 @@
+﻿.. _backend_structure:
+
+======================
 LLVM Backend Structure
 ======================
 
@@ -16,45 +19,147 @@ involved in writing a LLVM backend. Once knowing the overall structure, you can
 quickly create a simple backend from scratch.
 
 Overview
---------
-首先介紹編譯的基本知識，編譯流程可以簡化成 :num:`figure #compilation-pipeline` 。
-源語言 (代碼) 經過編譯器前端解析成編譯器內部的中間表示，並在此階段優化代碼，最後
-產生目標平台語言。:num:`figure #compilation-flow` 展示了更進一步的編譯流程。
+========
 
-.. _compilation-pipeline:
+.. note::
+   Following content came from "Design and Implementation of a TriCore Backend for the LLVM Compiler Framework" [6]_ Chapter 4. I already got author's approve on the Chinese translation work. :-) 
 
-.. figure:: ../Fig/backendstructure/compilation_pipeline.png
-   :figclass: align-center
+As mentioned in Chapter 2, LLVM provides developers with an extensive generic frame
+work for code generation. It prescribes a fixed directory layout and class hierarchy
+template. Each backend is located in its own subdirectory within lib/Target, where
+most of the code to be implemented goes. Apart from this, only a handful of the original
+files in the LLVM source tree have to be modified in order to integrate the new backend
+with the existing LLVM codebase.
 
-   Compilation Pipeline
+如同第二章所提到，LLVM 提供開發者一套相當通用的框架用來開發後端。LLVM 提供一個
+固定的目錄布局，和類別階層。每一個後端都位在各自位於 ``lib/Target`` 的子目錄，
+大部分的實作代碼都在該子目錄底下。除此之外，只有少部分 LLVM 代碼需要修改以將
+新增的後端整合進 LLVM 代碼庫。
 
-.. _compilation-flow:
+The target code generator is divided into several components, each of which is discussed
+in a separate section. For a better overview, each section contains a list of the source
+files that comprise the respective component
 
-.. figure:: ../Fig/backendstructure/compilation_flow_part_1.png
-   :figclass: align-center
+目標後端被分為數個元件，底下各節將分別加以討論。為了加強讀者整體印象，各節會列出
+相應的檔案。
 
-   Compilation Flow
+The given class hierarchy specifies a number of abstract base classes with virtual
+functions and requires the backend developer to implement subclasses for each of them.
+Most of these classes do not provide any immediate functionality for code generation, but
+merely give selected information about the characteristics and properties of the target
+machine. This makes it possible to keep the bulk of the actual algorithms and procedures
+fully target-independent by accessing all the required target-specific information through
+the specified interfaces.
 
-LLVM 後端的四大功能標明在 :num:`figure #llvm-backend` 。
-
-#. 將 LLVM IR 編譯成匯編文本文件: 傳統的靜態編譯。
-
-#. 將 LLVM IR 編譯成目標二進制文件: .o file writer。
-
-#. 將匯編文本文件轉譯為目標二進製文件: 匯編。
-
-#. 將目標二進制文件還原為匯編文本文件: 反匯編。
-
-.. _llvm-backend:
-
-.. figure:: ../Fig/backendstructure/llvm_backend.png
-   :figclass: align-center
-
-   LLVM 後端
+LLVM 的類別階層指定數個抽象基礎類別，其中定義數個虛擬函式。後端開發者必須實做前述
+抽象類別的子類別，並依據需要實做虛擬函式。大部分的類別僅提供目標的各項資訊和特性，
+與後端代碼生成並不相關。這使得演算法和其它程序與底層目標無關，僅透過指定的界面存取
+目標資訊。
 
 
-Step 0. Build Example Code
----------------------------
+Code Generation Process
+=======================
+
+為了瞭解 LLVM 後端的結構，先理解 LLVM  後端是如何生成目標代碼是必要的。
+將 LLVM IR 轉成目標代碼，後端需要經過數個步驟 [#]_ 。
+
+Instruction Selection
+---------------------
+
+目標代碼生成的第一步，是將 LLVM IR 轉成一組 ``SelectionDAG`` ，
+這是一個有向無環圖，其中每一個節點代表一條 LLVM 指令。任兩條指令之間的 definition-use
+關係由一條從 using node 指向 defining node 的邊描述，邊上伴隨受影響變數的型別其資訊。
+如果指令之間有 control flow dependency ，會以額外的邊加以表示。由於目標並不保證支持
+所有 LLVM 提供的型別和操作，前述的 DAG 必須先加以合法化，也就是要先將其轉成目標支持
+的型別和操作。合法化的 DAG 再交由 instruction selector 以樣式匹配的方式，創建以目標
+指令為內容的 DAG 節點。對於每一個匹配到的 LLVM DAG 節點，相應目標指令的 DAG 節點
+會被建立。instruction selector 的輸入和輸出都是 DAG，只是其內容由 LLVM 指令轉成目標指令。
+
+Scheduling and Formation
+------------------------
+
+前述由目標指令所構成的的 DAG 將會在此階段被解構成目標指令序列 (list)。每一個函式以
+一個 `MachineFunction`_ 加以表示，其中包含 `MachineBlock`_ 串列。 `MachineBlock`_
+中又包含數條 `MachineInstr`_ 。Scheduler 必須決定以何種順序將目標指令寫出，這會受
+到許多因素影響，例如: 最小 register pressure，亦即減少因暫存器數量不足，而需要將
+暫存器內容暫時搬移至內存的次數。
+
+此時，目標指令序列仍舊保持 SSA 形式，它並非合法的匯編。除了少數例外 (像是將返回值
+搬移至 ABI 所規定的暫存器)，所有的指令仍舊操作 LLVM 提供的無限量虛擬暫存器，且所有
+存取棧的指令均是存取虛擬的棧空間，而非真正的偏移量。
+
+.. _MachineFunction: http://llvm.org/docs/doxygen/html/classllvm_1_1MachineFunction.html
+
+.. _MachineBlock: http://llvm.org/docs/doxygen/html/classllvm_1_1MachineBasicBlock.html
+
+.. _MachineInstr: http://llvm.org/docs/doxygen/html/classllvm_1_1MachineInstr.html
+
+SSA-based Machine Code Optimization
+-----------------------------------
+
+在分配物理暫存器之前，後端有機會針對保有 SSA 形式的目標指令序列進行 SSA 相關的優化。
+
+Register Allocation
+-------------------
+
+虛擬暫存器將在此階段被消除，改以物理暫存器對應之。LLVM 暫存器分配器將會為每一個虛擬
+暫存器分配一個物理暫存器。如果虛擬暫存器數量超過實際可用的物理暫存器，暫存器分配器
+會產生 spill code 將某個物理暫存器搬移至內存以供使用。因為暫存器有可能重疊，例如:
+``%e2`` 暫存器分別由 ``%d3`` 和 ``%d2`` 構成其上下半部，暫存器分配器必須考慮到這種
+情況。虛擬暫存器的消除同時伴隨著 SSA 形式的解構。為建立 SSA 形式所插入的 phi 指令
+將被 copy 指令所取代。
+
+Prologue/Epilogue Code Insertion
+--------------------------------
+
+在暫存器分配器運行之後，我們可以計算每一個函式將會需要多少棧空間。進而在函式的出入口
+寫入相對應的 prologue 和 epilogue。之前存取虛擬棧空間的指令，現在可以存取到相對應
+棧頂 (sp) 或是棧底 (fp) 指針的偏移量。
+
+Late Machine Code Optimizations
+-------------------------------
+
+在將目標指令寫出之前，可以做窺孔優化 (peephole optimization)，對目標指令做細部調整。
+
+Code Emission
+-------------
+
+最後，完整的目標代碼被寫出。對於靜態編譯，其結果可以是匯編文本; 對於 JIT 編譯，目標指
+令的編碼將被寫入內存。
+
+General Target Information
+==========================
+
+每一個 LLVM 後端都必須要提供一個介面供上層原件調用。後端必須實現 `LLVMTargetMachine`_
+的子類，提供目標平台必要資訊，並向 LLVM 代碼生成器註冊。
+
+.. _LLVMTargetMachine: http://llvm.org/docs/doxygen/html/classllvm_1_1LLVMTargetMachine.html
+
+Target Machine Characteristics
+------------------------------
+
+類別 ``XXTargetMachine`` 扮演著中心的角色，它是目標後端和 LLVM 其它原件之間的界面。
+它創建並擁有數個物件描述目標平台資訊，LLVM 代碼生成器透過 ``XXTargetMachine`` 取
+得相應資訊。
+
+* `DataLayout`_ 
+
+* `TargetFrameLowering`_
+
+* `TargetInstrInfo`_ 、 `TargetLowering`_ 和  `TargetRegisterInfo`_
+
+.. _DataLayout : http://llvm.org/docs/doxygen/html/classllvm_1_1DataLayout.html
+
+.. _TargetFrameLowering : http://llvm.org/docs/doxygen/html/TargetFrameLowering_8h.html
+
+.. _TargetInstrInfo: http://llvm.org/docs/doxygen/html/TargetInstrInfo_8h_source.html
+
+.. _TargetLowering : http://llvm.org/docs/doxygen/html/TargetLowering_8h.html
+
+.. _TargetRegisterInfo: http://llvm.org/docs/doxygen/html/TargetRegisterInfo_8h_source.html
+
+Build Example Code
+==================
 
 We build our example code first, then add components step by step.
 
@@ -78,6 +183,7 @@ We build our example code first, then add components step by step.
 
 Step 1. Add XXTargetMachine
 ---------------------------
+
 The role of TargetMachine in the LLVM backend structure is shown in :num:`figure #target-machine`. `llc
 <http://llvm.org/docs/CommandGuide/llc.html>`_ is LLVM static compiler.
 When you invoke ``llc`` command with option ``-march=XX``, it will trigger the
@@ -270,7 +376,7 @@ LLVM code generation sequence, DAG, and instruction selection in next three
 sections.
 
 LLVM Code Generation Sequence
------------------------------
+=============================
 
 .. note::
 Following content came from
@@ -486,7 +592,7 @@ Step 5. Add Prologue/Epilogue
 
 Following came from
 "Design and Implementation of a TriCore Backend for the LLVM Compiler Framework"
-[6]_ section 4.4.2.
+[5]_ section 4.4.2.
 
 For some target architectures, some aspects of the target architecture’s 
 register set are dependent upon variable factors and have to be determined at 
@@ -548,8 +654,8 @@ Following is the command and output file ch3.cpu0.s,
 
 .. literalinclude:: ../terminal_io/backendstructure/7.txt
 
-Summary of this Chapter
------------------------
+Summary
+=======
 
 We have finished a simple assembler for cpu0 which only support **addiu**, 
 **st** and **ret** 3 instructions.
@@ -575,7 +681,7 @@ instruction), has only 45,000 lines with comments.
 In next chapter, we will show you that add a new instruction support is as easy 
 as 123.
 
-
+.. [#] http://llvm.org/docs/CodeGenerator.html
 
 .. [#] http://llvm.org/docs/WritingAnLLVMBackend.html#target-machine
 
