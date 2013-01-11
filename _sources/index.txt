@@ -37,6 +37,6 @@ The book is also available in:
 
     <ul>
       <li>
-        <a href="http://azru0512.github.com/lbd//lbd/WriteAnLLVMBackendTutorialForCpu0.pdf">PDF</a>
+        <a href="http://azru0512.github.com/lbd/WriteAnLLVMBackendTutorialForCpu0.pdf">PDF</a>
       </li>
     </ul>
