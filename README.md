@@ -24,5 +24,5 @@ browser without checking out and building the book, please visit:
 如果你不想要下載並編譯本文件的代碼，而只想要以瀏覽器閱讀本文件最新的版本，
 請見:
 
-  http://azru0512.github.com/lbd/
-  http://people.cs.nctu.edu.tw/~chenwj/slide/lbd/
+*  http://azru0512.github.com/lbd/
+*  http://people.cs.nctu.edu.tw/~chenwj/slide/lbd/
