@@ -167,3 +167,8 @@ gh-pages:
 	rm -rf $(GH_PAGES_SOURCES) build
 	git add -A
 	git commit -m "Generated gh-pages for `git log private -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout private
+
+genexample:
+	rm -rf LLVMBackendTutorialExampleCode.tar.gz LLVMBackendTutorialExampleCode
+	sh genexample.sh
+	tar -zcvf LLVMBackendTutorialExampleCode.tar.gz LLVMBackendTutorialExampleCode
