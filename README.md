@@ -2,12 +2,13 @@ lbd: llvm backend document
 ==========================
 
 This document aims to provide a simple, concise, and clear step-by-step 
-tutorial in creating a new LLVM backend from scratch. 
-It is written in reStructuredText, and built using the Sphinx Python 
-Documentation Generator.
+tutorial in creating a new LLVM backend from scratch. It is written in
+reStructuredText, and built using the
+[Sphinx Python Documentation Generator] (http://sphinx-doc.org/).
 
 本文件目的是為 LLVM 編寫後端提供一個簡潔扼要的教學。本文件以 reStructuredText
-寫成，並以 Sphinx Python Documentation Generator 編譯而成。
+寫成，並以 [Sphinx Python Documentation Generator](http://sphinx-doc.org/)
+編譯而成。
 
 You can download and build the document yourself by doing command below:
 
