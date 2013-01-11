@@ -216,7 +216,3 @@ Chapter of Appendix A:
 
 Include the LLVM source code, development tools installation, and environment 
 setting on iMac and Linux platform.
-
-
-
->>>>>>> 8f1f338... Add Outline of chapters
