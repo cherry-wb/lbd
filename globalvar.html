@@ -69,6 +69,29 @@ Machine DAG translation directly according the input file IR DAG.</p>
 <h2>Global variable<a class="headerlink" href="#global-variable" title="Permalink to this headline">¶</a></h2>
 <p>6/1/Cpu0 support the global variable, let&#8217;s compile ch6_1.cpp with this version
 first, and explain the code changes after that.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// clang -c ch5_1.cpp -emit-llvm -o ch5_1.bc</span>
+<span class="c1">// /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc -march=cpu0 -relocation-model=pic -filetype=asm ch5_1.bc -o ch5_1.cpu0.s</span>
+<span class="c1">// /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc -march=cpu0 -relocation-model=static -cpu0-islinux-format=false -filetype=asm ch5_1.bc -o ch5_1.cpu0.islinux-format-false.s</span>
+<span class="c1">// /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc -march=cpu0 -relocation-model=static -filetype=asm ch5_1.bc -o ch5_1.cpu0.static.s</span>
+<span class="c1">// /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc -march=cpu0 -relocation-model=pic -filetype=obj ch5_1.bc -o ch5_1.cpu0.o</span>
+<span class="c1">// /usr/local/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/llc -march=cpu0 -relocation-model=static -filetype=obj ch5_1.bc -o ch5_1.cpu0.static.o</span>
+
+<span class="c1">// /Users/Jonathan/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/Debug/llc -march=cpu0 -relocation-model=pic -filetype=asm ch5_1.bc -o ch5_1.cpu0.s</span>
+<span class="c1">// /Users/Jonathan/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/Debug/llc -march=cpu0 -relocation-model=static -cpu0-islinux-format=false -filetype=asm ch5_1.bc -o ch5_1.cpu0.islinux-format-false.s</span>
+<span class="c1">// /Users/Jonathan/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/Debug/llc -march=cpu0 -relocation-model=static -filetype=asm ch5_1.bc -o ch5_1.cpu0.static.s</span>
+<span class="c1">// /Applications/Xcode.app/Contents/Developer/usr/bin/lldb -- /Users/Jonathan/llvm/3.1.test/cpu0/1/cmake_debug_build/bin/Debug/llc -march=cpu0 -filetype=asm ch5_1.bc -o ch5_1.cpu0.s </span>
+
+<span class="kt">int</span> <span class="n">gI</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="n">c</span> <span class="o">=</span> <span class="n">gI</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <div class="highlight-bash"><div class="highlight"><pre>118-165-66-82:InputFiles Jonathan<span class="nv">$ </span>llvm-dis ch6_1.bc -o ch6_1.ll
 118-165-66-82:InputFiles Jonathan<span class="nv">$ </span>cat ch6_1.ll
 ; <span class="nv">ModuleID</span> <span class="o">=</span> <span class="s1">&#39;ch6_1.bc&#39;</span>
