@@ -20,7 +20,6 @@ Table of Contents
    funccall
    elf
    todo
-   
 
 Book example code
 -----------------
@@ -28,7 +27,6 @@ Book example code
 The example code is available in: 
 
 http://jonathan2251.github.com/lbd/LLVMBackendTutorialExampleCode.tar.gz
-
 
 Alternate formats
 -----------------
@@ -38,11 +36,7 @@ The book is also available in:
 .. raw:: html
 
     <ul>
-    <li>
-    <a href="http://jonathan2251.github.com/lbd/WriteAnLLVMBackendTutorialForCpu0.pdf">PDF</a>
-    </li>
-    <li>
-    <a href="http://jonathan2251.github.com/lbd/WriteAnLLVMBackendTutorialForCpu0.epub">ePub</a>
-    </li>
+      <li>
+        <a href="http://azru0512.github.com/lbd//lbd/WriteAnLLVMBackendTutorialForCpu0.pdf">PDF</a>
+      </li>
     </ul>
-

@@ -20,6 +20,9 @@ Anoushe Jamshidi
 Revision history
 ----------------
 
+Version 3.2.2, Released January 10, 2013
+	Add section "Full support %" and section "Verify DIV for operator %".
+	
 Version 3.2.1, Released January 7, 2013
 	Add Footnote for references.
 	Reorganize chapters.
@@ -166,7 +169,7 @@ three instructions support to generate the assembly output file.
 Chapter of Other instructions:
 
 Over ten of C operators and their corresponding LLVM IR instructions 
-introduced in this chapter. Around 200 lines of source code (most are in 
+introduced in this chapter. Around 345 lines of source code (most are in 
 .td Target Description file) are added. With these 345 lines, it can translate 
 **+, -, \*, /, &, |, ^, <<, >>, !** and **%** into assembly code. 
 The ``llc`` debug option and debug tool **Graphviz** which supported by LLVM 
@@ -216,7 +219,3 @@ Chapter of Appendix A:
 
 Include the LLVM source code, development tools installation, and environment 
 setting on iMac and Linux platform.
-
-
-
->>>>>>> 8f1f338... Add Outline of chapters
