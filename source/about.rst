@@ -20,9 +20,10 @@ Anoushe Jamshidi
 Revision history
 ----------------
 
+Version 3.2.3, Released January 12, 2013
+	Add chapter "Porting to LLVM 3.2".
 Version 3.2.2, Released January 10, 2013
 	Add section "Full support %" and section "Verify DIV for operator %".
-	
 Version 3.2.1, Released January 7, 2013
 	Add Footnote for references.
 	Reorganize chapters.
@@ -213,6 +214,10 @@ Chapter of ELF:
 Like many backend. Cpu0 support ELF obj format generated. The ELF format and 
 binutils tools (not a part of LLVM) introduced and demonstrate backend 
 designers how to use this ELF tool to verify and analysis the backend obj.  
+
+Chapter of Porting to LLVM 3.2:
+
+Introduce the changes of API used by Cpu0 and Mips changes in this version.  
 
 
 Chapter of Appendix A:

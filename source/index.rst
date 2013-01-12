@@ -19,6 +19,7 @@ Table of Contents
    ctrlflow
    funccall
    elf
+   port3.2
    todo
 
 Book example code
