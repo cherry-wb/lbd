@@ -164,7 +164,8 @@ gh-pages:
 	gmake latexpdf
 	mv -fv build/html/* ./
 	mv -fv build/latex/WriteAnLLVMBackendTutorialForCpu0.pdf "./WriteAnLLVMBackendTutorialForCpu0.pdf"
-	rm -rf $(GH_PAGES_SOURCES) build
+<<<<<<< HEAD
+	rm -rf $(GH_PAGES_SOURCES) build LLVMBackendTutorialExampleCode
 	git add -A
 	git commit -m "Generated gh-pages for `git log private -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout private
 
