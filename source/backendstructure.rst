@@ -1,4 +1,4 @@
-﻿.. _backend_structure:
+.. _backend_structure:
 
 ======================
 LLVM Backend Structure
