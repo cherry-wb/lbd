@@ -142,11 +142,11 @@ Target Machine Characteristics
 它創建並擁有數個物件描述目標平台資訊，LLVM 代碼生成器透過 ``XXTargetMachine`` 取
 得相應資訊。
 
-* `DataLayout`_ 
+* `DataLayout`_ 描述目標的資料佈局，如: 大小端，指針寬度和內存對齊。
 
-* `TargetFrameLowering`_
+* `TargetFrameLowering`_ 描述目標棧框佈局。它指明棧生長方向、棧上空間的對齊要求和本地變數應從棧底何處偏移量開始存取。
 
-* `TargetInstrInfo`_ 、 `TargetLowering`_ 和  `TargetRegisterInfo`_
+* 其它類別諸如: `TargetInstrInfo`_ 、 `TargetLowering`_ 和  `TargetRegisterInfo`_ 。底下各節會分別加以描述。
 
 .. _DataLayout : http://llvm.org/docs/doxygen/html/classllvm_1_1DataLayout.html
 
@@ -157,6 +157,9 @@ Target Machine Characteristics
 .. _TargetLowering : http://llvm.org/docs/doxygen/html/TargetLowering_8h.html
 
 .. _TargetRegisterInfo: http://llvm.org/docs/doxygen/html/TargetRegisterInfo_8h_source.html
+
+Subtarget Information
+---------------------
 
 Build Example Code
 ==================

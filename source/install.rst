@@ -24,11 +24,18 @@ program and without clang and clang++.
 Install LLVM 3.1 release on Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our tutorial is based on LLVM 3.1 release. We need `LLVM <http://llvm.org/>`_,
-`clang <http://clang.llvm.org/>`_ and `compiler-rt <http://compiler-rt.llvm.org/>`_.
+Our tutorial is based on LLVM 3.1 release. We need `LLVM`_,
+`clang`_ and `compiler-rt`_.
 In this section, we will show the command line steps to build and install LLVM
 on your Linux machine. We use the following names to denote paths specific to
 your enviroment.
+
+.. _LLVM: http://llvm.org
+
+.. _clang: http://clang.llvm.org
+
+.. _compiler-rt: http://compiler-rt.llvm.org
+
 
 ``LLVM_SRC``
 
@@ -49,7 +56,9 @@ your enviroment.
 
   The resulting binary will be installed in this directory.
 
-If you are using IDE, please see :ref:`appendix` for more information.
+If you are using IDE, please see `appendix`_ for more information.
+
+.. _appendix: http://jonathan2251.github.com/lbd/install.html
 
 #. Download the source code.
 
