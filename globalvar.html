@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Global variable, struct and array &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
+    <title>Global variables, structs and arrays &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.2',
+        VERSION:     '3.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
-    <link rel="next" title="Control flow statement" href="ctrlflow.html" />
-    <link rel="prev" title="Generate obj file" href="genobj.html" /> 
+    <link rel="next" title="Control flow statements" href="ctrlflow.html" />
+    <link rel="prev" title="Generating object files" href="genobj.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,10 +39,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="ctrlflow.html" title="Control flow statement"
+          <a href="ctrlflow.html" title="Control flow statements"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="genobj.html" title="Generate obj file"
+          <a href="genobj.html" title="Generating object files"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>
@@ -53,8 +53,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="global-variable-struct-and-array">
-<h1>Global variable, struct and array<a class="headerlink" href="#global-variable-struct-and-array" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="global-variables-structs-and-arrays">
+<span id="sec-globalvars"></span><h1>Global variables, structs and arrays<a class="headerlink" href="#global-variables-structs-and-arrays" title="Permalink to this headline">¶</a></h1>
 <p>In the previous two chapters, we only access the local variables.
 This chapter will deal global variable access translation.
 After that, introducing the types of struct and array as well as
@@ -955,7 +955,7 @@ ld  <span class="nv">$2</span>, 4<span class="o">(</span><span class="nv">$2</sp
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Global variable, struct and array</a><ul>
+<li><a class="reference internal" href="#">Global variables, structs and arrays</a><ul>
 <li><a class="reference internal" href="#global-variable">Global variable</a><ul>
 <li><a class="reference internal" href="#static-mode">Static mode</a></li>
 <li><a class="reference internal" href="#pic-mode">PIC mode</a></li>
@@ -970,10 +970,10 @@ ld  <span class="nv">$2</span>, 4<span class="o">(</span><span class="nv">$2</sp
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="genobj.html"
-                        title="previous chapter">Generate obj file</a></p>
+                        title="previous chapter">Generating object files</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="ctrlflow.html"
-                        title="next chapter">Control flow statement</a></p>
+                        title="next chapter">Control flow statements</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/globalvar.txt"
@@ -1003,10 +1003,10 @@ ld  <span class="nv">$2</span>, 4<span class="o">(</span><span class="nv">$2</sp
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="ctrlflow.html" title="Control flow statement"
+          <a href="ctrlflow.html" title="Control flow statements"
              >next</a> |</li>
         <li class="right" >
-          <a href="genobj.html" title="Generate obj file"
+          <a href="genobj.html" title="Generating object files"
              >previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>

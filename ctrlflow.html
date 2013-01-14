@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Control flow statement &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
+    <title>Control flow statements &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.2',
+        VERSION:     '3.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
     <link rel="next" title="Function call" href="funccall.html" />
-    <link rel="prev" title="Global variable, struct and array" href="globalvar.html" /> 
+    <link rel="prev" title="Global variables, structs and arrays" href="globalvar.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,7 +42,7 @@
           <a href="funccall.html" title="Function call"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="globalvar.html" title="Global variable, struct and array"
+          <a href="globalvar.html" title="Global variables, structs and arrays"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>
@@ -53,13 +53,13 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="control-flow-statement">
-<h1>Control flow statement<a class="headerlink" href="#control-flow-statement" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="control-flow-statements">
+<span id="sec-controlflow"></span><h1>Control flow statements<a class="headerlink" href="#control-flow-statements" title="Permalink to this headline">¶</a></h1>
 <p>This chapter illustrates the corresponding IR for control flow statements, like
 <strong>“if else”</strong>, <strong>“while”</strong> and <strong>“for”</strong> loop statements in C, and how to
 translate these control flow statements of llvm IR into cpu0 instructions.</p>
-<div class="section" id="id1">
-<h2>Control flow statement<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="control-flow-statement">
+<h2>Control flow statement<a class="headerlink" href="#control-flow-statement" title="Permalink to this headline">¶</a></h2>
 <p>Run ch7_1_1.cpp with clang will get result as follows,</p>
 <div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ch7_1_1.cpp</span>
 <span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
@@ -738,8 +738,8 @@ the book is written) is more complicate and deep in CPU architecture.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Control flow statement</a><ul>
-<li><a class="reference internal" href="#id1">Control flow statement</a></li>
+<li><a class="reference internal" href="#">Control flow statements</a><ul>
+<li><a class="reference internal" href="#control-flow-statement">Control flow statement</a></li>
 <li><a class="reference internal" href="#risc-cpu-knowledge">RISC CPU knowledge</a></li>
 </ul>
 </li>
@@ -747,7 +747,7 @@ the book is written) is more complicate and deep in CPU architecture.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="globalvar.html"
-                        title="previous chapter">Global variable, struct and array</a></p>
+                        title="previous chapter">Global variables, structs and arrays</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="funccall.html"
                         title="next chapter">Function call</a></p>
@@ -783,7 +783,7 @@ the book is written) is more complicate and deep in CPU architecture.</p>
           <a href="funccall.html" title="Function call"
              >next</a> |</li>
         <li class="right" >
-          <a href="globalvar.html" title="Global variable, struct and array"
+          <a href="globalvar.html" title="Global variables, structs and arrays"
              >previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Other instructions &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
+    <title>Adding arithmetic and local pointer support &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.2',
+        VERSION:     '3.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
-    <link rel="next" title="Generate obj file" href="genobj.html" />
+    <link rel="next" title="Generating object files" href="genobj.html" />
     <link rel="prev" title="LLVM Backend Structure" href="backendstructure.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="genobj.html" title="Generate obj file"
+          <a href="genobj.html" title="Generating object files"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="backendstructure.html" title="LLVM Backend Structure"
@@ -53,8 +53,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="other-instructions">
-<h1>Other instructions<a class="headerlink" href="#other-instructions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="adding-arithmetic-and-local-pointer-support">
+<span id="sec-addingmoresupport"></span><h1>Adding arithmetic and local pointer support<a class="headerlink" href="#adding-arithmetic-and-local-pointer-support" title="Permalink to this headline">¶</a></h1>
 <p>This chapter add more cpu0 arithmetic instructions support first.
 The logic operation <strong>“not”</strong> support and translation in
 <a class="reference external" href="http://jonathan2251.github.com/lbd/otherinst.html#operator-not">section Operator “not” !</a>. The <a class="reference external" href="http://jonathan2251.github.com/lbd/otherinst.html#display-llvm-ir-nodes-with-graphviz">section Display llvm IR nodes with Graphviz</a>
@@ -1432,7 +1432,7 @@ from three to over ten.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Other instructions</a><ul>
+<li><a class="reference internal" href="#">Adding arithmetic and local pointer support</a><ul>
 <li><a class="reference internal" href="#support-arithmetic-instructions">Support arithmetic instructions</a></li>
 <li><a class="reference internal" href="#operator-not">Operator “not” !</a></li>
 <li><a class="reference internal" href="#display-llvm-ir-nodes-with-graphviz">Display llvm IR nodes with Graphviz</a></li>
@@ -1458,7 +1458,7 @@ from three to over ten.</p>
                         title="previous chapter">LLVM Backend Structure</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="genobj.html"
-                        title="next chapter">Generate obj file</a></p>
+                        title="next chapter">Generating object files</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/otherinst.txt"
@@ -1488,7 +1488,7 @@ from three to over ten.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="genobj.html" title="Generate obj file"
+          <a href="genobj.html" title="Generating object files"
              >next</a> |</li>
         <li class="right" >
           <a href="backendstructure.html" title="LLVM Backend Structure"

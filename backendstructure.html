@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.2',
+        VERSION:     '3.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
-    <link rel="next" title="Other instructions" href="otherinst.html" />
+    <link rel="next" title="Adding arithmetic and local pointer support" href="otherinst.html" />
     <link rel="prev" title="Introduce Cpu0 and LLVM" href="llvmstructure.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="otherinst.html" title="Other instructions"
+          <a href="otherinst.html" title="Adding arithmetic and local pointer support"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="llvmstructure.html" title="Introduce Cpu0 and LLVM"
@@ -165,10 +165,13 @@ the specified interfaces.</p>
 它創建並擁有數個物件描述目標平台資訊，LLVM 代碼生成器透過 <tt class="docutils literal"><span class="pre">XXTargetMachine</span></tt> 取
 得相應資訊。</p>
 <ul class="simple">
-<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1DataLayout.html">DataLayout</a></li>
-<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetFrameLowering_8h.html">TargetFrameLowering</a></li>
-<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetInstrInfo_8h_source.html">TargetInstrInfo</a> 、 <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetLowering_8h.html">TargetLowering</a> 和  <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetRegisterInfo_8h_source.html">TargetRegisterInfo</a></li>
+<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/classllvm_1_1DataLayout.html">DataLayout</a> 描述目標的資料佈局，如: 大小端，指針寬度和內存對齊。</li>
+<li><a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetFrameLowering_8h.html">TargetFrameLowering</a> 描述目標棧框佈局。它指明棧生長方向、棧上空間的對齊要求和本地變數應從棧底何處偏移量開始存取。</li>
+<li>其它類別諸如: <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetInstrInfo_8h_source.html">TargetInstrInfo</a> 、 <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetLowering_8h.html">TargetLowering</a> 和  <a class="reference external" href="http://llvm.org/docs/doxygen/html/TargetRegisterInfo_8h_source.html">TargetRegisterInfo</a> 。底下各節會分別加以描述。</li>
 </ul>
+</div>
+<div class="section" id="subtarget-information">
+<h3>Subtarget Information<a class="headerlink" href="#subtarget-information" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="build-example-code">
@@ -1148,6 +1151,7 @@ as 123.</p>
 </li>
 <li><a class="reference internal" href="#general-target-information">General Target Information</a><ul>
 <li><a class="reference internal" href="#target-machine-characteristics">Target Machine Characteristics</a></li>
+<li><a class="reference internal" href="#subtarget-information">Subtarget Information</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#build-example-code">Build Example Code</a><ul>
@@ -1173,7 +1177,7 @@ as 123.</p>
                         title="previous chapter">Introduce Cpu0 and LLVM</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="otherinst.html"
-                        title="next chapter">Other instructions</a></p>
+                        title="next chapter">Adding arithmetic and local pointer support</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/backendstructure.txt"
@@ -1203,7 +1207,7 @@ as 123.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="otherinst.html" title="Other instructions"
+          <a href="otherinst.html" title="Adding arithmetic and local pointer support"
              >next</a> |</li>
         <li class="right" >
           <a href="llvmstructure.html" title="Introduce Cpu0 and LLVM"

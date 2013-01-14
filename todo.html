@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.2',
+        VERSION:     '3.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
-    <link rel="prev" title="ELF" href="elf.html" /> 
+    <link rel="prev" title="Porting to LLVM 3.2" href="port3.2.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="elf.html" title="ELF"
+          <a href="port3.2.html" title="Porting to LLVM 3.2"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>
@@ -55,7 +55,7 @@
 <p class="first admonition-title">Todo</p>
 <p class="last">Add info about LLVM documentation licensing.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="about.html#index-0"><em>original entry</em></a> is located in  /z/tmp/github/lbd/source/about.rst, line 52.)</p>
+<p class="todo-source">(The <a class="reference internal" href="about.html#index-0"><em>original entry</em></a> is located in  /z/tmp/github/lbd/source/about.rst, line 53.)</p>
 <div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">Fix centering for figure captions.</p>
@@ -71,6 +71,13 @@
 <p class="last">The html will follow the appear order in *.rst source context but latexpdf didn&#8217;t. For example, the <a class="reference internal" href="#install-f4"><em>Create LLVM.xcodeproj by cmake – Set option to generate Xcode project</em></a> Figure 2.4 and <a class="reference internal" href="#install-f5"><em>Create LLVM.xcodeproj by cmake – Before Adjust CMAKE_INSTALL_NAME_TOOL</em></a> Figure 2.5 appear after the below text &#8220;Click OK from ...&#8221; in pdf. If find the <strong>NoReorder</strong> or <strong>newpage</strong> directive, maybe can solve this problem.</p>
 </div>
 <p class="todo-source">(The <a class="reference internal" href="appendix.html#index-2"><em>original entry</em></a> is located in  /z/tmp/github/lbd/source/appendix.rst, line 89.)</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">The changes made to port from LLVM 3.1-&gt;3.2 should be reflected throughout
+the rest of the book. We should assume the reader is using the current release
+of LLVM when working with this book.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="port3.2.html#index-0"><em>original entry</em></a> is located in  /z/tmp/github/lbd/source/port3.2.rst, line 13.)</p>
 </div>
 
 
@@ -80,8 +87,8 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="elf.html"
-                        title="previous chapter">ELF</a></p>
+  <p class="topless"><a href="port3.2.html"
+                        title="previous chapter">Porting to LLVM 3.2</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/todo.txt"
@@ -111,7 +118,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="elf.html" title="ELF"
+          <a href="port3.2.html" title="Porting to LLVM 3.2"
              >previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>

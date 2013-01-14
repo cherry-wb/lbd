@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Generate obj file &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
+    <title>Generating object files &mdash; Write An LLVM Backend Tutorial For Cpu0</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.2',
+        VERSION:     '3.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="Write An LLVM Backend Tutorial For Cpu0" href="index.html" />
-    <link rel="next" title="Global variable, struct and array" href="globalvar.html" />
-    <link rel="prev" title="Other instructions" href="otherinst.html" /> 
+    <link rel="next" title="Global variables, structs and arrays" href="globalvar.html" />
+    <link rel="prev" title="Adding arithmetic and local pointer support" href="otherinst.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,10 +39,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="globalvar.html" title="Global variable, struct and array"
+          <a href="globalvar.html" title="Global variables, structs and arrays"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="otherinst.html" title="Other instructions"
+          <a href="otherinst.html" title="Adding arithmetic and local pointer support"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>
@@ -53,8 +53,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="generate-obj-file">
-<h1>Generate obj file<a class="headerlink" href="#generate-obj-file" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="generating-object-files">
+<span id="sec-genobjfiles"></span><h1>Generating object files<a class="headerlink" href="#generating-object-files" title="Permalink to this headline">¶</a></h1>
 <p>The previous chapters only introduce the assembly code generated.
 This chapter will introduce you the obj support first, and display the obj by
 objdump utility. With LLVM support, the cpu0 backend can generate both big
@@ -312,7 +312,7 @@ Like <a class="reference internal" href="#genobj-f1"><em>Register Cpu0MCAsmInfo<
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Generate obj file</a><ul>
+<li><a class="reference internal" href="#">Generating object files</a><ul>
 <li><a class="reference internal" href="#translate-into-obj-file">Translate into obj file</a></li>
 <li><a class="reference internal" href="#backend-target-registration-structure">Backend Target Registration Structure</a></li>
 </ul>
@@ -321,10 +321,10 @@ Like <a class="reference internal" href="#genobj-f1"><em>Register Cpu0MCAsmInfo<
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="otherinst.html"
-                        title="previous chapter">Other instructions</a></p>
+                        title="previous chapter">Adding arithmetic and local pointer support</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="globalvar.html"
-                        title="next chapter">Global variable, struct and array</a></p>
+                        title="next chapter">Global variables, structs and arrays</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/genobj.txt"
@@ -354,10 +354,10 @@ Like <a class="reference internal" href="#genobj-f1"><em>Register Cpu0MCAsmInfo<
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="globalvar.html" title="Global variable, struct and array"
+          <a href="globalvar.html" title="Global variables, structs and arrays"
              >next</a> |</li>
         <li class="right" >
-          <a href="otherinst.html" title="Other instructions"
+          <a href="otherinst.html" title="Adding arithmetic and local pointer support"
              >previous</a> |</li>
         <li><a href="index.html">Write An LLVM Backend Tutorial For Cpu0</a> &raquo;</li> 
       </ul>
