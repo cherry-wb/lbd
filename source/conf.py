@@ -86,6 +86,12 @@ pygments_style = 'sphinx'
 
 highlight_language = 'c++'
 
+from tblgen.tblgen import TblgenLexer
+
+def setup(app):
+    from sphinx.highlighting import lexers
+    lexers['tblgen'] = TblgenLexer()
+
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
