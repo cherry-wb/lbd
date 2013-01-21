@@ -4,6 +4,11 @@ The reStructuredText skill used in this book
 Build reStructuredText by command sphinx-build. 
 Reference <http://sphinx-doc.org/.
 
+Reference web:
+http://docs.geoserver.org/latest/en/docguide/sphinx.html
+http://docutils.sourceforge.net/docs/ref/rst/directives.html
+http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html
+
 Currently skills/setting use in this document
 
 1. Font
@@ -64,4 +69,10 @@ Currently skills/setting use in this document
 6. Use hyper link in reference our book section. But use "section name" of 
    `web link`_ to reference outside web section. Because I find the hyper link 
    for reference section of LLVM is changed from version to version.
+
+7. For easy to verify the out of date reference. 
+Put outside web reference at end of chapter with footnote [#].
+
+8. Use :menuselection:`Start Menu --> Programs --> GeoServer`.
+
 

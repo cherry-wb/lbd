@@ -1,6 +1,11 @@
 diff -Naur 7/1/Cpu0/Cpu0CallingConv.td 8/2/Cpu0/Cpu0CallingConv.td
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0CallingConv.td	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0CallingConv.td	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0CallingConv.td	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0CallingConv.td	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -13,6 +13,37 @@
  class CCIfSubtarget<string F, CCAction A>:
    CCIf<!strconcat("State.getTarget().getSubtarget<Cpu0Subtarget>().", F), A>;
@@ -40,6 +45,7 @@ diff -Naur 7/1/Cpu0/Cpu0CallingConv.td 8/2/Cpu0/Cpu0CallingConv.td
                                     (sequence "S%u", 2, 0))>;
  
 diff -Naur 7/1/Cpu0/Cpu0ISelLowering.cpp 8/2/Cpu0/Cpu0ISelLowering.cpp
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0ISelLowering.cpp	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0ISelLowering.cpp	2013-01-10 18:32:51.000000000 +0800
 @@ -71,7 +71,7 @@
@@ -52,6 +58,11 @@ diff -Naur 7/1/Cpu0/Cpu0ISelLowering.cpp 8/2/Cpu0/Cpu0ISelLowering.cpp
    setOperationAction(ISD::SREM, MVT::i32, Expand);
    setOperationAction(ISD::UDIV, MVT::i32, Expand);
 @@ -239,6 +239,58 @@
+=======
+--- 7/1/Cpu0/Cpu0ISelLowering.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0ISelLowering.cpp	2013-01-16 21:39:45.000000000 +0800
+@@ -235,6 +235,58 @@
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
                                           DebugLoc dl, SelectionDAG &DAG,
                                           SmallVectorImpl<SDValue> &InVals)
                                            const {
@@ -111,8 +122,13 @@ diff -Naur 7/1/Cpu0/Cpu0ISelLowering.cpp 8/2/Cpu0/Cpu0ISelLowering.cpp
  }
  
 diff -Naur 7/1/Cpu0/Cpu0InstrFormats.td 8/2/Cpu0/Cpu0InstrFormats.td
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0InstrFormats.td	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0InstrFormats.td	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0InstrFormats.td	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0InstrFormats.td	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -71,6 +71,13 @@
    field bits<32> SoftFail = 0;
  }
@@ -128,8 +144,13 @@ diff -Naur 7/1/Cpu0/Cpu0InstrFormats.td 8/2/Cpu0/Cpu0InstrFormats.td
  // Format A instruction class in Cpu0 : <|opcode|ra|rb|rc|cx|>
  //===----------------------------------------------------------------------===//
 diff -Naur 7/1/Cpu0/Cpu0InstrInfo.cpp 8/2/Cpu0/Cpu0InstrInfo.cpp
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0InstrInfo.cpp	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0InstrInfo.cpp	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0InstrInfo.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0InstrInfo.cpp	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -13,6 +13,7 @@
  
  #include "Cpu0InstrInfo.h"
@@ -163,7 +184,11 @@ diff -Naur 7/1/Cpu0/Cpu0InstrInfo.cpp 8/2/Cpu0/Cpu0InstrInfo.cpp
 +  MachineMemOperand *MMO = GetMemOperand(MBB, FI, MachineMemOperand::MOLoad);
 +  unsigned Opc = 0;
 +
+<<<<<<< HEAD
 +  if (RC == Cpu0::CPURegsRegisterClass)
+=======
++  if (Cpu0::CPURegsRegClass.hasSubClassEq(RC))
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 +    Opc = Cpu0::LD;
 +  assert(Opc && "Register class not handled!");
 +  BuildMI(MBB, I, DL, get(Opc), DestReg).addFrameIndex(FI).addImm(0)
@@ -174,8 +199,13 @@ diff -Naur 7/1/Cpu0/Cpu0InstrInfo.cpp 8/2/Cpu0/Cpu0InstrInfo.cpp
  Cpu0InstrInfo::emitFrameIndexDebugValue(MachineFunction &MF, int FrameIx,
                                          uint64_t Offset, const MDNode *MDPtr,
 diff -Naur 7/1/Cpu0/Cpu0InstrInfo.h 8/2/Cpu0/Cpu0InstrInfo.h
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0InstrInfo.h	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0InstrInfo.h	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0InstrInfo.h	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0InstrInfo.h	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -42,6 +42,12 @@
                             bool KillSrc) const;
  
@@ -190,8 +220,13 @@ diff -Naur 7/1/Cpu0/Cpu0InstrInfo.h 8/2/Cpu0/Cpu0InstrInfo.h
                                                   int FrameIx, uint64_t Offset,
                                                   const MDNode *MDPtr,
 diff -Naur 7/1/Cpu0/Cpu0InstrInfo.td 8/2/Cpu0/Cpu0InstrInfo.td
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0InstrInfo.td	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0InstrInfo.td	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0InstrInfo.td	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0InstrInfo.td	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -27,6 +27,13 @@
                                           [SDTCisInt<0>,
                                            SDTCisSameAs<0, 1>]>;
@@ -288,8 +323,13 @@ diff -Naur 7/1/Cpu0/Cpu0InstrInfo.td 8/2/Cpu0/Cpu0InstrInfo.td
  def : Pat<(Cpu0Hi tglobaladdr:$in), (SHL (ADDiu ZERO, tglobaladdr:$in), 16)>;
  // Expect cpu0 add LUi support, like Mips
 diff -Naur 7/1/Cpu0/Cpu0MCInstLower.cpp 8/2/Cpu0/Cpu0MCInstLower.cpp
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0MCInstLower.cpp	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0MCInstLower.cpp	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0MCInstLower.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0MCInstLower.cpp	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -48,6 +48,7 @@
  //  format=false (global var in .sdata).
    case Cpu0II::MO_GPREL:     Kind = MCSymbolRefExpr::VK_Cpu0_GPREL; break;
@@ -299,8 +339,13 @@ diff -Naur 7/1/Cpu0/Cpu0MCInstLower.cpp 8/2/Cpu0/Cpu0MCInstLower.cpp
    case Cpu0II::MO_GOT:       Kind = MCSymbolRefExpr::VK_Cpu0_GOT; break;
  // ABS_HI and ABS_LO is for llc -march=cpu0 -relocation-model=static (global 
 diff -Naur 7/1/Cpu0/Cpu0MachineFunction.h 8/2/Cpu0/Cpu0MachineFunction.h
+<<<<<<< HEAD
 --- 7/1/Cpu0/Cpu0MachineFunction.h	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/Cpu0MachineFunction.h	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 7/1/Cpu0/Cpu0MachineFunction.h	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/Cpu0MachineFunction.h	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -30,19 +30,64 @@
    /// use as the global base register. This is used for PIC in some PIC
    /// relocation models.
@@ -369,9 +414,15 @@ diff -Naur 7/1/Cpu0/Cpu0MachineFunction.h 8/2/Cpu0/Cpu0MachineFunction.h
  
  } // end of namespace llvm
 diff -Naur 7/1/Cpu0/MCTargetDesc/Cpu0MCCodeEmitter.cpp 8/2/Cpu0/MCTargetDesc/Cpu0MCCodeEmitter.cpp
+<<<<<<< HEAD
 --- 7/1/Cpu0/MCTargetDesc/Cpu0MCCodeEmitter.cpp	2013-01-10 18:32:51.000000000 +0800
 +++ 8/2/Cpu0/MCTargetDesc/Cpu0MCCodeEmitter.cpp	2013-01-10 18:32:51.000000000 +0800
 @@ -195,6 +195,9 @@
+=======
+--- 7/1/Cpu0/MCTargetDesc/Cpu0MCCodeEmitter.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 8/2/Cpu0/MCTargetDesc/Cpu0MCCodeEmitter.cpp	2013-01-16 21:39:45.000000000 +0800
+@@ -209,6 +209,9 @@
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
    case MCSymbolRefExpr::VK_Cpu0_GPREL:
      FixupKind = Cpu0::fixup_Cpu0_GPREL16;
      break;

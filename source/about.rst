@@ -17,16 +17,39 @@ Anoushe Jamshidi
 	ajamshidi@gmail.com
 
 
+Contributors
+------------
+
+Chen Wei-Ren, chenwj@iis.sinica.edu.tw, assisted with text and code formatting.
+
+
+Acknowledgments
+---------------
+
+We would like to thank Sean Silva, silvas@purdue.edu, for his help, encouragement, and
+assistance with the Sphinx document generator.  Without his help, this book would not 
+have been finished and published online.
+
+
 Revision history
 ----------------
 
+Version 3.2.5, Not release yet
+	Add "LLVMBackendTutorialExampleCode/llvm3.1"
+Version 3.2.4, Released January 17, 2013
+	Update for LLVM 3.2.
+	Change title (book name) from "Write An LLVM Backend Tutorial For Cpu0" to 
+	"Tutorial: Creating an LLVM Backend for the Cpu0 Architecture".
 Version 3.2.3, Released January 12, 2013
 	Add chapter "Porting to LLVM 3.2".
 Version 3.2.2, Released January 10, 2013
 	Add section "Full support %" and section "Verify DIV for operator %".
 Version 3.2.1, Released January 7, 2013
 	Add Footnote for references.
-	Reorganize chapters.
+	Reorganize chapters (Move bottom part of chapter "Global variable" to 
+	chapter "Other instruction"; Move section "Translate into obj file" to 
+	new chapter "Generate obj file". 
+	Fix errors in Fig/otherinst/2.png and Fig/otherinst/3.png. 
 Version 3.2.0, Released January 1, 2013
 	Add chapter Function.
 	Move Chapter "Installing LLVM and the Cpu0 example code" from beginning to 
@@ -106,70 +129,72 @@ these documents to get a deeper understanding of what the tutorial is teaching:
 `Mips ABI document <http://www.linux-mips.org/pub/linux/mips/doc/ABI/mipsabi.pdf>`_
 
 
-Outline of Sections
+Outline of Chapters
 -------------------
 
 :ref:`sec-llvmstructure`:
 
-This section introduces the Cpu0 architecture, a high-level view of LLVM, and how Cpu0 
-will be targeted in in an LLVM backend. This section will run you through the initial 
+This chapter introduces the Cpu0 architecture, a high-level view of LLVM, and how Cpu0 
+will be targeted in in an LLVM backend. This chapter will run you through the initial 
 steps of building the backend, including initial work on the target description (td), 
 setting up cmake and LLVMBuild files, and target registration. Around 750 lines of source 
-code are added by the end of this section.
+code are added by the end of this chapter.
 
 :ref:`sec-backendstructure`:
 
-This section highlights the structure of an LLVM backend using by UML graphs, and we 
-continue to build the Cpu0 backend. Around 2300 lines of source code are added in this 
-section, most of which is common from one LLVM backends to another, regardless of the 
-target architecture. By the end of this section, the Cpu0 LLVM backend will support 
+This chapter highlights the structure of an LLVM backend using by UML graphs, and we 
+continue to build the Cpu0 backend. Around 2300 lines of source code are added, 
+most of which are common from one LLVM backends to another, regardless of the 
+target architecture. By the end of this chapter, the Cpu0 LLVM backend will support 
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 three instructions to generate some initial assembly output. 
 
 :ref:`sec-addingmoresupport`:
 
 Over ten C operators and their corresponding LLVM IR instructions are introduced in this 
-section. Around 345 lines of source code, mostly in .td Target Description files, are 
+chapter. Around 345 lines of source code, mostly in .td Target Description files, are 
 added. With these 345 lines, the backend can now translate the **+, -, \*, /, &, |, ^, 
 <<, >>, !** and **%** C operators into the appropriate Cpu0 assembly code. Use of the 
-``llc`` debug option and of **Graphviz** as a debug tool are introduced in this section.
+``llc`` debug option and of **Graphviz** as a debug tool are introduced in this chapter.
 
 :ref:`sec-genobjfiles`:
 
-Object file generation support for the Cpu0 backend is added in this section, as the 
+Object file generation support for the Cpu0 backend is added in this chapter, as the 
 Target Registration structure is introduced. With 700 lines of additional code, 
 the Cpu0 backend can now generate big and little endian object files.
 
 :ref:`sec-globalvars`:
 
-Global variable, struct and array support are added in this section. 
+Global variable, struct and array support are added in this chapter. 
 About 300 lines of source code are added to do this. The Cpu0 supports PIC and static 
-addressing mode, both of which area explained as they are added in this section.
+addressing mode, both of which area explained as their functionality is implemented.
 
 :ref:`sec-controlflow`:
 
 Support for the **if, else, while, for, goto** flow control statements are 
-added in this section. Around 150 lines of source code added.
+added in this chapter. Around 150 lines of source code added.
 
 :ref:`sec-funccall`:
 
-This section details the implementation of function calls in the Cpu0 backend. The stack 
+This chapter details the implementation of function calls in the Cpu0 backend. The stack 
 frame, handling incoming & outgoing arguments, and their corresponding standard LLVM 
-functions are introduced in this chapter. Over 700 lines of source code are added in 
-this section.
+functions are introduced. Over 700 lines of source code are added.
 
 :ref:`sec-elf`:
 
-This section details Cpu0 support for the well-known ELF object file format. The ELF 
-format and binutils tools are not a part of LLVM, but are introduced.  This section 
-details how to use this ELF tool to verify and analyze the object files created by the 
+This chapter details Cpu0 support for the well-known ELF object file format. The ELF 
+format and binutils tools are not a part of LLVM, but are introduced.  This chapter 
+details how to use the ELF tools to verify and analyze the object files created by the 
 Cpu0 backend.
-
-:ref:`sec-porting32`:
-
-Introduces the changes of the LLVM APIs used by Cpu0 and Mips when updating this guide 
-from LLVM 3.1 to 3.2.  
 
 :ref:`sec-appendix-installing`:
 
 Details how to set up the LLVM source code, development tools, and environment
 setting for Mac OS X and Linux platforms.
+
+:ref:`sec-appendix-old-llvm-ver`:
+
+Introduces the difference of the LLVM APIs used by Cpu0 and Mips when updating 
+this guide between LLVM different version.  
+
+

@@ -21,4 +21,7 @@ diff -Naur 8/3/Cpu0/ 8/4/Cpu0/ > 8-4.patch
 diff -Naur 8/4/Cpu0/ 8/5/Cpu0/ > 8-5.patch
 diff -Naur 8/5/Cpu0/ 8/6/Cpu0/ > 8-6.patch
 diff -Naur 8/6/Cpu0/ 8/7/Cpu0/ > 8-7.patch
+<<<<<<< HEAD
 diff -Naur 8/7/Cpu0/ 9/1/Cpu0/ > 9-1.patch
+=======
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f

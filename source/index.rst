@@ -22,7 +22,8 @@ Table of Contents
    ctrlflow
    funccall
    elf
-   port3.2
+   install
+   oldver
    todo
 
 Book example code
@@ -31,6 +32,7 @@ Book example code
 The example code is available in: 
 
 http://jonathan2251.github.com/lbd/LLVMBackendTutorialExampleCode.tar.gz
+
 
 Alternate formats
 -----------------
@@ -44,3 +46,4 @@ The book is also available in the following formats:
         <a href="http://azru0512.github.com/lbd/WriteAnLLVMBackendTutorialForCpu0.pdf">PDF</a>
       </li>
     </ul>
+

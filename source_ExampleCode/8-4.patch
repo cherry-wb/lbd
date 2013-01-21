@@ -1,6 +1,11 @@
 diff -Naur 8/3/Cpu0/Cpu0MachineFunction.h 8/4/Cpu0/Cpu0MachineFunction.h
+<<<<<<< HEAD
 --- 8/3/Cpu0/Cpu0MachineFunction.h	2013-01-10 18:32:51.000000000 +0800
 +++ 8/4/Cpu0/Cpu0MachineFunction.h	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 8/3/Cpu0/Cpu0MachineFunction.h	2013-01-16 21:39:45.000000000 +0800
++++ 8/4/Cpu0/Cpu0MachineFunction.h	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -26,6 +26,11 @@
    virtual void anchor();
    MachineFunction& MF;
@@ -44,8 +49,13 @@ diff -Naur 8/3/Cpu0/Cpu0MachineFunction.h 8/4/Cpu0/Cpu0MachineFunction.h
    bool globalBaseRegSet() const;
    unsigned getGlobalBaseReg();
 diff -Naur 8/3/Cpu0/Cpu0RegisterInfo.cpp 8/4/Cpu0/Cpu0RegisterInfo.cpp
+<<<<<<< HEAD
 --- 8/3/Cpu0/Cpu0RegisterInfo.cpp	2013-01-10 18:32:51.000000000 +0800
 +++ 8/4/Cpu0/Cpu0RegisterInfo.cpp	2013-01-10 18:32:51.000000000 +0800
+=======
+--- 8/3/Cpu0/Cpu0RegisterInfo.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 8/4/Cpu0/Cpu0RegisterInfo.cpp	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -97,6 +97,7 @@
    MachineInstr &MI = *II;
    MachineFunction &MF = *MI.getParent()->getParent();

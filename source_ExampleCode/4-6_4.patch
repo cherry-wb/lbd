@@ -1,4 +1,5 @@
 diff -Naur 4/6_2/Cpu0/Cpu0ISelLowering.cpp 4/6_4/Cpu0/Cpu0ISelLowering.cpp
+<<<<<<< HEAD
 --- 4/6_2/Cpu0/Cpu0ISelLowering.cpp	2013-01-10 18:35:24.000000000 +0800
 +++ 4/6_4/Cpu0/Cpu0ISelLowering.cpp	2013-01-10 18:35:24.000000000 +0800
 @@ -42,7 +42,15 @@
@@ -7,6 +8,14 @@ diff -Naur 4/6_2/Cpu0/Cpu0ISelLowering.cpp 4/6_4/Cpu0/Cpu0ISelLowering.cpp
    addRegisterClass(MVT::i32, Cpu0::CPURegsRegisterClass);
 -
 +  
+=======
+--- 4/6_2/Cpu0/Cpu0ISelLowering.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 4/6_4/Cpu0/Cpu0ISelLowering.cpp	2013-01-16 21:39:45.000000000 +0800
+@@ -43,6 +43,14 @@
+   // Set up the register classes
+   addRegisterClass(MVT::i32, &Cpu0::CPURegsRegClass);
+ 
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 +  setOperationAction(ISD::SDIV, MVT::i32, Expand);
 +  setOperationAction(ISD::SREM, MVT::i32, Expand);
 +  setOperationAction(ISD::UDIV, MVT::i32, Expand);
@@ -14,7 +23,11 @@ diff -Naur 4/6_2/Cpu0/Cpu0ISelLowering.cpp 4/6_4/Cpu0/Cpu0ISelLowering.cpp
 +
 +  setTargetDAGCombine(ISD::SDIVREM);
 +  setTargetDAGCombine(ISD::UDIVREM);
+<<<<<<< HEAD
 +  
+=======
++
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
  //- Set .align 2
  // It will emit .align 2 later
    setMinFunctionAlignment(2);
@@ -78,8 +91,13 @@ diff -Naur 4/6_2/Cpu0/Cpu0ISelLowering.cpp 4/6_4/Cpu0/Cpu0ISelLowering.cpp
  
  /// LowerFormalArguments - transform physical registers into virtual registers
 diff -Naur 4/6_2/Cpu0/Cpu0ISelLowering.h 4/6_4/Cpu0/Cpu0ISelLowering.h
+<<<<<<< HEAD
 --- 4/6_2/Cpu0/Cpu0ISelLowering.h	2013-01-10 18:35:24.000000000 +0800
 +++ 4/6_4/Cpu0/Cpu0ISelLowering.h	2013-01-10 18:35:24.000000000 +0800
+=======
+--- 4/6_2/Cpu0/Cpu0ISelLowering.h	2013-01-16 21:39:45.000000000 +0800
++++ 4/6_4/Cpu0/Cpu0ISelLowering.h	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -25,7 +25,10 @@
      enum NodeType {
        // Start the numbering from where ISD NodeType finishes.
@@ -102,8 +120,13 @@ diff -Naur 4/6_2/Cpu0/Cpu0ISelLowering.h 4/6_4/Cpu0/Cpu0ISelLowering.h
      // Subtarget Info
      const Cpu0Subtarget *Subtarget;
 diff -Naur 4/6_2/Cpu0/Cpu0InstrInfo.cpp 4/6_4/Cpu0/Cpu0InstrInfo.cpp
+<<<<<<< HEAD
 --- 4/6_2/Cpu0/Cpu0InstrInfo.cpp	2013-01-10 18:35:24.000000000 +0800
 +++ 4/6_4/Cpu0/Cpu0InstrInfo.cpp	2013-01-10 18:35:24.000000000 +0800
+=======
+--- 4/6_2/Cpu0/Cpu0InstrInfo.cpp	2013-01-16 21:39:45.000000000 +0800
++++ 4/6_4/Cpu0/Cpu0InstrInfo.cpp	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -28,6 +28,42 @@
    return RI;
  }
@@ -148,8 +171,13 @@ diff -Naur 4/6_2/Cpu0/Cpu0InstrInfo.cpp 4/6_4/Cpu0/Cpu0InstrInfo.cpp
  Cpu0InstrInfo::emitFrameIndexDebugValue(MachineFunction &MF, int FrameIx,
                                          uint64_t Offset, const MDNode *MDPtr,
 diff -Naur 4/6_2/Cpu0/Cpu0InstrInfo.h 4/6_4/Cpu0/Cpu0InstrInfo.h
+<<<<<<< HEAD
 --- 4/6_2/Cpu0/Cpu0InstrInfo.h	2013-01-10 18:35:24.000000000 +0800
 +++ 4/6_4/Cpu0/Cpu0InstrInfo.h	2013-01-10 18:35:24.000000000 +0800
+=======
+--- 4/6_2/Cpu0/Cpu0InstrInfo.h	2013-01-16 21:39:45.000000000 +0800
++++ 4/6_4/Cpu0/Cpu0InstrInfo.h	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -36,6 +36,11 @@
    ///
    virtual const Cpu0RegisterInfo &getRegisterInfo() const;
@@ -163,8 +191,13 @@ diff -Naur 4/6_2/Cpu0/Cpu0InstrInfo.h 4/6_4/Cpu0/Cpu0InstrInfo.h
    virtual MachineInstr* emitFrameIndexDebugValue(MachineFunction &MF,
                                                   int FrameIx, uint64_t Offset,
 diff -Naur 4/6_2/Cpu0/Cpu0InstrInfo.td 4/6_4/Cpu0/Cpu0InstrInfo.td
+<<<<<<< HEAD
 --- 4/6_2/Cpu0/Cpu0InstrInfo.td	2013-01-10 18:35:24.000000000 +0800
 +++ 4/6_4/Cpu0/Cpu0InstrInfo.td	2013-01-10 18:35:24.000000000 +0800
+=======
+--- 4/6_2/Cpu0/Cpu0InstrInfo.td	2013-01-16 21:39:45.000000000 +0800
++++ 4/6_4/Cpu0/Cpu0InstrInfo.td	2013-01-16 21:39:45.000000000 +0800
+>>>>>>> 835f5d4b63205622010953bfd1928b4eb0ee820f
 @@ -23,10 +23,20 @@
  
  def SDT_Cpu0Ret          : SDTypeProfile<0, 1, [SDTCisInt<0>]>;
