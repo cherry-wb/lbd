@@ -13,9 +13,9 @@ Table of Contents
    :maxdepth: 3
 
    about
-   install
-   llvmstructure
-   backendstructure
+   cmd_install
+   llvmstructure_new
+   backendstructure_new
    otherinst
    genobj
    globalvar
